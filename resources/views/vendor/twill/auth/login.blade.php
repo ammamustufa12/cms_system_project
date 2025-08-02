@@ -78,17 +78,28 @@
 
                                         <div class="mb-3">
                                             <label for="email" class="form-label">Email address</label>
-                                            <input id="email" type="email" class="form-control" name="email" value="{{ old('email') }}" required autofocus placeholder="Enter your email">
+                                            <input id="email" type="email"
+                                                class="form-control @error('email') is-invalid @enderror"
+                                                name="email" value="{{ old('email') }}" required autofocus placeholder="Enter your email">
+                                            @error('email')
+                                                <span class="invalid-feedback" role="alert">
+                                                    <strong>{{ $message }}</strong>
+                                                </span>
+                                            @enderror
                                         </div>
 
                                         <div class="mb-3">
-                                            <div class="float-end">
-                                                {{-- <a href="{{ route('twill.password.request') }}" class="text-muted">Forgot password?</a> --}}
-                                            </div>
                                             <label for="password" class="form-label">Password</label>
                                             <div class="position-relative auth-pass-inputgroup mb-3">
-                                                <input id="password" type="password" class="form-control pe-5 password-input" name="password" required placeholder="Enter your password">
+                                                <input id="password" type="password"
+                                                    class="form-control pe-5 password-input @error('password') is-invalid @enderror"
+                                                    name="password" required placeholder="Enter your password">
                                                 <button class="btn btn-link position-absolute end-0 top-0 text-decoration-none text-muted password-addon material-shadow-none" type="button" id="password-addon"><i class="ri-eye-fill align-middle"></i></button>
+                                                @error('password')
+                                                    <span class="invalid-feedback d-block" role="alert">
+                                                        <strong>{{ $message }}</strong>
+                                                    </span>
+                                                @enderror
                                             </div>
                                         </div>
 

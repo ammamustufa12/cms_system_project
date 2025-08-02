@@ -3,89 +3,136 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Role;
+use App\Helpers\ActivityLogger;  // Import ActivityLogger
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 use Illuminate\Http\Request;
+use A17\Twill\Models\User as TwillUser;
+use Illuminate\Support\Facades\Log;
+
+
 
 class UserController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    // List all users
     public function index()
     {
-        $users = User::all();
-        return view('users.index', compact('users'));
+        $users = TwillUser::all();
+        $roles = Role::with('permissions')->get();
+        return view('vendor.twill.users.list', compact('users','roles'));
     }
 
-    // Show create user form
     public function create()
     {
         return view('users.create');
     }
 
-    // Store new user
-    public function store(Request $request)
-    {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
-            'password' => 'required|string|min:6|confirmed',
-        ]);
 
-        User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-        ]);
+public function store(Request $request)
+{
+    $validated = $request->validate([
+        'name' => 'required|string|max:255',
+        'email' => 'required|email|unique:twill_users,email',
+        // 'phone' => 'required|string|max:20',
+        'joining_date' => 'required|date',
+        'status' => 'required|in:Active,Block',
+        'role_id' => 'required|exists:roles,id',
+    ]);
 
-        return redirect()->route('users.index')->with('success', 'User created successfully.');
+    try {
+        $user = TwillUser::create($validated);
+
+        if (class_exists('ActivityLogger')) {
+            ActivityLogger::log('created', $user, "User '{$user->name}' created.");
+        }
+
+        return redirect()->back()->with('success', 'User added successfully');
+    } catch (\Exception $e) {
+        Log::error('User creation failed: ' . $e->getMessage(), [
+            'trace' => $e->getTraceAsString(),
+            'input' => $request->all(),
+        ]);
+        return redirect()->back()->withErrors(['error' => 'Something went wrong. Check logs.']);
     }
+}
 
-    // Show a single user
     public function show(string $id)
     {
         $user = User::findOrFail($id);
         return view('users.show', compact('user'));
     }
 
-    // Show edit form
     public function edit(string $id)
     {
         $user = User::findOrFail($id);
         return view('users.edit', compact('user'));
     }
 
-    // Update user
-    public function update(Request $request, string $id)
-    {
-        $user = User::findOrFail($id);
+   
+public function update(Request $request, string $id)
+{
+    $user = TwillUser::findOrFail($id);
 
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => ['required','email', Rule::unique('users')->ignore($user->id)],
-            'password' => 'nullable|string|min:6|confirmed',
-        ]);
+    $validated = $request->validate([
+        'name' => 'required|string|max:255',
+        'email' => ['required', 'email', Rule::unique('twill_users')->ignore($user->id)],
+        'joining_date' => 'required|date',
+        'status' => 'required|in:Active,Block',
+        'role_id' => 'required|exists:roles,id',
+        'password' => 'nullable|string|min:6|confirmed',
+    ]);
 
-        $user->name = $request->name;
-        $user->email = $request->email;
+    try {
+        $oldData = $user->getOriginal();
 
-        if ($request->filled('password')) {
-            $user->password = Hash::make($request->password);
+        $user->name = $validated['name'];
+        $user->email = $validated['email'];
+        $user->joining_date = $validated['joining_date'];
+        $user->status = $validated['status'];
+        $user->role_id = $validated['role_id'];
+
+        if (!empty($validated['password'])) {
+            $user->password = Hash::make($validated['password']);
         }
 
         $user->save();
 
-        return redirect()->route('users.index')->with('success', 'User updated successfully.');
-    }
+        $changes = $user->getChanges();
 
-    // Delete user
-    public function destroy(string $id)
+        if (class_exists('ActivityLogger')) {
+            ActivityLogger::log(
+                'updated',
+                $user,
+                "User '{$user->name}' updated.",
+                $changes
+            );
+        }
+
+        return redirect()->route('users.index')->with('success', 'User updated successfully.');
+    } catch (\Exception $e) {
+        Log::error('User update failed: ' . $e->getMessage(), [
+            'trace' => $e->getTraceAsString(),
+            'input' => $request->all(),
+        ]);
+
+        return redirect()->back()->withErrors(['error' => 'Something went wrong. Check logs.']);
+    }
+}
+
+ 
+    public function destroy($id)
     {
-        $user = User::findOrFail($id);
+        $user = TwillUser::findOrFail($id);
+        $userName = $user->name;
         $user->delete();
 
-        return redirect()->route('users.index')->with('success', 'User deleted successfully.');
+        // Optional: Log activity
+        if (class_exists('ActivityLogger')) {
+            ActivityLogger::log('deleted', $user, "User '{$userName}' deleted.");
+        }
+
+        return redirect()->back()->with('success', 'User deleted successfully.');
     }
+
+
 }

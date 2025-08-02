@@ -4,7 +4,7 @@
           /* Full screen height */
           overflow-y: auto;
           /* Enable vertical scrolling */
-          padding-right: 8px;
+          padding-right: 4px;
           /* Optional: space for scrollbar */
       }
   </style>
@@ -33,21 +33,27 @@
 
               <!-- Users -->
               <li class="nav-item">
-                  <a class="nav-link menu-link" href="/admin/users">
+                  <a class="nav-link menu-link" href="{{ route('users.index')}}">
                       <i class="ri-user-line"></i> <span>Users</span>
                   </a>
               </li>
 
               <!-- Roles & Permissions -->
               <li class="nav-item">
-                  <a class="nav-link menu-link" href="/admin/roles">
-                      <i class="ri-lock-unlock-line"></i> <span>Roles & Permissions</span>
+                  <a class="nav-link menu-link" href="{{ route('roles.index') }}">
+                      <i class="ri-lock-unlock-line"></i> <span>Roles</span>
                   </a>
               </li>
 
+             {{-- <li class="nav-item">
+                  <a class="nav-link menu-link" href="{{ route('permissions.index') }}">
+                      <i class="ri-lock-unlock-line"></i> <span> Permissions</span>
+                  </a>
+              </li> --}}
+
               <!-- Activity Logs -->
               <li class="nav-item">
-                  <a class="nav-link menu-link" href="/admin/activity-logs">
+                  <a class="nav-link menu-link" href="{{ route('activity_logs.index') }}">
                       <i class="ri-history-line"></i> <span>Activity Logs</span>
                   </a>
               </li>
@@ -62,7 +68,7 @@
 
               <!-- Pages -->
               <li class="nav-item">
-                  <a class="nav-link menu-link" href="/admin/pages">
+                  <a class="nav-link menu-link" href="{{ route('page.builder')}}">
                       <i class="ri-pages-line"></i> <span>Pages</span>
                   </a>
               </li>

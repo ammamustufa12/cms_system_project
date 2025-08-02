@@ -2,13 +2,18 @@
 <html dir="ltr" lang="{{ config('twill.locale', 'en') }}">
 
 <head>
+      <!-- jsvectormap css -->
+
     <!-- CSS files -->
+        <link href="{{ asset('admin_assets/js/layout.js') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('admin_assets/libs/jsvectormap/jsvectormap.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('admin_assets/libs/swiper/swiper-bundle.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('admin_assets/css/bootstrap.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('admin_assets/css/icons.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('admin_assets/css/app.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('admin_assets/css/custom.min.css') }}" rel="stylesheet" type="text/css" />
+
+        <title>@yield('title', 'Admin Dashboard')</title>
 
     <!-- Layout config JS -->
     <script src="{{ asset('admin_assets/js/layout.js') }}"></script>

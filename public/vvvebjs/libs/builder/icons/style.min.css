@@ -1,0 +1,2 @@
+/* public/vvvebjs/libs/builder/icons/style.min.css */
+.icons-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px;padding:15px}.icon-item{border:1px solid #ddd;border-radius:4px;padding:10px;text-align:center;cursor:pointer;transition:all .3s}.icon-item:hover{background:#f5f5f5}.icon-item i{font-size:24px;display:block;margin-bottom:5px}

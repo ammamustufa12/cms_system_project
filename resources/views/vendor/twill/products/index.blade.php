@@ -119,7 +119,7 @@
                                         <!-- item -->
                                         <a href="javascript:void(0);" class="dropdown-item notify-item py-2">
                                             <div class="d-flex">
-                                                <img src="assets/images/users/avatar-2.jpg"
+                                                <img src="{{ asset('admin_assets/images/users/avatar-2.jpg')}}"
                                                     class="me-3 rounded-circle avatar-xs" alt="user-pic">
                                                 <div class="flex-grow-1">
                                                     <h6 class="m-0">Angela Bernier</h6>
@@ -612,7 +612,7 @@
                                             <div
                                                 class="text-reset notification-item d-block dropdown-item position-relative">
                                                 <div class="d-flex">
-                                                    <img src="assets/images/users/avatar-2.jpg"
+                                                    <img src="{{ asset('admin_assets/images/users/avatar-2.jpg')}}"
                                                         class="me-3 rounded-circle avatar-xs flex-shrink-0"
                                                         alt="user-pic">
                                                     <div class="flex-grow-1">
@@ -745,7 +745,7 @@
 
                                             <div class="text-reset notification-item d-block dropdown-item">
                                                 <div class="d-flex">
-                                                    <img src="assets/images/users/avatar-2.jpg"
+                                                    <img src="{{ asset('admin_assets/images/users/avatar-2.jpg')}}"
                                                         class="me-3 rounded-circle avatar-xs" alt="user-pic">
                                                     <div class="flex-grow-1">
                                                         <a href="#!" class="stretched-link">
@@ -2889,7 +2889,7 @@
                                                                 <td>
                                                                     <div class="d-flex align-items-center">
                                                                         <div class="flex-shrink-0 me-2">
-                                                                            <img src="assets/images/users/avatar-2.jpg"
+                                                                            <img src="{{ asset('admin_assets/images/users/avatar-2.jpg')}}"
                                                                                 alt=""
                                                                                 class="avatar-xs rounded-circle material-shadow" />
                                                                         </div>
@@ -3073,7 +3073,7 @@
                                                 </div>
                                                 <div class="acitivity-item py-3 d-flex">
                                                     <div class="flex-shrink-0">
-                                                        <img src="assets/images/users/avatar-2.jpg" alt=""
+                                                        <img src="{{ asset('admin_assets/images/users/avatar-2.jpg')}}" alt=""
                                                             class="avatar-xs rounded-circle acitivity-avatar material-shadow">
                                                     </div>
                                                     <div class="flex-grow-1 ms-3">
@@ -3336,7 +3336,7 @@
                                                             <div class="card-body">
                                                                 <div class="d-flex">
                                                                     <div class="flex-shrink-0">
-                                                                        <img src="assets/images/users/avatar-2.jpg"
+                                                                        <img src="{{ asset('admin_assets/images/users/avatar-2.jpg')}}"
                                                                             alt=""
                                                                             class="avatar-sm rounded material-shadow">
                                                                     </div>
