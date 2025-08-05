@@ -19,27 +19,33 @@ Route::get('/login', function () {
     return redirect()->route('twill.login');
 })->name('login');
 Route::middleware(['web'])->prefix('admin')->group(function () {
-    Route::get('/products', [ProductController::class, 'index'])->name('products.index');
-// Index - List all users
-Route::get('/users', [UserController::class, 'index'])->name('users.index');
+    // Route::get('/products', [ProductController::class, 'index'])->name('products.index');
+    Route::resource('users', UserController::class);
+        // ✅ Dashboard route
+    // Route::get('/', function () {
+    //     return view('admin.dashboard'); // make sure this view exists
+    // })->name('admin');
+
+    // // Index - List all users
+// Route::get('/users', [UserController::class, 'index'])->name('users.index');
 
 // Create - Show form to create user
-Route::get('/users/create', [UserController::class, 'create'])->name('users.create');
+// Route::get('/users/create', [UserController::class, 'create'])->name('users.create');
 
 // Store - Save new user
-Route::post('/users', [UserController::class, 'store'])->name('users.store');
+// Route::post('/users', [UserController::class, 'store'])->name('users.store');
 
 // Show - View user details (optional)
-Route::get('/users/{id}', [UserController::class, 'show'])->name('users.show');
+// Route::get('/users/{id}', [UserController::class, 'show'])->name('users.show');
 
 // Edit - Show form to edit user
-Route::get('/users/{id}/edit', [UserController::class, 'edit'])->name('users.edit');
+// Route::get('/users/{id}/edit', [UserController::class, 'edit'])->name('users.edit');
 
 // Update - Save updated user
-Route::put('/users/{id}', [UserController::class, 'update'])->name('users.update');
+// Route::put('/users/{id}', [UserController::class, 'update'])->name('users.update');
 
 // Delete - Remove user
-    Route::delete('/users/{id}', [UserController::class, 'destroy'])->name('users.destroy');
+// Route::delete('/users/{id}', [UserController::class, 'destroy'])->name('users.destroy');
 
 
 
@@ -85,27 +91,27 @@ Route::delete('/permissions/{id}', [PermissionController::class, 'destroy'])->na
 
 // To:
 Route::post('/page/save', [PageBuilderController::class, 'save'])->name('page.save');
-Route::get('/admin/page-builder', [PageBuilderController::class, 'index'])->name('page.builder');
+Route::get('/page-builder', [PageBuilderController::class, 'index'])->name('page.builder');
 
-
+Route::resource('roles', RoleController::class);
 
 // List all roles
-Route::get('/roles', [RoleController::class, 'index'])->name('roles.index');
+// Route::get('/roles', [RoleController::class, 'index'])->name('roles.index');
 
 // Show form to create a new role
-Route::get('/roles/create', [RoleController::class, 'create'])->name('roles.create');
+// Route::get('/roles/create', [RoleController::class, 'create'])->name('roles.create');
 
 // Store new role
-Route::post('/roles', [RoleController::class, 'store'])->name('roles.store');
+// Route::post('/roles', [RoleController::class, 'store'])->name('roles.store');
 
 // Show form to edit an existing role
-Route::get('/roles/{role}/edit', [RoleController::class, 'edit'])->name('roles.edit');
+// Route::get('/roles/{role}/edit', [RoleController::class, 'edit'])->name('roles.edit');
 
 // Update existing role
-Route::put('/roles/{role}', [RoleController::class, 'update'])->name('roles.update');
+// Route::put('/roles/{role}', [RoleController::class, 'update'])->name('roles.update');
 
 // Delete role
-Route::delete('/roles/{role}', [RoleController::class, 'destroy'])->name('roles.destroy');
+// Route::delete('/roles/{role}', [RoleController::class, 'destroy'])->name('roles.destroy');
 
 
 });

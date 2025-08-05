@@ -1331,6 +1331,7 @@
         @stack('extra_js')
     </script>
     <!-- JS files -->
+
     <script src="{{ asset('admin_assets/libs/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
     <script src="{{ asset('admin_assets/libs/simplebar/simplebar.min.js') }}"></script>
     <script src="{{ asset('admin_assets/libs/node-waves/waves.min.js') }}"></script>
@@ -1342,6 +1343,11 @@
     <script src="{{ asset('admin_assets/libs/jsvectormap/maps/world-merc.js') }}"></script>
     <script src="{{ asset('admin_assets/libs/swiper/swiper-bundle.min.js') }}"></script>
     <script src="{{ asset('admin_assets/js/pages/dashboard-ecommerce.init.js') }}"></script>
+        <script src="{{ asset('admin_assets/libs/prismjs/prism.js')}}"></script>
+    <script src="{{ asset('admin_assets/libs/list.js/list.min.js')}}"></script>
+    <script src="{{ asset('admin_assets/libs/list.pagination.js/list.pagination.min.js')}}"></script>
+    <script src="{{ asset('admin_assets/js/pages/listjs.init.js')}}"></script>
+    <script src="{{ asset('admin_assets/libs/sweetalert2/sweetalert2.min.js')}}"></script>
     <script src="{{ asset('admin_assets/js/app.js') }}"></script>
     @stack('extra_js')
 </body>

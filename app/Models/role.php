@@ -7,8 +7,15 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Role extends Model
 {
-    protected $fillable = ['name', 'slug'];
+    protected $fillable = [
+        'name',
+        'slug',
+        'permissions',
+    ];
 
+    protected $casts = [
+        'permissions' => 'array',
+    ];
     /**
      * Users that belong to the role.
      */

@@ -6,80 +6,40 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     *
-     * @return void
-     */
-    public function up()
+    public function up(): void
     {
-        $twillUsersTable = config('twill.users_table', 'twill_users');
+        // Create twill_users table
+        Schema::create('twill_users', function (Blueprint $table) {
+           $table->id();
+    $table->string('first_name');
+    $table->string('last_name');
+    $table->string('username')->unique();
+    $table->string('email')->unique();
+    $table->string('password', 60)->nullable()->default(null);
+    $table->string('phone')->nullable();
+    $table->text('address')->nullable();
+    $table->string('photo')->nullable();
 
-        if (! Schema::hasTable($twillUsersTable)) {
-            Schema::create($twillUsersTable, function (Blueprint $table) {
-                createDefaultTableFields($table);
+    $table->unsignedBigInteger('role_id')->nullable();
 
-                $table->string('name');
-                $table->string('first_name')->nullable();
-                $table->string('last_name')->nullable();
+    $table->rememberToken();
+    $table->timestamps();
+    $table->softDeletes();
 
-                $table->string('email')->unique();
-                $table->string('password', 60)->nullable()->default(null);
+    $table->foreign('role_id')->references('id')->on('roles')->onDelete('set null');
+        });
 
-                $table->unsignedBigInteger('role_id')->nullable();
-                $table->foreign('role_id')->references('id')->on('roles')->onDelete('set null');
-
-                $table->string('phone', 100)->nullable();
-                $table->date('joining_date')->nullable();
-                $table->json('skills')->nullable();
-                $table->string('designation', 255)->nullable();
-
-                $table->string('website')->nullable();
-                $table->string('city')->nullable();
-                $table->string('country')->nullable();
-                $table->string('zipcode', 10)->nullable();
-
-                $table->string('github_username')->nullable();
-                $table->string('dribbble_username')->nullable();
-                $table->string('pinterest_username')->nullable();
-                $table->string('portfolio_website')->nullable();
-
-                $table->string('photo')->nullable(); // Profile image
-                $table->string('cover_image')->nullable();
-
-                $table->string('title', 255)->nullable();
-                $table->text('description')->nullable();
-                $table->rememberToken();
-            });
-        }
-
-        $twillPasswordResetsTable = config('twill.password_resets_table', 'twill_password_resets');
-
-        if (! Schema::hasTable($twillPasswordResetsTable)) {
-            Schema::create($twillPasswordResetsTable, function (Blueprint $table) {
-                $table->string('email')->index();
-                $table->string('token')->index();
-                $table->timestamp('created_at')->nullable();
-            });
-        }
+        // Create twill_password_resets table
+        Schema::create('twill_password_resets', function (Blueprint $table) {
+            $table->string('email')->index();
+            $table->string('token')->index();
+            $table->timestamp('created_at')->nullable();
+        });
     }
 
-    /**
-     * Reverse the migrations.
-     *
-     * @return void
-     */
-    public function down()
+    public function down(): void
     {
-        $twillUsersTable = config('twill.users_table', 'twill_users');
-
-        if (Schema::hasTable($twillUsersTable)) {
-            Schema::table($twillUsersTable, function (Blueprint $table) {
-                $table->dropForeign(['role_id']);
-            });
-        }
-
-        Schema::dropIfExists(config('twill.password_resets_table', 'twill_password_resets'));
-        Schema::dropIfExists($twillUsersTable);
+        Schema::dropIfExists('twill_password_resets');
+        Schema::dropIfExists('twill_users');
     }
 };

@@ -1,6 +1,14 @@
 @extends('twill::layouts.main')
 
 @section('content')
+<style>
+    .navbar-brand-box {
+        margin-top: 25px;
+        text-align: center;
+        transition: all .1s ease-out;
+    }
+</style>
+
     <div class="page-content">
         <div class="container-fluid">
 
@@ -22,6 +30,22 @@
             </div>
             <!-- end page title -->
 
+            <!-- Alerts -->
+            @if (session('success'))
+                <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
+                    {{ session('success') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            @endif
+            @if ($errors->any())
+                <div class="alert alert-danger mt-3">
+                    <ul class="mb-0">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
             <div class="row">
                 <div class="col-lg-12">
                     <div class="card">
@@ -54,70 +78,67 @@
 
                                 <div class="table-responsive table-card mt-3 mb-1">
                                     <table class="table align-middle table-nowrap" id="rolesTable">
-                                        <thead class="table-light">
-                                            <tr>
-                                                <th scope="col" style="width: 50px;">
-                                                    <div class="form-check">
-                                                        <input class="form-check-input" type="checkbox" id="checkAllRoles">
-                                                    </div>
-                                                </th>
-                                                <th class="sort" data-sort="name">Role Name</th>
-                                                <th class="sort" data-sort="slug">Slug</th>
-                                                {{-- <th class="sort" data-sort="permissions">Permissions</th> --}}
-                                                <th class="sort" data-sort="created_at">Created At</th>
-                                                <th class="sort" data-sort="action">Action</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody class="list form-check-all">
-                                            @foreach ($roles as $role)
+                                        <table class="table table-bordered table-hover align-middle">
+                                            <thead class="table-light">
                                                 <tr>
-                                                    <th scope="row">
-                                                        <div class="form-check">
-                                                            <input class="form-check-input" type="checkbox" name="chk_role"
-                                                                value="{{ $role->id }}">
-                                                        </div>
-                                                    </th>
-                                                    <td class="name">{{ $role->name }}</td>
-                                                    <td class="slug">{{ $role->slug }}</td>
-                                                    {{-- <td class="permissions">
-                                                        @if (is_array($role->permissions) && count($role->permissions) > 0)
-                                                            <ul class="list-unstyled mb-0">
-                                                                @foreach ($role->permissions as $permission)
-                                                                    <li><span
-                                                                            class="badge bg-info text-dark">{{ $permission }}</span>
-                                                                    </li>
-                                                                @endforeach
-                                                            </ul>
-                                                        @else
-                                                            <span class="text-muted">No permissions assigned</span>
-                                                        @endif
-                                                    </td> --}}
-                                                    <td class="created_at">{{ $role->created_at->format('d M, Y') }}</td>
-                                                    <td>
-                                                        <div class="d-flex gap-2">
-                                                            <button class="btn btn-sm btn-success edit-role-btn"
-                                                                data-bs-toggle="modal" data-bs-target="#editRoleModal"
-                                                                data-id="{{ $role->id }}">Edit</button>
-                                                            <button class="btn btn-sm btn-danger delete-role-btn"
-                                                                data-bs-toggle="modal" data-bs-target="#deleteRoleModal"
-                                                                data-id="{{ $role->id }}">Remove</button>
-                                                        </div>
-                                                    </td>
+                                                    <th>Name</th>
+                                                    <th>Slug</th>
+                                                    <th>Permissions</th>
+                                                    <th>Created At</th>
+                                                    <th>Actions</th>
                                                 </tr>
-                                            @endforeach
-                                        </tbody>
-                                    </table>
+                                            </thead>
+                                            <tbody>
+                                                @forelse ($roles as $role)
+                                                    <tr>
+                                                        <td>{{ $role->name }}</td>
+                                                        <td>{{ $role->slug }}</td>
+                                                        <td>
+                                                            @foreach ($role->permissions ?? [] as $perm)
+                                                                <span
+                                                                    class="badge bg-info text-dark">{{ $perm }}</span>
+                                                            @endforeach
+                                                        </td>
+                                                        <td>{{ $role->created_at->format('d M Y') }}</td>
+                                                        <td>
+                                                            <!-- Edit Button -->
+                                                            <button class="btn btn-sm btn-primary edit-role-btn"
+                                                                data-bs-toggle="modal" data-bs-target="#editRoleModal"
+                                                                data-id="{{ $role->id }}"
+                                                                data-name="{{ $role->name }}"
+                                                                data-slug="{{ $role->slug }}"
+                                                                data-permissions='@json($role->permissions)'>
+                                                                Edit
+                                                            </button>
 
-                                    <div class="noresult" style="display: none">
-                                        <div class="text-center">
-                                            <lord-icon src="https://cdn.lordicon.com/msoeawqm.json" trigger="loop"
-                                                colors="primary:#121331,secondary:#08a88a"
-                                                style="width:75px;height:75px"></lord-icon>
-                                            <h5 class="mt-2">Sorry! No Result Found</h5>
-                                            <p class="text-muted mb-0">We've searched more than 150+ Orders We
-                                                did not find any orders for you search.</p>
+                                                            <!-- Delete Form -->
+                                                            <form action="{{ route('roles.destroy', $role->id) }}"
+                                                                method="POST" onsubmit="return confirm('Are you sure?');"
+                                                                style="display:inline;">
+                                                                @csrf
+                                                                @method('DELETE')
+                                                                <button class="btn btn-sm btn-danger">Delete</button>
+                                                            </form>
+                                                        </td>
+                                                    </tr>
+                                                @empty
+                                                    <tr>
+                                                        <td colspan="5" class="text-center">No roles found.</td>
+                                                    </tr>
+                                                @endforelse
+                                            </tbody>
+                                        </table>
+
+                                        <div class="noresult" style="display: none">
+                                            <div class="text-center">
+                                                <lord-icon src="https://cdn.lordicon.com/msoeawqm.json" trigger="loop"
+                                                    colors="primary:#121331,secondary:#08a88a"
+                                                    style="width:75px;height:75px"></lord-icon>
+                                                <h5 class="mt-2">Sorry! No Result Found</h5>
+                                                <p class="text-muted mb-0">We've searched more than 150+ Orders We
+                                                    did not find any orders for you search.</p>
+                                            </div>
                                         </div>
-                                    </div>
                                 </div>
 
                                 <div class="d-flex justify-content-end">
@@ -140,246 +161,115 @@
             </div>
 
             <!-- Add/Edit Modal -->
-          <div class="modal fade" id="addRoleModal" tabindex="-1" aria-labelledby="addRoleModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header bg-light p-3">
-                <h5 class="modal-title" id="addRoleModalLabel">Add Role</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                    aria-label="Close"></button>
-            </div>
-            <form action="{{ route('roles.store') }}" method="POST" autocomplete="off">
-                @csrf
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label for="role-name-field" class="form-label">Role Name</label>
-                        <input type="text" name="name" id="role-name-field" class="form-control" placeholder="Enter Role Name" required>
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="role-slug-field" class="form-label">Slug</label>
-                        <input type="text" name="slug" id="role-slug-field" class="form-control" placeholder="Enter Slug (e.g. admin, manager)" required>
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label">Permissions</label>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" name="permissions[]" value="add_user" id="permAddUser">
-                            <label class="form-check-label" for="permAddUser">Add User</label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" name="permissions[]" value="edit_user" id="permEditUser">
-                            <label class="form-check-label" for="permEditUser">Edit User</label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" name="permissions[]" value="delete_user" id="permDeleteUser">
-                            <label class="form-check-label" for="permDeleteUser">Delete User</label>
-                        </div>
-                        <!-- Add more permissions as needed -->
-                    </div>
-                </div>
-
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-success" id="add-role-btn">Add Role</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
-
-
-            <!-- Delete Modal -->
-            {{-- <div class="modal fade" id="deleteRecordModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <form method="POST" id="deleteUserForm">
-            @csrf
-            @method('DELETE')
-            <div class="modal-content">
-                <div class="modal-header bg-light p-3">
-                    <h5 class="modal-title">Delete User</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    Are you sure you want to delete this user?
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-danger">Delete</button>
-                </div>
-            </div>
-        </form>
-    </div>
-</div> --}}
-
-
-
-            <!-- Script -->
-            {{-- <script>
-                document.addEventListener("DOMContentLoaded", function() {
-                    const showModal = new bootstrap.Modal(document.getElementById('showModal'));
-
-                    document.querySelectorAll('.edit-item-btn').forEach(btn => {
-                        btn.addEventListener('click', function() {
-                            const row = btn.closest('tr');
-                            const id = btn.dataset.id;
-                            const name = row.querySelector('.customer_name')?.textContent.trim();
-                            const email = row.querySelector('.email')?.textContent.trim();
-                            const phone = row.querySelector('.phone')?.textContent.trim();
-                            const date = row.querySelector('.date')?.textContent.trim();
-                            const status = row.querySelector('.status .badge')?.textContent.trim();
-                            const role = row.dataset.role || 'user';
-
-                            document.getElementById('id-field').value = id;
-                            document.getElementById('customername-field').value = name;
-                            document.getElementById('email-field').value = email;
-                            document.getElementById('phone-field').value = phone;
-                            document.getElementById('date-field').value = formatDateForInput(date);
-                            document.getElementById('status-field').value = (status === 'Active') ?
-                                'Active' : 'Block';
-                            document.getElementById('role-field').value = role;
-
-                            document.getElementById('add-btn').textContent = 'Update Customer';
-                            document.getElementById('showModalLabel').textContent = 'Edit User';
-                        });
-                    });
-
-                    document.getElementById('create-btn').addEventListener('click', () => {
-                        document.querySelector('.tablelist-form').reset();
-                        document.getElementById('id-field').value = '';
-                        document.getElementById('add-btn').textContent = 'Add Customer';
-                        document.getElementById('showModalLabel').textContent = 'Add User';
-                    });
-
-                    function formatDateForInput(dateStr) {
-                        const parts = dateStr.split(' ');
-                        if (parts.length === 3) {
-                            const day = parts[0].padStart(2, '0');
-                            const month = new Date(`${parts[1]} 1, 2000`).getMonth() + 1;
-                            const year = parts[2];
-                            return `${year}-${String(month).padStart(2, '0')}-${day}`;
-                        }
-                        return '';
-                    }
-                });
-
-                
-            </script> --}}
-            {{-- <script>
-    document.querySelectorAll('.remove-item-btn').forEach(button => {
-        button.addEventListener('click', function () {
-            const userId = this.getAttribute('data-id');
-            const form = document.getElementById('deleteUserForm');
-            form.action = `/users/${userId}`; // Ensure this matches your route
-        });
-    });
-</script> --}}
-            <!-- Modal -->
-            <!-- Modal -->
-            {{-- <div class="modal fade" id="showModal" tabindex="-1" aria-labelledby="showModalLabel" aria-hidden="true">
+            <div class="modal fade" id="addRoleModal" tabindex="-1" aria-labelledby="addRoleModalLabel" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered">
                     <div class="modal-content">
                         <div class="modal-header bg-light p-3">
-                            <h5 class="modal-title" id="showModalLabel">Add Customer</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
-                                id="close-modal"></button>
+                            <h5 class="modal-title" id="addRoleModalLabel">Add Role</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
-
-                        <form class="tablelist-form" action="{{ route('users.store') }}" method="POST"
-                            autocomplete="off">
+                        <form action="{{ route('roles.store') }}" method="POST" autocomplete="off">
                             @csrf
                             <div class="modal-body">
-
-                                <!-- Hidden ID for edit (optional) -->
-                                <input type="hidden" name="id" id="id-field" />
-
-                                <!-- Customer Name -->
                                 <div class="mb-3">
-                                    <label for="customername-field" class="form-label">Customer Name</label>
-                                    <input type="text" name="name" id="customername-field" class="form-control"
-                                        placeholder="Enter Name" required>
-                                    <div class="invalid-feedback">Please enter a customer name.</div>
+                                    <label for="role-name-field" class="form-label">Role Name</label>
+                                    <input type="text" name="name" id="role-name-field" class="form-control"
+                                        placeholder="Enter Role Name" required>
                                 </div>
 
-                                <!-- Email -->
                                 <div class="mb-3">
-                                    <label for="email-field" class="form-label">Email</label>
-                                    <input type="email" name="email" id="email-field" class="form-control"
-                                        placeholder="Enter Email" required>
-                                    <div class="invalid-feedback">Please enter an email.</div>
+                                    <label for="role-slug-field" class="form-label">Slug</label>
+                                    <input type="text" name="slug" id="role-slug-field" class="form-control"
+                                        placeholder="Enter Slug (e.g. admin, manager)" required>
                                 </div>
 
-                                <!-- Phone -->
                                 <div class="mb-3">
-                                    <label for="phone-field" class="form-label">Phone</label>
-                                    <input type="text" name="phone" id="phone-field" class="form-control"
-                                        placeholder="Enter Phone no." required>
-                                    <div class="invalid-feedback">Please enter a phone number.</div>
+                                    <label class="form-label">Permissions</label>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="permissions[]"
+                                            value="add_user" id="permAddUser">
+                                        <label class="form-check-label" for="permAddUser">Add User</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="permissions[]"
+                                            value="edit_user" id="permEditUser">
+                                        <label class="form-check-label" for="permEditUser">Edit User</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="permissions[]"
+                                            value="delete_user" id="permDeleteUser">
+                                        <label class="form-check-label" for="permDeleteUser">Delete User</label>
+                                    </div>
+                                    <!-- Add more permissions as needed -->
                                 </div>
-
-                                <!-- Joining Date -->
-                                <div class="mb-3">
-                                    <label for="date-field" class="form-label">Joining Date</label>
-                                    <input type="date" name="joining_date" id="date-field" class="form-control"
-                                        placeholder="Select Date" required>
-                                    <div class="invalid-feedback">Please select a joining date.</div>
-                                </div>
-
-                                <!-- Status -->
-                                <div class="mb-3">
-                                    <label for="status-field" class="form-label">Status</label>
-                                    <select name="status" id="status-field" class="form-control" required>
-                                        <option value="">Select Status</option>
-                                        <option value="Active">Active</option>
-                                        <option value="Block">Block</option>
-                                    </select>
-                                    <div class="invalid-feedback">Please select a status.</div>
-                                </div>
-
-                                <!-- Role -->
-                                <div class="mb-3">
-                                    <label for="role-field" class="form-label">Role</label>
-                                    <select name="role" id="role-field" class="form-control" required>
-                                        <option value="">Select Role</option>
-                                        <option value="user">User</option>
-                                        <option value="admin">Admin</option>
-                                        <option value="manager">Manager</option>
-                                        <!-- Add more roles as needed -->
-                                    </select>
-                                    <div class="invalid-feedback">Please select a role.</div>
-                                </div>
-
                             </div>
 
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
-                                <button type="submit" class="btn btn-success" id="add-btn">Add Customer</button>
+                                <button type="submit" class="btn btn-success" id="add-role-btn">Add Role</button>
                             </div>
                         </form>
-
                     </div>
                 </div>
-            </div> --}}
+            </div>
 
 
 
+            <!-- Edit Role Modal -->
+            <div class="modal fade" id="editRoleModal" tabindex="-1" aria-labelledby="editRoleModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <form method="POST" id="editRoleForm">
+                        @csrf
+                        @method('PUT')
+                        <div class="modal-content">
+                            <div class="modal-header bg-light">
+                                <h5 class="modal-title" id="editRoleModalLabel">Edit Role</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="mb-3">
+                                    <label class="form-label">Role Name</label>
+                                    <input type="text" name="name" id="edit-role-name" class="form-control"
+                                        required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Slug</label>
+                                    <input type="text" name="slug" id="edit-role-slug" class="form-control"
+                                        required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Permissions</label>
+                                    @php
+                                        $permissions = ['add_user', 'edit_user', 'delete_user'];
+                                    @endphp
+                                    @foreach ($permissions as $permission)
+                                        <div class="form-check">
+                                            <input type="checkbox" name="permissions[]" value="{{ $permission }}"
+                                                class="form-check-input edit-perm" id="edit_{{ $permission }}">
+                                            <label class="form-check-label"
+                                                for="edit_{{ $permission }}">{{ ucwords(str_replace('_', ' ', $permission)) }}</label>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+                                <button type="submit" class="btn btn-primary">Update Role</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+
+            
 
         </div>
         <!-- container-fluid -->
     </div>
 @stop
 
-{{-- @section('initialStore')
-    window['{{ config('twill.js_namespace') }}'].STORE.datatable = {}
-
-    window['{{ config('twill.js_namespace') }}'].STORE.datatable.mine = {!! json_encode($myActivityData) !!}
-    window['{{ config('twill.js_namespace') }}'].STORE.datatable.all = {!! json_encode($allActivityData) !!}
-
-    window['{{ config('twill.js_namespace') }}'].STORE.datatable.data = window['{{ config('twill.js_namespace') }}'].STORE.datatable.all
-    window['{{ config('twill.js_namespace') }}'].STORE.datatable.columns = {!! json_encode($tableColumns) !!}
-@stop
- --}}
 <script>
     $(document).ready(function() {
         $('#date-field').datepicker({

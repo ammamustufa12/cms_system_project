@@ -7,59 +7,30 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class TwillUser extends Authenticatable
+class User extends Authenticatable
 {
     use Notifiable, HasFactory, SoftDeletes;
 
     protected $table = 'twill_users';
 
-    /**
-     * The attributes that are mass assignable.
-     */
     protected $fillable = [
-  'name',
-    'email',
-    'password',
-    'role_id',
-    'phone',
-    'joining_date',
-    'skills',
-    'designation',
-    'website',
-    'city',
-    'country',
-    'zipcode',
-    'github_username',
-    'dribbble_username',
-    'pinterest_username',
-    'portfolio_website',
-    'photo',
-    'cover_image',
-    'title',
-    'description',
-
-
+        'first_name',
+        'last_name',
+        'username',
+        'email',
+        'password',
+        'phone',
+        'address',
+        'photo',
+        'role_id',
     ];
 
-    /**
-     * The attributes that should be cast.
-     */
-    protected $casts = [
-        'skills' => 'array',
-        'joining_date' => 'date',
-    ];
-
-    /**
-     * The attributes that should be hidden.
-     */
     protected $hidden = [
         'password',
         'remember_token',
     ];
 
-    /**
-     * Automatically hash password if set.
-     */
+    // Automatically hash password when set
     public function setPasswordAttribute($value)
     {
         if ($value) {
@@ -67,25 +38,13 @@ class TwillUser extends Authenticatable
         }
     }
 
-    /**
-     * Relation to Role model.
-     */
+    // Relationship with Role model
     public function role()
     {
         return $this->belongsTo(Role::class);
     }
 
-    /**
-     * Accessor for full name.
-     */
-    public function getFullNameAttribute()
-    {
-        return trim("{$this->first_name} {$this->last_name}");
-    }
-
-    /**
-     * Accessor for profile image URL.
-     */
+    // Accessor for photo URL
     public function getPhotoUrlAttribute()
     {
         return $this->photo

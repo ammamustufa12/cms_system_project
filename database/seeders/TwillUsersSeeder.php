@@ -24,30 +24,15 @@ class TwillUsersSeeder extends Seeder
         }
 
         $user = User::create([
-            'name' => 'Admin User',
             'first_name' => 'Admin',
             'last_name' => 'User',
+            'username' => 'adminuser',
             'email' => 'admin@twill.test',
             'password' => Hash::make('password'),
-            'published' => true,
-            'role_id' => $adminRole->id,
             'phone' => '1234567890',
-            'joining_date' => now()->toDateString(),
-            'skills' => json_encode(['Laravel', 'Vue', 'Tailwind']),
-            'designation' => 'Super Admin',
-            'website' => 'https://adminsite.com',
-            'city' => 'Dubai',
-            'country' => 'UAE',
-            'zipcode' => '00000',
-            'github_username' => '@admin',
-            'dribbble_username' => '@admin_design',
-            'pinterest_username' => '@admin_pins',
-            'portfolio_website' => 'https://portfolio.adminsite.com',
+            'address' => '123 Admin St, Admin City, Country',
             'photo' => 'admin_avatar.jpg',
-            'cover_image' => 'cover_admin.jpg',
-            'title' => 'Master of CMS',
-            'description' => 'This is the administrator of the Twill CMS system.',
-            'remember_token' => null,
+            'role_id' => $adminRole->id,
         ]);
 
         echo "✅ Admin user created successfully. ID: {$user->id}\n";

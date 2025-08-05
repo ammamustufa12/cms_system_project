@@ -1,47 +1,30 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Page Builder</title>
-    <link href="{{ asset('vvvebjs/css/editor.css') }}" rel="stylesheet">
-    <link href="{{ asset('vvvebjs/libs/builder/icons/style.min.css') }}" rel="stylesheet">
-</head>
-<body>
-    <!-- Must have this exact structure -->
-    <div id="vvveb-builder">
-        <div class="vvveb-builder-content">
-            <iframe id="vvveb-editor-iframe" class="vvveb-editor-iframe"></iframe>
-        </div>
-    </div>
+@extends('twill::layouts.main')
 
-    <!-- Load jQuery first -->
-    <script src="{{ asset('vvvebjs/libs/jquery/jquery.min.js') }}"></script>
-    <!-- Then load builder -->
-    <script src="{{ asset('vvvebjs/js/vvvebjs.js') }}"></script>
-
-    <!-- Then builder components -->
-    <script src="{{ asset('vvvebjs/libs/builder/builder.js') }}"></script>
-
-    <script>
-    $(document).ready(function() {
-        // Verify all required components are loaded
-        if (typeof Vvveb === 'undefined') {
-            console.error('VVVeB core not loaded');
-            return;
-        }
-        
-        if (typeof Vvveb.Builder === 'undefined') {
-            console.error('Builder component not loaded');
-            return;
-        }
-
-        // Initialize with proper parameters
-        Vvveb.Builder.init('{{ url("/") }}', {
-            editorSelector: '#vvveb-builder',
-            iframeUrl: '{{ url("/blank.html") }}', // Create this file
-            saveUrl: '{{ route("page.save") }}',
-            components: '{{ asset("vvvebjs/libs/builder/components.json") }}'
-        });
-    });
-    </script>
-</body>
-</html>
+@section('content')
+<div class="container">
+    <h2>Pages</h2>
+    <a href="{{ route('pages.create') }}" class="btn btn-success mb-3">Add Page</a>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Title</th><th>Slug</th><th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach ($pages as $page)
+            <tr>
+                <td>{{ $page->title }}</td>
+                <td>{{ $page->slug }}</td>
+                <td>
+                    <a href="{{ route('pages.edit', $page->id) }}" class="btn btn-primary btn-sm">Edit</a>
+                    <form action="{{ route('pages.destroy', $page->id) }}" method="POST" style="display:inline;">
+                        @csrf @method('DELETE')
+                        <button type="submit" onclick="return confirm('Delete page?')" class="btn btn-danger btn-sm">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            @endforeach
+        </tbody>
+    </table>
+</div>
+@endsection

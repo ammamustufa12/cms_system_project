@@ -11,13 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('pages', function (Blueprint $table) {
-            $table->id();
-    $table->string('title');
-    $table->string('slug')->unique();
-    $table->text('html_content')->nullable();
-    $table->text('css_content')->nullable();
-    $table->timestamps();
+        Schema::table('twill_users', function (Blueprint $table) {
+            $table->boolean('published')->default(true)->after('email');
         });
     }
 
@@ -26,6 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('pages');
+        Schema::table('twill_users', function (Blueprint $table) {
+            $table->dropColumn('published');
+        });
     }
 };
