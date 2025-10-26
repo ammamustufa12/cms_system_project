@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exported Page</title>
+    <style>
+        
+                    body { font-family: Arial, sans-serif; margin: 0; padding: 20px; }
+                    .canvas-element { margin-bottom: 20px; }
+                    .widget-heading { font-size: 24px; font-weight: bold; color: #2c3e50; }
+                    .widget-paragraph { font-size: 16px; color: #2c3e50; line-height: 1.6; }
+                    .widget-button { background: #3498db; color: white; padding: 12px 24px; border: none; border-radius: 6px; cursor: pointer; }
+                    .widget-image { max-width: 100%; height: auto; border-radius: 8px; }
+                
+    </style>
+</head>
+<body>
+    
+                    <div class="empty-canvas" style="display: none;">
+                        <i class="ri-drag-drop-line"></i>
+                        <h3>Drag widgets here to start building</h3>
+                        <p>Choose widgets from the left sidebar and drag them to this area</p>
+                    </div>
+                <div class="canvas-element" data-widget-type="container"><div class="widget-container"></div><div class="element-controls">
+                    <button class="control-btn" onclick="builder.duplicateElement(this.parentElement.parentElement)" title="Duplicate" fdprocessedid="89gwcx">
+                        <i class="ri-file-copy-line"></i>
+                    </button>
+                    <button class="control-btn" onclick="builder.deleteElement(this.parentElement.parentElement)" title="Delete" fdprocessedid="e3r8k">
+                        <i class="ri-delete-bin-line"></i>
+                    </button>
+                </div><div class="canvas-element" data-widget-type="heading"><h2 class="widget-heading" contenteditable="true">Click to edit heading</h2><div class="element-controls">
+                    <button class="control-btn" onclick="builder.duplicateElement(this.parentElement.parentElement)" title="Duplicate" fdprocessedid="g4jf">
+                        <i class="ri-file-copy-line"></i>
+                    </button>
+                    <button class="control-btn" onclick="builder.deleteElement(this.parentElement.parentElement)" title="Delete" fdprocessedid="emfv5">
+                        <i class="ri-delete-bin-line"></i>
+                    </button>
+                </div></div><div class="canvas-element" data-widget-type="image"><img src="https://via.placeholder.com/400x300?text=Image+Widget" alt="Image" class="widget-image"><div class="element-controls">
+                    <button class="control-btn" onclick="builder.duplicateElement(this.parentElement.parentElement)" title="Duplicate">
+                        <i class="ri-file-copy-line"></i>
+                    </button>
+                    <button class="control-btn" onclick="builder.deleteElement(this.parentElement.parentElement)" title="Delete">
+                        <i class="ri-delete-bin-line"></i>
+                    </button>
+                </div></div></div>
+</body>
+</html>

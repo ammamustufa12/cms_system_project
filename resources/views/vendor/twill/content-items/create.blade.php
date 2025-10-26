@@ -16,7 +16,7 @@
                                 <li class="breadcrumb-item"><a href="javascript: void(0);">Dashboard</a></li>
                                 <li class="breadcrumb-item"><a href="{{ route('content-types.index') }}">Content Types</a>
                                 </li>
-                                <li class="breadcrumb-item"><a href="{{ route('content-types.index') }}">Content Items</a>
+                                <li class="breadcrumb-item"><a href="{{ route('content-types.content-items.index', ['contentType' => $contentType->slug]) }}">Content Items</a>
                                 </li>
                                 <li class="breadcrumb-item active">Create Content</li>
                             </ol>
@@ -181,7 +181,7 @@
                                                         <div class="validation-icon me-2">
                                                             <i class="fas fa-circle text-muted"></i>
                                                         </div>
-                                                        <span class="validation-label">{{ $field['label'] }}</span>
+                                                        <span class="validation-label">{{ $field['name'] ?? $field['label'] ?? ucfirst(str_replace('_', ' ', $fieldKey)) }}</span>
                                                     </div>
                                                 @endif
                                             @endforeach

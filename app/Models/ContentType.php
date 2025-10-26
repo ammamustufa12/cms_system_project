@@ -17,6 +17,10 @@ class ContentType extends Model
         'fields_schema',
         'layout_config',
         'style_config',
+        'field_groups',
+        'visibility_rules',
+        'icon',
+        'color',
         'status',
         'created_by'
     ];
@@ -24,7 +28,9 @@ class ContentType extends Model
     protected $casts = [
         'fields_schema' => 'array',
         'layout_config' => 'array',
-        'style_config' => 'array'
+        'style_config' => 'array',
+        'field_groups' => 'array',
+        'visibility_rules' => 'array'
     ];
     public function contentItems(): HasMany
     {
@@ -56,8 +62,13 @@ class ContentType extends Model
             if (empty($model->slug)) {
                 $model->slug = Str::slug($model->name);
             }
-            $model->created_by = auth('twill_users')->user()->id;
-            Log::error(auth('twill_users')->user());
+            
+            // Set created_by only if user is authenticated
+            if (auth('twill_users')->check()) {
+                $model->created_by = auth('twill_users')->user()->id;
+            } else {
+                $model->created_by = 1; // Default admin user ID
+            }
         });
 
         static::updating(function ($model) {

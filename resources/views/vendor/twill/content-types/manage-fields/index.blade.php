@@ -2,6 +2,10 @@
 
 @section('appTypeClass', 'body--listing')
 
+@push('head')
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+@endpush
+
 @section('content')
     <div class="page-content">
         <!-- start page title -->
@@ -31,18 +35,31 @@
                             : json_decode($contentType->fields_schema, true) ?? [];
                     @endphp
 
+                    <!-- Unified Field Selector -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">
+                                <i class="fas fa-plus-circle me-2"></i>
+                                Add New Fields
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            @include('vendor.twill.content-types.manage-fields.unified-field-selector')
+                        </div>
+                    </div>
+
                     @if (count($fieldsSchema) > 0)
                         <!-- Fields List -->
                         <div class="card">
                             <div class="card-header d-flex justify-content-between align-items-center">
                                 <h5 class="card-title mb-0">
-                                    <i class="fas fa-list-ul me-2"></i>Field Configuration
+                                    <i class="fas fa-list-ul me-2"></i>Current Fields ({{ count($fieldsSchema) }})
                                 </h5>
                                 <div>
                                     <a href="{{ route('content-types.add-field', $contentType->slug) }}"
-                                        class="btn btn-primary me-2">
-                                        {{-- <i class="fas fa-eye me-1"></i> --}}
-                                        Add
+                                        class="btn btn-outline-primary me-2">
+                                        <i class="fas fa-plus me-1"></i>
+                                        Add Custom Field
                                     </a>
                                     {{-- <button class="btn btn-sm btn-outline-secondary" id="sortFieldsBtn">
                                         <i class="fas fa-sort me-1"></i>Reorder Fields
@@ -79,7 +96,7 @@
                                                         @endif
                                                     </td>
                                                     <td>
-                                                        <strong>{{ $field['label'] }}</strong>
+                                                        <strong>{{ $field['name'] ?? $field['label'] ?? ucfirst(str_replace('_', ' ', $fieldKey)) }}</strong>
                                                     </td>
                                                     <td>
                                                         <span class="badge bg-secondary">
@@ -101,17 +118,24 @@
                                                     </td>
                                                     <td>
                                                         <div class="btn-group btn-group-sm">
-                                                            <a href="{{ route('content-types.edit-field', ['slug' => $contentType->slug, 'fieldKey' => $fieldKey]) }}"
+                                                            <a href="{{ route('content-types.edit-field', ['contentType' => $contentType->slug, 'fieldKey' => $fieldKey]) }}"
                                                                 class="btn btn-outline-primary btn-sm edit-field"
                                                                 data-field-key="{{ $fieldKey }}" title="Edit Field">
                                                                 <i class="fas fa-edit text-capitalize">edit</i>
                                                             </a>
                                                             <button class="btn btn-outline-danger btn-sm delete-field"
                                                                 data-field-key="{{ $fieldKey }}"
-                                                                data-field-name="{{ $field['label'] }}"
+                                                                data-field-name="{{ $field['name'] ?? $field['label'] ?? ucfirst(str_replace('_', ' ', $fieldKey)) }}"
                                                                 title="Delete Field">
                                                                 <i class="fas fa-trash text-capitalize">delete</i>
                                                             </button>
+
+
+                                                            {{-- Add this button in your manage-fields.blade.php --}}
+                                                            <a href="{{ route('content-types.layout-builder', $contentType->slug) }}"
+                                                                class="btn btn-primary">
+                                                                <i class="ri-layout-line"></i> Design Layout
+                                                            </a>
                                                         </div>
                                                     </td>
                                                 </tr>
@@ -164,111 +188,113 @@
         </div>
 
         <!-- Delete Confirmation Modal -->
-     <!-- Fixed Delete Confirmation Modal -->
-<div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Confirm Delete</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <p>Are you sure you want to delete the field <strong id="deleteFieldName"></strong>?</p>
-                <p class="text-danger small">This action cannot be undone and may affect existing content items.</p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <form id="deleteForm" method="POST" style="display: inline;">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit" class="btn btn-danger">Delete Field</button>
-                </form>
+        <!-- Fixed Delete Confirmation Modal -->
+        <div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Confirm Delete</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Are you sure you want to delete the field <strong id="deleteFieldName"></strong>?</p>
+                        <p class="text-danger small">This action cannot be undone and may affect existing content items.</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <form id="deleteForm" method="POST" style="display: inline;">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="btn btn-danger">Delete Field</button>
+                        </form>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
-</div>
 
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Delete field functionality - Fixed
-    document.querySelectorAll('.delete-field').forEach(button => {
-        button.addEventListener('click', function() {
-            const fieldKey = this.dataset.fieldKey;
-            const fieldName = this.dataset.fieldName;
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                // Delete field functionality - Fixed
+                document.querySelectorAll('.delete-field').forEach(button => {
+                    button.addEventListener('click', function() {
+                        const fieldKey = this.dataset.fieldKey;
+                        const fieldName = this.dataset.fieldName;
 
-            // Set field name in modal
-            document.getElementById('deleteFieldName').textContent = fieldName;
-            
-            // Set correct action URL
-            const deleteForm = document.getElementById('deleteForm');
-            deleteForm.action = `{{ url('admin/content-types/' . $contentType->slug) }}/${fieldKey}`;
+                        // Set field name in modal
+                        document.getElementById('deleteFieldName').textContent = fieldName;
 
-            // Show modal
-            new bootstrap.Modal(document.getElementById('deleteModal')).show();
-        });
-    });
+                        // Set correct action URL
+                        const deleteForm = document.getElementById('deleteForm');
+                        deleteForm.action =
+                            `{{ url('admin/content-types/' . $contentType->slug) }}/${fieldKey}`;
 
-    // Initialize sortable for field reordering
-    const fieldsTableBody = document.getElementById('fieldsTableBody');
-    if (fieldsTableBody) {
-        new Sortable(fieldsTableBody, {
-            handle: '.sort-handle',
-            animation: 150,
-            onEnd: function(evt) {
-                updateFieldOrder();
-            }
-        });
-    }
-
-    // Update field order function
-    function updateFieldOrder() {
-        const rows = fieldsTableBody.querySelectorAll('tr');
-        const fieldOrder = Array.from(rows).map(row => row.dataset.fieldKey);
-
-        fetch(`{{ route('content-types.reorder-fields', $contentType->slug) }}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                },
-                body: JSON.stringify({
-                    field_order: fieldOrder
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // Update order numbers in the UI
-                    rows.forEach((row, index) => {
-                        const orderBadge = row.querySelector('.badge');
-                        orderBadge.textContent = index + 1;
+                        // Show modal
+                        new bootstrap.Modal(document.getElementById('deleteModal')).show();
                     });
-                    showToast('Field order updated successfully', 'success');
-                }
-            })
-            .catch(error => {
-                console.error('Error updating field order:', error);
-                showToast('Error updating field order', 'error');
-            });
-    }
+                });
 
-    // Show toast function
-    function showToast(message, type = 'info') {
-        const toast = document.createElement('div');
-        toast.className = `alert alert-${type === 'error' ? 'danger' : type} position-fixed top-0 end-0 m-3`;
-        toast.style.zIndex = '9999';
-        toast.innerHTML = `
+                // Initialize sortable for field reordering
+                const fieldsTableBody = document.getElementById('fieldsTableBody');
+                if (fieldsTableBody) {
+                    new Sortable(fieldsTableBody, {
+                        handle: '.sort-handle',
+                        animation: 150,
+                        onEnd: function(evt) {
+                            updateFieldOrder();
+                        }
+                    });
+                }
+
+                // Update field order function
+                function updateFieldOrder() {
+                    const rows = fieldsTableBody.querySelectorAll('tr');
+                    const fieldOrder = Array.from(rows).map(row => row.dataset.fieldKey);
+
+                    fetch(`{{ route('content-types.reorder-fields', $contentType->slug) }}`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                            },
+                            body: JSON.stringify({
+                                field_order: fieldOrder
+                            })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                // Update order numbers in the UI
+                                rows.forEach((row, index) => {
+                                    const orderBadge = row.querySelector('.badge');
+                                    orderBadge.textContent = index + 1;
+                                });
+                                showToast('Field order updated successfully', 'success');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error updating field order:', error);
+                            showToast('Error updating field order', 'error');
+                        });
+                }
+
+                // Show toast function
+                function showToast(message, type = 'info') {
+                    const toast = document.createElement('div');
+                    toast.className =
+                        `alert alert-${type === 'error' ? 'danger' : type} position-fixed top-0 end-0 m-3`;
+                    toast.style.zIndex = '9999';
+                    toast.innerHTML = `
             ${message}
             <button type="button" class="btn-close" onclick="this.parentElement.remove()"></button>
         `;
-        document.body.appendChild(toast);
+                    document.body.appendChild(toast);
 
-        setTimeout(() => {
-            toast.remove();
-        }, 5000);
-    }
-});
-</script>
+                    setTimeout(() => {
+                        toast.remove();
+                    }, 5000);
+                }
+            });
+        </script>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
@@ -350,7 +376,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
                         function generateFormPreview() {
                             const fieldsData = @json($fieldsSchema);
-                            const fieldTypes = @json($fieldTypes);
+                            const fieldTypes = @json($allFieldTypes);
 
                             let previewHtml = '<form class="needs-validation" novalidate>';
 

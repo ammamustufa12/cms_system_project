@@ -95,4 +95,61 @@
             </form>
         </div>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const nameInput = document.getElementById('name');
+            const slugInput = document.getElementById('slug');
+            const form = document.getElementById('contentTypeForm');
+
+            // Auto-generate slug from name
+            nameInput.addEventListener('input', function() {
+                if (slugInput.value === '') {
+                    const slug = this.value
+                        .toLowerCase()
+                        .replace(/[^a-z0-9 -]/g, '')
+                        .replace(/\s+/g, '-')
+                        .replace(/-+/g, '-')
+                        .trim('-');
+                    slugInput.value = slug;
+                }
+            });
+
+            // Form validation
+            form.addEventListener('submit', function(e) {
+                const name = nameInput.value.trim();
+                const slug = slugInput.value.trim();
+
+                if (!name) {
+                    e.preventDefault();
+                    alert('Please enter a content type name.');
+                    nameInput.focus();
+                    return false;
+                }
+
+                if (!slug) {
+                    // Auto-generate slug if empty
+                    const autoSlug = name
+                        .toLowerCase()
+                        .replace(/[^a-z0-9 -]/g, '')
+                        .replace(/\s+/g, '-')
+                        .replace(/-+/g, '-')
+                        .trim('-');
+                    slugInput.value = autoSlug;
+                }
+
+                // Show loading state
+                const submitBtn = form.querySelector('button[type="submit"]');
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Creating...';
+                submitBtn.disabled = true;
+            });
+
+            // Clear slug when name is cleared
+            nameInput.addEventListener('blur', function() {
+                if (this.value.trim() === '') {
+                    slugInput.value = '';
+                }
+            });
+        });
+    </script>
 @endsection

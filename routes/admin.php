@@ -9,6 +9,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['web', 'twill.auth']], funct
     TwillRoutes::module('posts');
     // Add your own modules here
 
+
     // Custom routes (optional)
     // Route::get('custom-dashboard', [CustomDashboardController::class, 'index'])->name('admin.custom.dashboard');
 });

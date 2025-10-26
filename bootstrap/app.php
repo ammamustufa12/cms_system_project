@@ -11,7 +11,10 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        //
+        $middleware->alias([
+            'twill.auth' => \App\Http\Middleware\TwillAuth::class,
+            'admin.only' => \App\Http\Middleware\AdminOnly::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

@@ -209,6 +209,182 @@ class FieldTypeService
                     'max_items' => ['type' => 'number', 'default' => null, 'label' => 'Maximum Items'],
                     'add_button_text' => ['type' => 'text', 'default' => 'Add Item', 'label' => 'Add Button Text']
                 ]
+            ],
+
+            'gallery' => [
+                'label' => 'Image Gallery',
+                'icon' => '🖼️',
+                'description' => 'Multiple image uploads',
+                'validation' => 'array',
+                'component' => 'GalleryUpload',
+                'options' => [
+                    'max_images' => ['type' => 'number', 'default' => 10, 'label' => 'Maximum Images'],
+                    'max_size' => ['type' => 'number', 'default' => 2048, 'label' => 'Max Size (KB)'],
+                    'allowed_types' => ['type' => 'multi_select', 'default' => ['jpg', 'jpeg', 'png', 'gif'], 
+                                      'options' => ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'], 'label' => 'Allowed Types'],
+                    'thumbnail_size' => ['type' => 'text', 'default' => '300x200', 'label' => 'Thumbnail Size']
+                ]
+            ],
+
+            'wysiwyg' => [
+                'label' => 'Rich Text Editor',
+                'icon' => '📝',
+                'description' => 'WYSIWYG text editor',
+                'validation' => 'string',
+                'component' => 'WysiwygEditor',
+                'options' => [
+                    'toolbar' => ['type' => 'multi_select', 'default' => ['bold', 'italic', 'underline', 'link'], 
+                                'options' => ['bold', 'italic', 'underline', 'strike', 'link', 'image', 'list', 'code', 'table'], 'label' => 'Toolbar Options'],
+                    'height' => ['type' => 'number', 'default' => 300, 'label' => 'Editor Height (px)'],
+                    'max_length' => ['type' => 'number', 'default' => null, 'label' => 'Max Length']
+                ]
+            ],
+
+            'code' => [
+                'label' => 'Code Editor',
+                'icon' => '💻',
+                'description' => 'Code editor with syntax highlighting',
+                'validation' => 'string',
+                'component' => 'CodeEditor',
+                'options' => [
+                    'language' => ['type' => 'select', 'default' => 'html', 'options' => [
+                        'html' => 'HTML',
+                        'css' => 'CSS',
+                        'javascript' => 'JavaScript',
+                        'php' => 'PHP',
+                        'json' => 'JSON',
+                        'xml' => 'XML',
+                        'sql' => 'SQL'
+                    ], 'label' => 'Language'],
+                    'theme' => ['type' => 'select', 'default' => 'default', 'options' => [
+                        'default' => 'Default',
+                        'dark' => 'Dark',
+                        'monokai' => 'Monokai',
+                        'github' => 'GitHub'
+                    ], 'label' => 'Theme'],
+                    'height' => ['type' => 'number', 'default' => 200, 'label' => 'Editor Height (px)']
+                ]
+            ],
+
+            'map' => [
+                'label' => 'Map',
+                'icon' => '🗺️',
+                'description' => 'Interactive map with location picker',
+                'validation' => 'array',
+                'component' => 'MapPicker',
+                'options' => [
+                    'default_lat' => ['type' => 'number', 'default' => 0, 'label' => 'Default Latitude'],
+                    'default_lng' => ['type' => 'number', 'default' => 0, 'label' => 'Default Longitude'],
+                    'zoom_level' => ['type' => 'number', 'default' => 10, 'label' => 'Default Zoom Level'],
+                    'height' => ['type' => 'number', 'default' => 300, 'label' => 'Map Height (px)']
+                ]
+            ],
+
+            'relation' => [
+                'label' => 'Content Relation',
+                'icon' => '🔗',
+                'description' => 'Link to other content items',
+                'validation' => 'array',
+                'component' => 'RelationPicker',
+                'options' => [
+                    'content_type' => ['type' => 'select', 'default' => '', 'options' => [], 'label' => 'Related Content Type'],
+                    'multiple' => ['type' => 'boolean', 'default' => false, 'label' => 'Allow Multiple Selection'],
+                    'display_field' => ['type' => 'text', 'default' => 'title', 'label' => 'Display Field']
+                ]
+            ],
+
+            'tags' => [
+                'label' => 'Tags',
+                'icon' => '🏷️',
+                'description' => 'Tag input with autocomplete',
+                'validation' => 'array',
+                'component' => 'TagInput',
+                'options' => [
+                    'suggestions' => ['type' => 'textarea', 'default' => '', 'label' => 'Tag Suggestions (one per line)'],
+                    'max_tags' => ['type' => 'number', 'default' => null, 'label' => 'Maximum Tags'],
+                    'allow_custom' => ['type' => 'boolean', 'default' => true, 'label' => 'Allow Custom Tags']
+                ]
+            ],
+
+            'slider' => [
+                'label' => 'Range Slider',
+                'icon' => '🎚️',
+                'description' => 'Numeric range slider',
+                'validation' => 'numeric',
+                'component' => 'RangeSlider',
+                'options' => [
+                    'min' => ['type' => 'number', 'default' => 0, 'label' => 'Minimum Value'],
+                    'max' => ['type' => 'number', 'default' => 100, 'label' => 'Maximum Value'],
+                    'step' => ['type' => 'number', 'default' => 1, 'label' => 'Step Value'],
+                    'unit' => ['type' => 'text', 'default' => '', 'label' => 'Unit (e.g., %, $, px)']
+                ]
+            ],
+
+            'toggle' => [
+                'label' => 'Toggle Switch',
+                'icon' => '🔘',
+                'description' => 'On/off toggle switch',
+                'validation' => 'boolean',
+                'component' => 'ToggleSwitch',
+                'options' => [
+                    'label_on' => ['type' => 'text', 'default' => 'Yes', 'label' => 'On Label'],
+                    'label_off' => ['type' => 'text', 'default' => 'No', 'label' => 'Off Label'],
+                    'color' => ['type' => 'color', 'default' => '#007bff', 'label' => 'Toggle Color']
+                ]
+            ],
+
+            'rating' => [
+                'label' => 'Star Rating',
+                'icon' => '⭐',
+                'description' => 'Star rating input',
+                'validation' => 'numeric|min:0|max:5',
+                'component' => 'StarRating',
+                'options' => [
+                    'max_stars' => ['type' => 'number', 'default' => 5, 'label' => 'Maximum Stars'],
+                    'half_stars' => ['type' => 'boolean', 'default' => false, 'label' => 'Allow Half Stars'],
+                    'color' => ['type' => 'color', 'default' => '#ffc107', 'label' => 'Star Color']
+                ]
+            ],
+
+            'time' => [
+                'label' => 'Time Picker',
+                'icon' => '🕐',
+                'description' => 'Time selection input',
+                'validation' => 'date_format:H:i',
+                'component' => 'TimePicker',
+                'options' => [
+                    'format' => ['type' => 'select', 'default' => '24', 'options' => [
+                        '24' => '24 Hour (HH:MM)',
+                        '12' => '12 Hour (HH:MM AM/PM)'
+                    ], 'label' => 'Time Format'],
+                    'step' => ['type' => 'number', 'default' => 15, 'label' => 'Minute Step']
+                ]
+            ],
+
+            'password' => [
+                'label' => 'Password',
+                'icon' => '🔒',
+                'description' => 'Password input field',
+                'validation' => 'string|min:6',
+                'component' => 'PasswordInput',
+                'options' => [
+                    'min_length' => ['type' => 'number', 'default' => 6, 'label' => 'Minimum Length'],
+                    'require_confirmation' => ['type' => 'boolean', 'default' => false, 'label' => 'Require Confirmation'],
+                    'show_strength' => ['type' => 'boolean', 'default' => true, 'label' => 'Show Strength Meter']
+                ]
+            ],
+
+            'url' => [
+                'label' => 'URL',
+                'icon' => '🔗',
+                'description' => 'Website URL input',
+                'validation' => 'url',
+                'component' => 'UrlInput',
+                'options' => [
+                    'placeholder' => ['type' => 'text', 'default' => 'https://example.com', 'label' => 'Placeholder'],
+                    'protocols' => ['type' => 'multi_select', 'default' => ['http', 'https'], 
+                                  'options' => ['http', 'https', 'ftp', 'mailto'], 'label' => 'Allowed Protocols']
+                ]
             ]
         ];
     }

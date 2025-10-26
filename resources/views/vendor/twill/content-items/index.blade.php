@@ -283,7 +283,7 @@
                                                 <th>Status</th>
                                                 @php
 
-                                                    $fieldsSchema =
+                                                    $fieldsSchema = is_array($contentType->fields_schema) ? $contentType->fields_schema :
                                                         json_decode($contentType->fields_schema, true) ?? [];
 
                                                     $fieldData = $item->field_data ?? [];
@@ -292,7 +292,7 @@
                                                     $listFields = array_slice($fieldsSchema, 0, 2, true);
                                                 @endphp
                                                 @foreach ($listFields as $fieldKey => $field)
-                                                    <th>{{ $field['label'] }}</th>
+                                                    <th>{{ $field['name'] ?? $field['label'] ?? ucfirst(str_replace('_', ' ', $fieldKey)) }}</th>
                                                 @endforeach
                                                 <th>Dates</th>
                                                 <th width="150">Actions</th>

@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Plus Icons Test</title>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f8f9fa;
+        }
+
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            padding: 40px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .canvas-placeholder {
+            border: 2px dashed #dee2e6;
+            border-radius: 12px;
+            padding: 60px 20px;
+            text-align: center;
+            background: #f8f9fa;
+            margin: 20px 0;
+        }
+
+        /* Simple Plus Icons Styles */
+        .simple-plus-icons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .simple-plus-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .simple-plus-icon:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+        }
+
+        .simple-plus-icon i {
+            font-size: 20px;
+            color: white;
+            transition: transform 0.3s ease;
+        }
+
+        .simple-plus-icon:hover i {
+            transform: rotate(90deg);
+        }
+
+        .simple-plus-icon.green {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        }
+
+        .simple-plus-icon.black {
+            background: linear-gradient(135deg, #333 0%, #000 100%);
+        }
+
+        .simple-plus-icon.purple {
+            background: linear-gradient(135deg, #6f42c1 0%, #e83e8c 100%);
+        }
+
+        .simple-plus-icon.blue {
+            background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+        }
+
+        .drag-text {
+            color: #6c757d;
+            font-size: 14px;
+            margin: 0;
+            text-align: center;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #28a745;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 6px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            z-index: 1000;
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>Simple Plus Icons Test</h1>
+        <p>यह test page है simple plus icons के लिए। नीचे दिए गए icons पर click करके देखें:</p>
+        
+        <div class="canvas-placeholder">
+            <div class="simple-plus-icons">
+                <!-- Green Plus Icon -->
+                <div class="simple-plus-icon green" id="greenPlusIcon">
+                    <i class="ri-add-line"></i>
+                </div>
+                
+                <!-- Black Plus Icon -->
+                <div class="simple-plus-icon black" id="blackPlusIcon">
+                    <i class="ri-add-line"></i>
+                </div>
+                
+                <!-- Purple Plus Icon -->
+                <div class="simple-plus-icon purple" id="purplePlusIcon">
+                    <i class="ri-add-line"></i>
+                </div>
+                
+                <!-- Blue Plus Icon -->
+                <div class="simple-plus-icon blue" id="bluePlusIcon">
+                    <i class="ri-add-line"></i>
+                </div>
+            </div>
+            <p class="drag-text">Drag widget here</p>
+        </div>
+    </div>
+
+    <script>
+        function showNotification(message, type) {
+            const notification = document.createElement('div');
+            notification.className = 'notification show';
+            notification.textContent = message;
+            notification.style.background = type === 'success' ? '#28a745' : '#dc3545';
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        // Simple Plus Icons Click Handlers
+        document.getElementById('greenPlusIcon').addEventListener('click', function(e) {
+            e.stopPropagation();
+            showNotification('Green Plus Icon Clicked!', 'success');
+        });
+
+        document.getElementById('blackPlusIcon').addEventListener('click', function(e) {
+            e.stopPropagation();
+            showNotification('Black Plus Icon Clicked!', 'success');
+        });
+
+        document.getElementById('purplePlusIcon').addEventListener('click', function(e) {
+            e.stopPropagation();
+            showNotification('Purple Plus Icon Clicked!', 'success');
+        });
+
+        document.getElementById('bluePlusIcon').addEventListener('click', function(e) {
+            e.stopPropagation();
+            showNotification('Blue Plus Icon Clicked!', 'success');
+        });
+    </script>
+</body>
+</html>

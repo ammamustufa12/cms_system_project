@@ -82,59 +82,127 @@
 
             <!-- Content Types Grid -->
             @if ($contentTypes->count() > 0)
-                <div class="card">
-                    <div class="card-header d-flex justify-content-between align-items-center">
-                        <h5 class="card-title mb-0">
-                            <i class="fas fa-list-ul me-2"></i>Content Types
-                        </h5>
-                        <div>
-                            <a href="{{ route('content-types.create') }}" class="btn btn-primary me-2">
-                                {{-- <i class="fas fa-eye me-1"></i> --}}
-                                Add
-                            </a>
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h5 class="card-title mb-0">
+                                    <i class="fas fa-layer-group me-2"></i>Content Types
+                                </h5>
+                                <div>
+                                    <a href="{{ route('content-types.create') }}" class="btn btn-primary">
+                                        <i class="fas fa-plus me-1"></i>Create New
+                                    </a>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <div class="card-body p-0">
-                        <div class="table-responsive">
-                            <table class="table table-hover mb-0">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th>Content Type</th>
-                                        <th width="400">Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="fieldsTableBody">
-                                    @foreach ($contentTypes as $fieldKey => $contentType)
-                                        <tr data-field-key="{{ $fieldKey }}">
-                                            <td>
-                                                <h5 class="fw-bold">
-                                                    {{ $contentType->name }}
-                                                </h5>
-                                                <p>
-                                                    {{ $contentType->description }}
-                                                </p>
-                                            </td>
-                                            <td>
-                                                <div class="flex text-capitalize">
-                                                    <a href="{{ route('content-types.content-items.index', ['contentType' => $contentType->slug]) }}"
-                                                        class="btn btn-primary">add</a>
-                                                    <a href="{{ route('content-types.manage-fields', $contentType->slug) }}"
-                                                        class="btn btn-success">Manage Fields</a>
-                                                    <a href="{{ route('content-types.edit', $contentType->slug) }}"
-                                                        class="btn btn-warning">Edit</a>
-                                                    <button class="btn btn-danger"
-                                                        onclick="deleteItem({{ $contentType->id }}, '{{ $contentType->name }}')"
-                                                        title="Delete">
-                                                        <i class="fas fa-trash"></i>Delete
-                                                    </button>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
+                </div>
+
+                <!-- Content Types Cards -->
+                <div class="row g-4 mt-2">
+                    @foreach ($contentTypes as $contentType)
+                        <div class="col-xl-4 col-lg-6 col-md-6">
+                            <div class="card content-type-card h-100">
+                                <div class="card-header d-flex justify-content-between align-items-center">
+                                    <div class="d-flex align-items-center">
+                                        <div class="content-type-icon me-3" style="background: {{ $contentType->color ?? '#007bff' }};">
+                                            <i class="{{ $contentType->icon ?? 'fas fa-cube' }}"></i>
+                                        </div>
+                                        <div>
+                                            <h6 class="mb-0">{{ $contentType->name }}</h6>
+                                            <small class="text-muted">{{ $contentType->slug }}</small>
+                                        </div>
+                                    </div>
+                                    <span class="badge bg-{{ $contentType->status == 'active' ? 'success' : 'secondary' }}">
+                                        {{ ucfirst($contentType->status) }}
+                                    </span>
+                                </div>
+                                <div class="card-body">
+                                    <p class="text-muted mb-3">{{ $contentType->description ?? 'No description available' }}</p>
+                                    
+                                    <!-- Stats -->
+                                    <div class="row text-center mb-3">
+                                        <div class="col-4">
+                                            <div class="stat-item">
+                                                <strong>{{ count(is_array($contentType->fields_schema) ? $contentType->fields_schema : []) }}</strong>
+                                                <small class="text-muted d-block">Fields</small>
+                                            </div>
+                                        </div>
+                                        <div class="col-4">
+                                            <div class="stat-item">
+                                                <strong>{{ $contentType->contentItems->count() }}</strong>
+                                                <small class="text-muted d-block">Items</small>
+                                            </div>
+                                        </div>
+                                        <div class="col-4">
+                                            <div class="stat-item">
+                                                <strong>{{ count(is_array($contentType->layout_config) ? $contentType->layout_config : []) }}</strong>
+                                                <small class="text-muted d-block">Layouts</small>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Quick Actions -->
+                                    <div class="d-grid gap-2">
+                                        <a href="{{ route('content-types.content-items.index', ['contentType' => $contentType->slug]) }}" 
+                                           class="btn btn-outline-primary btn-sm">
+                                            <i class="fas fa-plus me-1"></i>Add Items
+                                        </a>
+                                        <div class="btn-group" role="group">
+                                            <a href="{{ route('content-types.manage-fields', $contentType->slug) }}" 
+                                               class="btn btn-outline-success btn-sm">
+                                                <i class="fas fa-cog me-1"></i>Fields
+                                            </a>
+                                            <div class="btn-group" role="group">
+                                                <a href="{{ route('content-types.working-builder', $contentType->slug) }}" 
+                                                   class="btn btn-success btn-sm">
+                                                    <i class="fas fa-check-circle me-1"></i>Edit with Elementor
+                                                </a>
+                                                {{-- <a href="{{ route('advanced-builder', $contentType->slug) }}" 
+                                                   class="btn btn-warning btn-sm">
+                                                    <i class="fas fa-magic me-1"></i>Advanced
+                                                </a> --}}
+                                                {{-- <a href="{{ route('content-types.professional-builder', $contentType->slug) }}" 
+                                                   class="btn btn-primary btn-sm">
+                                                    <i class="fas fa-layout me-1"></i>Professional
+                                                </a>
+                                                <a href="{{ route('content-types.simple-builder', $contentType->slug) }}" 
+                                                   class="btn btn-outline-success btn-sm">
+                                                    <i class="fas fa-rocket me-1"></i>Simple
+                                                </a>
+                                                <a href="{{ route('content-types.grapes-builder', $contentType->slug) }}" 
+                                                   class="btn btn-outline-info btn-sm">
+                                                    <i class="fas fa-palette me-1"></i>GrapesJS
+                                                </a>
+                                                <a href="{{ route('content-types.vvveb-builder', $contentType->slug) }}" 
+                                                   class="btn btn-outline-primary btn-sm">
+                                                    <i class="fas fa-magic me-1"></i>Vvveb.js
+                                                </a> --}}
+                                            </div>
+                                            <a href="{{ route('content-types.edit', $contentType->slug) }}" 
+                                               class="btn btn-outline-warning btn-sm">
+                                                <i class="fas fa-edit me-1"></i>Edit
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-footer bg-transparent">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <small class="text-muted">
+                                            <i class="fas fa-clock me-1"></i>
+                                            Updated {{ $contentType->updated_at->diffForHumans() }}
+                                        </small>
+                                        <button class="btn btn-outline-danger btn-sm" 
+                                                onclick="deleteItem({{ $contentType->id }}, '{{ $contentType->name }}')"
+                                                title="Delete">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                    </div>
+                    @endforeach
                 </div>
         </div>
     @else
@@ -180,6 +248,57 @@
         </div>
     </div>
     </div>
+
+    @push('extra_css')
+    <style>
+        .content-type-card {
+            transition: all 0.3s ease;
+            border: 1px solid #e9ecef;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .content-type-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            border-color: #007bff;
+        }
+        
+        .content-type-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+        }
+        
+        .stat-item {
+            padding: 8px;
+        }
+        
+        .stat-item strong {
+            font-size: 1.25rem;
+            color: #007bff;
+            display: block;
+        }
+        
+        .btn-group .btn {
+            border-radius: 0;
+        }
+        
+        .btn-group .btn:first-child {
+            border-top-left-radius: 0.375rem;
+            border-bottom-left-radius: 0.375rem;
+        }
+        
+        .btn-group .btn:last-child {
+            border-top-right-radius: 0.375rem;
+            border-bottom-right-radius: 0.375rem;
+        }
+    </style>
+    @endpush
 
     @push('extra_js')
         {{-- <script>

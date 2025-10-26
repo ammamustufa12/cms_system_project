@@ -54,7 +54,7 @@
                                             <label for="field_label" class="form-label">Field Label <span class="text-danger">*</span></label>
                                             <input type="text" class="form-control @error('field_label') is-invalid @enderror"
                                                 id="field_label" name="field_label" 
-                                                value="{{ old('field_label', $field['label']) }}"
+                                                value="{{ old('field_label', $field['name'] ?? $field['label'] ?? ucfirst(str_replace('_', ' ', $fieldKey))) }}"
                                                 placeholder="e.g. Product Title">
                                             <div class="form-text">This will be displayed to users</div>
                                             @error('field_label')

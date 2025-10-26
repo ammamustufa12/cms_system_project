@@ -15,7 +15,8 @@ class FormRendererService
         $requiredLabel = $required ? '<span class="text-danger">*</span>' : '';
         
         $html = '<div class="mb-3">';
-        $html .= '<label for="' . $fieldKey . '" class="form-label">' . $field['label'] . ' ' . $requiredLabel . '</label>';
+        $fieldLabel = $field['name'] ?? $field['label'] ?? ucfirst(str_replace('_', ' ', $fieldKey));
+        $html .= '<label for="' . $fieldKey . '" class="form-label">' . $fieldLabel . ' ' . $requiredLabel . '</label>';
         
         if (!empty($field['description'])) {
             $html .= '<div class="form-text mb-2">' . $field['description'] . '</div>';
@@ -93,6 +94,11 @@ class FormRendererService
         $placeholder = $options['placeholder'] ?? '';
         $maxLength = isset($options['max_length']) ? 'maxlength="' . $options['max_length'] . '"' : '';
         
+        // Handle array values
+        if (is_array($value)) {
+            $value = json_encode($value);
+        }
+        
         return '<input type="text" id="' . $fieldKey . '" name="' . $fieldKey . '" 
                 class="form-control ' . $errorClass . '" 
                 value="' . htmlspecialchars($value) . '" 
@@ -104,6 +110,11 @@ class FormRendererService
     {
         $options = $field['options'] ?? [];
         $placeholder = $options['placeholder'] ?? 'Enter email address';
+        
+        // Handle array values
+        if (is_array($value)) {
+            $value = json_encode($value);
+        }
         
         return '<input type="email" id="' . $fieldKey . '" name="' . $fieldKey . '" 
                 class="form-control ' . $errorClass . '" 
@@ -117,6 +128,11 @@ class FormRendererService
         $placeholder = $options['placeholder'] ?? '';
         $rows = $options['rows'] ?? 4;
         $maxLength = isset($options['max_length']) ? 'maxlength="' . $options['max_length'] . '"' : '';
+        
+        // Handle array values
+        if (is_array($value)) {
+            $value = json_encode($value);
+        }
         
         return '<textarea id="' . $fieldKey . '" name="' . $fieldKey . '" 
                 class="form-control ' . $errorClass . '" 
@@ -132,6 +148,11 @@ class FormRendererService
         $max = isset($options['max']) ? 'max="' . $options['max'] . '"' : '';
         $step = $options['step'] ?? '1';
         
+        // Handle array values
+        if (is_array($value)) {
+            $value = json_encode($value);
+        }
+        
         return '<input type="number" id="' . $fieldKey . '" name="' . $fieldKey . '" 
                 class="form-control ' . $errorClass . '" 
                 value="' . $value . '" 
@@ -144,7 +165,13 @@ class FormRendererService
         $multiple = $options['multiple'] ?? false;
         $multipleAttr = $multiple ? 'multiple' : '';
         $nameAttr = $multiple ? $fieldKey . '[]' : $fieldKey;
-        $selectedValues = $multiple && is_array($value) ? $value : [$value];
+        
+        // Handle array values properly
+        if (is_array($value)) {
+            $selectedValues = $value;
+        } else {
+            $selectedValues = $multiple ? [$value] : [$value];
+        }
         
         $html = '<select id="' . $fieldKey . '" name="' . $nameAttr . '" 
                  class="form-select ' . $errorClass . '" ' . $multipleAttr . ' ' . $requiredAttr . '>';
@@ -199,7 +226,7 @@ class FormRendererService
                                name="' . $fieldKey . '" value="1" 
                                id="' . $fieldKey . '" ' . $checked . ' ' . $requiredAttr . '>
                         <label class="form-check-label" for="' . $fieldKey . '">
-                            ' . $field['label'] . '
+                            ' . ($field['name'] ?? $field['label'] ?? ucfirst(str_replace('_', ' ', $fieldKey))) . '
                         </label>
                      </div>';
         }
@@ -211,6 +238,11 @@ class FormRendererService
     {
         $options = $field['options'] ?? [];
         $optionsList = $options['options_list'] ?? [];
+        
+        // Handle array values
+        if (is_array($value)) {
+            $value = $value[0] ?? '';
+        }
         
         $html = '<div class="radio-group">';
         foreach ($optionsList as $optionValue => $optionLabel) {
@@ -444,7 +476,7 @@ class FormRendererService
             $subFieldValue = $values[$subFieldKey] ?? '';
             
             $html .= '<div class="mb-3">
-                        <label class="form-label">' . $subField['label'] . '</label>';
+                        <label class="form-label">' . ($subField['name'] ?? $subField['label'] ?? ucfirst(str_replace('_', ' ', $subFieldKey))) . '</label>';
             
             // Simplified sub-field rendering
             switch ($subField['type']) {

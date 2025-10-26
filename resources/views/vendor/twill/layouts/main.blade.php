@@ -1,17 +1,36 @@
 <!DOCTYPE html>
-<html dir="ltr" lang="{{ config('twill.locale', 'en') }}">
+<html dir="ltr" lang="{{ config('twill.locale', 'en') }}" data-layout="vertical" data-topbar="light" data-sidebar="dark" data-sidebar-size="lg" data-sidebar-image="none" data-preloader="disable" data-theme="default" data-theme-colors="default">
 
 <head>
       <!-- jsvectormap css -->
 
     <!-- CSS files -->
-        <link href="{{ asset('admin_assets/js/layout.js') }}" rel="stylesheet" type="text/css" />
-    <link href="{{ asset('admin_assets/libs/jsvectormap/jsvectormap.min.css') }}" rel="stylesheet" type="text/css" />
-    <link href="{{ asset('admin_assets/libs/swiper/swiper-bundle.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('admin_assets/css/bootstrap.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('admin_assets/css/icons.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('admin_assets/css/app.min.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('admin_assets/libs/jsvectormap/jsvectormap.min.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('admin_assets/libs/swiper/swiper-bundle.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('admin_assets/css/custom.min.css') }}" rel="stylesheet" type="text/css" />
+    
+    <!-- Preloader CSS -->
+    <style>
+        #preloader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #fff;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #status {
+            width: 40px;
+            height: 40px;
+        }
+    </style>
 
         <title>@yield('title', 'Admin Dashboard')</title>
 
@@ -190,20 +209,20 @@
     <!--end back-to-top-->
 
     <!--preloader-->
-    {{-- <div id="preloader">
+    <div id="preloader">
         <div id="status">
             <div class="spinner-border text-primary avatar-sm" role="status">
                 <span class="visually-hidden">Loading...</span>
             </div>
         </div>
-    </div> --}}
+    </div>
 
-    <div class="customizer-setting d-none d-md-block">
+    {{-- <div class="customizer-setting d-none d-md-block">
         <div class="btn-info rounded-pill shadow-lg btn btn-icon btn-lg p-2" data-bs-toggle="offcanvas"
             data-bs-target="#theme-settings-offcanvas" aria-controls="theme-settings-offcanvas">
             <i class='mdi mdi-spin mdi-cog-outline fs-22'></i>
         </div>
-    </div>
+    </div> --}}
 
     <!-- Theme Settings -->
     <div class="offcanvas offcanvas-end border-0" tabindex="-1" id="theme-settings-offcanvas">
@@ -1349,6 +1368,21 @@
     <script src="{{ asset('admin_assets/js/pages/listjs.init.js')}}"></script>
     <script src="{{ asset('admin_assets/libs/sweetalert2/sweetalert2.min.js')}}"></script>
     <script src="{{ asset('admin_assets/js/app.js') }}"></script>
+    <script>
+        // Handle preloader
+        window.addEventListener('load', function() {
+            var preloader = document.getElementById('preloader');
+            if (preloader) {
+                preloader.style.display = 'none';
+            }
+        });
+
+        // Prevent FOUC (Flash of Unstyled Content)
+        document.documentElement.style.display = 'none';
+        document.addEventListener('DOMContentLoaded', function() {
+            document.documentElement.style.display = 'block';
+        });
+    </script>
     @stack('extra_js')
 </body>
 

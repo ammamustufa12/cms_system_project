@@ -2,110 +2,114 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Profile;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Auth;
-use A17\Twill\Models\User as TwillUser;
 
 class ProfileController extends Controller
 {
-    /**
-     * Display the profile page
-     */
- public function index()
+    public function index()
     {
-        $user = Auth::guard('twill_users')->user(); // Fetching logged-in Twill user
-        return view('vendor.twill.profile.index', compact('user'));
-    }
-    /**
-     * Display profile settings page
-     */
-    public function settings()
-    {
-        $user = Auth::user();
-
-        return view('vendor.twill.profile_setting.index', compact('user'));
+        $profiles = Profile::ordered()->paginate(10);
+        return view('vendor.twill.organize_content.profiles.index', compact('profiles'));
     }
 
-    /**
-     * Store social media data for authenticated user
-     */
-    public function socialmedia_store(Request $request)
+    public function create()
     {
-        $validated = $request->validate([
-            'github_username' => 'nullable|string|max:255',
-            'websiteInput' => 'nullable|string|max:255',
-            'dribbble_username' => 'nullable|string|max:255',
-            'pinterest_username' => 'nullable|string|max:255',
-        ]);
-
-        $user = Auth::user();
-
-        if (!$user) {
-            Log::warning('No authenticated user found during social media update');
-            return redirect()->route('login')->with('error', 'Please log in first.');
-        }
-
-        try {
-            $user->github_username = $validated['github_username'] ?? null;
-            $user->website = $validated['websiteInput'] ?? null;
-            $user->dribbble_username = $validated['dribbble_username'] ?? null;
-            $user->pinterest_username = $validated['pinterest_username'] ?? null;
-
-            $user->save();
-
-            Log::info("Social media updated for user ID: {$user->id}");
-
-            return redirect()->back()->with('success', 'Social media profile updated successfully.');
-        } catch (\Exception $e) {
-            Log::error('Social media update failed: ' . $e->getMessage(), [
-                'trace' => $e->getTraceAsString(),
-                'input' => $request->all(),
-            ]);
-
-            return redirect()->back()->withErrors(['error' => 'Failed to update social media profile.']);
-        }
+        return view('vendor.twill.organize_content.profiles.create');
     }
 
-    /**
-     * Store or update profile data
-     */
     public function store(Request $request)
     {
-        $user = Auth::user();
-
-        $validated = $request->validate([
-            'firstnameInput' => 'required|string|max:255',
-            'lastnameInput' => 'required|string|max:255',
-            'phonenumberInput' => 'nullable|string|max:100',
-            'emailInput' => 'required|email|unique:twill_users,email,' . $user->id,
-            'JoiningdatInput' => 'nullable|date',
-            'skillsInput' => 'nullable|array',
-            'skillsInput.*' => 'string',
-            'designationInput' => 'nullable|string|max:255',
-            'websiteInput1' => 'nullable|url|max:255',
-            'cityInput' => 'nullable|string|max:255',
-            'countryInput' => 'nullable|string|max:255',
-            'zipcodeInput' => 'nullable|string|max:10',
-            'exampleFormControlTextarea' => 'nullable|string',
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'email' => 'nullable|email|max:255',
+            'phone' => 'nullable|string|max:20',
+            'address' => 'nullable|string',
+            'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'social_links' => 'nullable|array',
+            'custom_fields' => 'nullable|array',
+            'status' => 'required|in:active,inactive',
+            'sort_order' => 'nullable|integer|min:0'
         ]);
 
-        // Map validated inputs to user model attributes
-        $user->first_name = $validated['firstnameInput'];
-        $user->last_name = $validated['lastnameInput'];
-        $user->phone = $validated['phonenumberInput'] ?? null;
-        $user->email = $validated['emailInput'];
-        $user->joining_date = $validated['JoiningdatInput'] ?? null;
-        $user->skills = $validated['skillsInput'] ?? null; // assuming 'skills' is cast as array/json
-        $user->designation = $validated['designationInput'] ?? null;
-        $user->website = $validated['websiteInput1'] ?? null;
-        $user->city = $validated['cityInput'] ?? null;
-        $user->country = $validated['countryInput'] ?? null;
-        $user->zipcode = $validated['zipcodeInput'] ?? null;
-        $user->description = $validated['exampleFormControlTextarea'] ?? null;
+        $data = $request->all();
+        
+        // Handle avatar upload
+        if ($request->hasFile('avatar')) {
+            $avatarPath = $request->file('avatar')->store('profiles', 'public');
+            $data['avatar'] = $avatarPath;
+        }
 
-        $user->save();
+        Profile::create($data);
 
-        return redirect()->route('profile.index')->with('success', 'Profile updated successfully.');
+        return redirect()->route('admin.profiles.index')
+            ->with('success', 'Profile created successfully.');
+    }
+
+    public function show(Profile $profile)
+    {
+        return view('vendor.twill.organize_content.profiles.show', compact('profile'));
+    }
+
+    public function edit(Profile $profile)
+    {
+        return view('vendor.twill.organize_content.profiles.edit', compact('profile'));
+    }
+
+    public function update(Request $request, Profile $profile)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'email' => 'nullable|email|max:255',
+            'phone' => 'nullable|string|max:20',
+            'address' => 'nullable|string',
+            'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'social_links' => 'nullable|array',
+            'custom_fields' => 'nullable|array',
+            'status' => 'required|in:active,inactive',
+            'sort_order' => 'nullable|integer|min:0'
+        ]);
+
+        $data = $request->all();
+        
+        // Handle avatar upload
+        if ($request->hasFile('avatar')) {
+            // Delete old avatar if exists
+            if ($profile->avatar && \Storage::disk('public')->exists($profile->avatar)) {
+                \Storage::disk('public')->delete($profile->avatar);
+            }
+            
+            $avatarPath = $request->file('avatar')->store('profiles', 'public');
+            $data['avatar'] = $avatarPath;
+        }
+
+        $profile->update($data);
+
+        return redirect()->route('admin.profiles.show', $profile)
+            ->with('success', 'Profile updated successfully.');
+    }
+
+    public function destroy(Profile $profile)
+    {
+        try {
+            \Log::info('Deleting profile: ' . $profile->id . ' - ' . $profile->name);
+            
+            // Delete avatar if exists
+            if ($profile->avatar && \Storage::disk('public')->exists($profile->avatar)) {
+                \Storage::disk('public')->delete($profile->avatar);
+            }
+            
+            $profile->delete();
+            \Log::info('Profile deleted successfully: ' . $profile->id);
+
+            return redirect()->route('admin.profiles.index')
+                ->with('success', 'Profile deleted successfully.');
+        } catch (\Exception $e) {
+            \Log::error('Error deleting profile: ' . $e->getMessage());
+            return redirect()->route('admin.profiles.index')
+                ->with('error', 'Error deleting profile: ' . $e->getMessage());
+        }
     }
 }

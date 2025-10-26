@@ -27,7 +27,8 @@
         "Database\\Seeders\\": "database/seeders/"
     },
     "files": [
-        "app/Helpers/ActivityLogger.php"
+        "app/Helpers/ActivityLogger.php",
+        "app/Helpers/AuthHelper.php"
     ]
 },
 

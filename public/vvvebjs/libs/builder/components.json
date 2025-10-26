@@ -1,0 +1,132 @@
+{
+  "components": {
+    "heading": {
+      "name": "Heading",
+      "category": "Basic",
+      "html": "<h1>Heading</h1>",
+      "image": "icons/heading.svg",
+      "attributes": {
+        "tag": {
+          "type": "select",
+          "label": "Tag",
+          "options": {
+            "h1": "H1",
+            "h2": "H2", 
+            "h3": "H3",
+            "h4": "H4",
+            "h5": "H5",
+            "h6": "H6"
+          },
+          "default": "h1"
+        },
+        "text": {
+          "type": "text",
+          "label": "Text",
+          "default": "Heading"
+        }
+      }
+    },
+    "paragraph": {
+      "name": "Paragraph",
+      "category": "Basic", 
+      "html": "<p>This is a paragraph.</p>",
+      "image": "icons/paragraph.svg",
+      "attributes": {
+        "text": {
+          "type": "textarea",
+          "label": "Text",
+          "default": "This is a paragraph."
+        }
+      }
+    },
+    "image": {
+      "name": "Image",
+      "category": "Media",
+      "html": "<img src='https://via.placeholder.com/300x200' alt='Image' />",
+      "image": "icons/image.svg",
+      "attributes": {
+        "src": {
+          "type": "image",
+          "label": "Image URL",
+          "default": "https://via.placeholder.com/300x200"
+        },
+        "alt": {
+          "type": "text",
+          "label": "Alt Text",
+          "default": "Image"
+        }
+      }
+    },
+    "button": {
+      "name": "Button",
+      "category": "Basic",
+      "html": "<button class='btn btn-primary'>Button</button>",
+      "image": "icons/button.svg",
+      "attributes": {
+        "text": {
+          "type": "text",
+          "label": "Button Text",
+          "default": "Button"
+        },
+        "class": {
+          "type": "select",
+          "label": "Style",
+          "options": {
+            "btn btn-primary": "Primary",
+            "btn btn-secondary": "Secondary",
+            "btn btn-success": "Success",
+            "btn btn-danger": "Danger"
+          },
+          "default": "btn btn-primary"
+        }
+      }
+    },
+    "container": {
+      "name": "Container",
+      "category": "Layout",
+      "html": "<div class='container'><p>Container content</p></div>",
+      "image": "icons/container.svg",
+      "attributes": {
+        "class": {
+          "type": "select",
+          "label": "Container Type",
+          "options": {
+            "container": "Fixed Width",
+            "container-fluid": "Full Width"
+          },
+          "default": "container"
+        }
+      }
+    },
+    "row": {
+      "name": "Row",
+      "category": "Layout",
+      "html": "<div class='row'><div class='col-md-6'>Column 1</div><div class='col-md-6'>Column 2</div></div>",
+      "image": "icons/row.svg"
+    },
+    "column": {
+      "name": "Column",
+      "category": "Layout", 
+      "html": "<div class='col-md-6'>Column content</div>",
+      "image": "icons/column.svg",
+      "attributes": {
+        "class": {
+          "type": "select",
+          "label": "Column Size",
+          "options": {
+            "col-md-1": "1/12",
+            "col-md-2": "2/12",
+            "col-md-3": "3/12",
+            "col-md-4": "4/12",
+            "col-md-6": "6/12",
+            "col-md-8": "8/12",
+            "col-md-9": "9/12",
+            "col-md-12": "12/12"
+          },
+          "default": "col-md-6"
+        }
+      }
+    }
+  }
+}
+
