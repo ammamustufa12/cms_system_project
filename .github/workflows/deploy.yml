@@ -1,0 +1,40 @@
+name: Deploy to Live Server
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+      
+    - name: Deploy to server via SSH
+      uses: appleboy/ssh-action@v0.1.5
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        key: ${{ secrets.SSH_KEY }}
+        script: |
+          cd /path/to/your/project
+          git pull origin main
+          composer install --no-dev --optimize-autoloader
+          php artisan route:clear
+          php artisan config:clear
+          php artisan view:clear
+          php artisan cache:clear
+          php artisan optimize
+          echo "Deployment completed successfully!"
+          
+    - name: Notify deployment status
+      if: always()
+      run: |
+        if [ ${{ job.status }} == 'success' ]; then
+          echo "✅ Deployment successful!"
+        else
+          echo "❌ Deployment failed!"
+        fi
