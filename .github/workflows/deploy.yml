@@ -1,4 +1,4 @@
-name: Deploy to Live Server
+name: Deploy to Hostinger
 
 on:
   push:
@@ -13,28 +13,32 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
       
-    - name: Deploy to server via SSH
+    - name: Deploy to Hostinger
       uses: appleboy/ssh-action@v0.1.5
       with:
-        host: ${{ secrets.HOST }}
-        username: ${{ secrets.USERNAME }}
-        key: ${{ secrets.SSH_KEY }}
+        host: lt-bnk-web1628.main-hosting.eu
+        username: u310228397
+        key: ${{ secrets.HOSTINGER_SSH_KEY }}
         script: |
-          cd /path/to/your/project
+          cd public_html/cms_system_project
+          echo "Starting deployment..."
           git pull origin main
+          echo "Code pulled successfully"
           composer install --no-dev --optimize-autoloader
+          echo "Dependencies installed"
           php artisan route:clear
           php artisan config:clear
           php artisan view:clear
           php artisan cache:clear
           php artisan optimize
-          echo "Deployment completed successfully!"
+          echo "Caches cleared and optimized"
+          echo "✅ Deployment completed successfully!"
           
-    - name: Notify deployment status
+    - name: Deployment Status
       if: always()
       run: |
         if [ ${{ job.status }} == 'success' ]; then
-          echo "✅ Deployment successful!"
+          echo "🎉 Deployment to Hostinger successful!"
         else
           echo "❌ Deployment failed!"
         fi
