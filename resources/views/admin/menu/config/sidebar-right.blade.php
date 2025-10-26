@@ -992,11 +992,11 @@
     <!-- Left Panel: Menu Links Management -->
     <div class="left-panel">
         <div class="menu-links-list" id="menu-links-list">
-            <!-- Home Menu Item -->
+            <!-- Recent Activity Right Sidebar Item -->
             <div class="menu-item" draggable="true" data-id="1">
                 <span class="drag-handle">⋮⋮</span>
                 <input type="checkbox" checked>
-                <input type="text" value="Home" class="menu-name">
+                <input type="text" value="Recent Activity" class="menu-name">
                 <div class="toggle-switch active" onclick="toggleSwitch(this)"></div>
                 <div class="actions">
                     <button title="Add">+</button>
@@ -1004,11 +1004,11 @@
                 </div>
             </div>
             
-            <!-- Shop Menu Item with Mega Menu -->
+            <!-- Quick Links Right Sidebar Item -->
             <div class="menu-item" draggable="true" data-id="2">
                 <span class="drag-handle">⋮⋮</span>
                 <input type="checkbox" checked>
-                <input type="text" value="Shop" class="menu-name">
+                <input type="text" value="Quick Links" class="menu-name">
                 <div class="toggle-switch active" onclick="toggleSwitch(this)"></div>
                 <div class="actions">
                     <button title="Mega Menu Settings" onclick="openMegaMenuSettings('2')" style="background: #28a745;">🎨</button>
@@ -1017,34 +1017,66 @@
                 </div>
             </div>
             
+            <!-- Quick Links Sub-menu Items -->
+            <div class="sub-menu">
+                <div class="menu-item" draggable="true" data-id="2-1">
+                    <span class="drag-handle">⋮⋮</span>
+                    <input type="checkbox" checked>
+                    <input type="text" value="Bookmarks" class="menu-name">
+                    <div class="actions">
+                        <button title="Add">+</button>
+                        <button title="Edit">✏️</button>
+                    </div>
+                </div>
+                <div class="menu-item" draggable="true" data-id="2-2">
+                    <span class="drag-handle">⋮⋮</span>
+                    <input type="checkbox" checked>
+                    <input type="text" value="Favorites" class="menu-name">
+                    <div class="actions">
+                        <button title="Add">+</button>
+                        <button title="Edit">✏️</button>
+                    </div>
+                </div>
+                <div class="menu-item" draggable="true" data-id="2-3">
+                    <span class="drag-handle">⋮⋮</span>
+                    <input type="checkbox" checked>
+                    <input type="text" value="Shortcuts" class="menu-name">
+                    <div class="actions">
+                        <button title="Add">+</button>
+                        <button title="Edit">✏️</button>
+                    </div>
+                </div>
+            </div>
 
-            <!-- Features Menu Item -->
+            <!-- Notifications Right Sidebar Item -->
             <div class="menu-item" draggable="true" data-id="3">
                 <span class="drag-handle">⋮⋮</span>
                 <input type="checkbox" checked>
-                <input type="text" value="Features Fillures" class="menu-name">
+                <input type="text" value="Notifications" class="menu-name">
+                <div class="toggle-switch active" onclick="toggleSwitch(this)"></div>
                 <div class="actions">
                     <button title="Add">+</button>
                     <button title="Edit">✏️</button>
                 </div>
             </div>
             
-            <!-- Mega Menu Item -->
+            <!-- Widgets Right Sidebar Item -->
             <div class="menu-item" draggable="true" data-id="4">
                 <span class="drag-handle">⋮⋮</span>
-                <input type="checkbox">
-                <input type="text" value="Mega menu" class="menu-name">
+                <input type="checkbox" checked>
+                <input type="text" value="Widgets" class="menu-name">
+                <div class="toggle-switch active" onclick="toggleSwitch(this)"></div>
                 <div class="actions">
                     <button title="Add">+</button>
                     <button title="Edit">✏️</button>
                 </div>
             </div>
             
-            <!-- Services Menu Item -->
+            <!-- Tools Right Sidebar Item -->
             <div class="menu-item" draggable="true" data-id="5">
                 <span class="drag-handle">⋮⋮</span>
-                <input type="checkbox">
-                <input type="text" value="Services" class="menu-name">
+                <input type="checkbox" checked>
+                <input type="text" value="Tools" class="menu-name">
                 <span class="expand-icon">⌄</span>
                 <div class="actions">
                     <button title="Add">+</button>
@@ -1052,12 +1084,12 @@
                 </div>
             </div>
             
-            <!-- Services Sub-menu Items -->
+            <!-- Tools Sub-menu Items -->
             <div class="sub-menu">
                 <div class="menu-item" draggable="true" data-id="5-1">
                     <span class="drag-handle">⋮⋮</span>
-                    <input type="checkbox">
-                    <input type="text" value="Portfolio" class="menu-name">
+                    <input type="checkbox" checked>
+                    <input type="text" value="Calculator" class="menu-name">
                     <div class="actions">
                         <button title="Add">+</button>
                         <button title="Edit">✏️</button>
@@ -1066,7 +1098,7 @@
                 <div class="menu-item" draggable="true" data-id="5-2">
                     <span class="drag-handle">⋮⋮</span>
                     <input type="checkbox" checked>
-                    <input type="text" value="Pricing" class="menu-name">
+                    <input type="text" value="Converter" class="menu-name">
                     <div class="actions">
                         <button title="Add">+</button>
                         <button title="Edit">✏️</button>
@@ -1074,8 +1106,8 @@
                 </div>
                 <div class="menu-item" draggable="true" data-id="5-3">
                     <span class="drag-handle">⋮⋮</span>
-                    <input type="checkbox">
-                    <input type="text" value="Services" class="menu-name">
+                    <input type="checkbox" checked>
+                    <input type="text" value="Notes" class="menu-name">
                     <div class="actions">
                         <button title="Add">+</button>
                         <button title="Edit">✏️</button>

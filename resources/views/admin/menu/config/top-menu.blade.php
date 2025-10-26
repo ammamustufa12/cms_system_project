@@ -992,7 +992,7 @@
     <!-- Left Panel: Menu Links Management -->
     <div class="left-panel">
         <div class="menu-links-list" id="menu-links-list">
-            <!-- Home Menu Item -->
+            <!-- Home Top Menu Item -->
             <div class="menu-item" draggable="true" data-id="1">
                 <span class="drag-handle">⋮⋮</span>
                 <input type="checkbox" checked>
@@ -1004,11 +1004,11 @@
                 </div>
             </div>
             
-            <!-- Shop Menu Item with Mega Menu -->
+            <!-- Products Top Menu Item with Mega Menu -->
             <div class="menu-item" draggable="true" data-id="2">
                 <span class="drag-handle">⋮⋮</span>
                 <input type="checkbox" checked>
-                <input type="text" value="Shop" class="menu-name">
+                <input type="text" value="Products" class="menu-name">
                 <div class="toggle-switch active" onclick="toggleSwitch(this)"></div>
                 <div class="actions">
                     <button title="Mega Menu Settings" onclick="openMegaMenuSettings('2')" style="background: #28a745;">🎨</button>
@@ -1017,34 +1017,66 @@
                 </div>
             </div>
             
+            <!-- Products Sub-menu Items -->
+            <div class="sub-menu">
+                <div class="menu-item" draggable="true" data-id="2-1">
+                    <span class="drag-handle">⋮⋮</span>
+                    <input type="checkbox" checked>
+                    <input type="text" value="All Products" class="menu-name">
+                    <div class="actions">
+                        <button title="Add">+</button>
+                        <button title="Edit">✏️</button>
+                    </div>
+                </div>
+                <div class="menu-item" draggable="true" data-id="2-2">
+                    <span class="drag-handle">⋮⋮</span>
+                    <input type="checkbox" checked>
+                    <input type="text" value="Categories" class="menu-name">
+                    <div class="actions">
+                        <button title="Add">+</button>
+                        <button title="Edit">✏️</button>
+                    </div>
+                </div>
+                <div class="menu-item" draggable="true" data-id="2-3">
+                    <span class="drag-handle">⋮⋮</span>
+                    <input type="checkbox" checked>
+                    <input type="text" value="Featured" class="menu-name">
+                    <div class="actions">
+                        <button title="Add">+</button>
+                        <button title="Edit">✏️</button>
+                    </div>
+                </div>
+            </div>
 
-            <!-- Features Menu Item -->
+            <!-- About Top Menu Item -->
             <div class="menu-item" draggable="true" data-id="3">
                 <span class="drag-handle">⋮⋮</span>
                 <input type="checkbox" checked>
-                <input type="text" value="Features Fillures" class="menu-name">
+                <input type="text" value="About Us" class="menu-name">
+                <div class="toggle-switch active" onclick="toggleSwitch(this)"></div>
                 <div class="actions">
                     <button title="Add">+</button>
                     <button title="Edit">✏️</button>
                 </div>
             </div>
             
-            <!-- Mega Menu Item -->
+            <!-- Services Top Menu Item -->
             <div class="menu-item" draggable="true" data-id="4">
                 <span class="drag-handle">⋮⋮</span>
-                <input type="checkbox">
-                <input type="text" value="Mega menu" class="menu-name">
+                <input type="checkbox" checked>
+                <input type="text" value="Services" class="menu-name">
+                <div class="toggle-switch active" onclick="toggleSwitch(this)"></div>
                 <div class="actions">
                     <button title="Add">+</button>
                     <button title="Edit">✏️</button>
                 </div>
             </div>
             
-            <!-- Services Menu Item -->
+            <!-- Blog Top Menu Item -->
             <div class="menu-item" draggable="true" data-id="5">
                 <span class="drag-handle">⋮⋮</span>
-                <input type="checkbox">
-                <input type="text" value="Services" class="menu-name">
+                <input type="checkbox" checked>
+                <input type="text" value="Blog" class="menu-name">
                 <span class="expand-icon">⌄</span>
                 <div class="actions">
                     <button title="Add">+</button>
@@ -1052,12 +1084,12 @@
                 </div>
             </div>
             
-            <!-- Services Sub-menu Items -->
+            <!-- Blog Sub-menu Items -->
             <div class="sub-menu">
                 <div class="menu-item" draggable="true" data-id="5-1">
                     <span class="drag-handle">⋮⋮</span>
-                    <input type="checkbox">
-                    <input type="text" value="Portfolio" class="menu-name">
+                    <input type="checkbox" checked>
+                    <input type="text" value="Latest Posts" class="menu-name">
                     <div class="actions">
                         <button title="Add">+</button>
                         <button title="Edit">✏️</button>
@@ -1066,7 +1098,7 @@
                 <div class="menu-item" draggable="true" data-id="5-2">
                     <span class="drag-handle">⋮⋮</span>
                     <input type="checkbox" checked>
-                    <input type="text" value="Pricing" class="menu-name">
+                    <input type="text" value="Categories" class="menu-name">
                     <div class="actions">
                         <button title="Add">+</button>
                         <button title="Edit">✏️</button>
@@ -1074,12 +1106,24 @@
                 </div>
                 <div class="menu-item" draggable="true" data-id="5-3">
                     <span class="drag-handle">⋮⋮</span>
-                    <input type="checkbox">
-                    <input type="text" value="Services" class="menu-name">
+                    <input type="checkbox" checked>
+                    <input type="text" value="Archive" class="menu-name">
                     <div class="actions">
                         <button title="Add">+</button>
                         <button title="Edit">✏️</button>
                     </div>
+                </div>
+            </div>
+            
+            <!-- Contact Top Menu Item -->
+            <div class="menu-item" draggable="true" data-id="6">
+                <span class="drag-handle">⋮⋮</span>
+                <input type="checkbox" checked>
+                <input type="text" value="Contact" class="menu-name">
+                <div class="toggle-switch active" onclick="toggleSwitch(this)"></div>
+                <div class="actions">
+                    <button title="Add">+</button>
+                    <button title="Edit">✏️</button>
                 </div>
             </div>
             
