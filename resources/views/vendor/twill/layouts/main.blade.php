@@ -33,6 +33,9 @@
     </style>
 
         <title>@yield('title', 'Admin Dashboard')</title>
+        
+        <!-- CSRF Token -->
+        <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <!-- Layout config JS -->
     <script src="{{ asset('admin_assets/js/layout.js') }}"></script>

@@ -1,8 +1,10 @@
 @extends('twill::layouts.main')
 
-@section('title', 'Menu Links - Toolbar')
+@section('title', 'Menu Links - Sidebar Left')
 
 @section('content')
+
+<meta name="csrf-token" content="{{ csrf_token() }}">
 <style>
     .menu-management-container {
         width: 100%;
@@ -293,6 +295,26 @@
         transition: all 0.3s ease;
     }
     
+    /* Nested Sub-menu Level 2 */
+    .sub-menu .sub-menu {
+        margin-left: 30px;
+        border-left: 2px solid #adb5bd;
+        padding-left: 15px;
+        background: #ffffff;
+        border-radius: 6px;
+        padding: 10px;
+    }
+    
+    /* Nested Sub-menu Level 3 */
+    .sub-menu .sub-menu .sub-menu {
+        margin-left: 20px;
+        border-left: 2px solid #ced4da;
+        padding-left: 10px;
+        background: #f8f9fa;
+        border-radius: 4px;
+        padding: 8px;
+    }
+    
     .sub-menu-item {
         background: white;
         border: 1px solid #e9ecef;
@@ -300,6 +322,25 @@
         margin: 5px 0;
         padding: 12px;
         box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    
+    /* Nested menu items styling */
+    .sub-menu .menu-item {
+        background: white;
+        margin: 4px 0;
+        padding: 10px;
+    }
+    
+    .sub-menu .sub-menu .menu-item {
+        background: #f8f9fa;
+        margin: 3px 0;
+        padding: 8px;
+    }
+    
+    .sub-menu .sub-menu .sub-menu .menu-item {
+        background: #ffffff;
+        margin: 2px 0;
+        padding: 6px;
     }
     
     .sub-menu-item:hover {
@@ -423,6 +464,16 @@
         .sub-menu {
             margin-left: 20px;
             padding-left: 15px;
+        }
+        
+        .sub-menu .sub-menu {
+            margin-left: 15px;
+            padding-left: 10px;
+        }
+        
+        .sub-menu .sub-menu .sub-menu {
+            margin-left: 10px;
+            padding-left: 8px;
         }
         
         .sub-menu-item {
@@ -978,6 +1029,9 @@
         
         <!-- Action Buttons -->
         <div class="ms-auto d-flex gap-2">
+            <button class="btn btn-success" onclick="saveMenuItemsToDatabase()" title="Save all menu items to database">
+                <i class="ri-save-line me-1"></i> Save Menu
+            </button>
             <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#newMenuModal">
                 <i class="ri-add-line me-1"></i> New Menu
             </button>
@@ -996,7 +1050,29 @@
             <div class="menu-item" draggable="true" data-id="1">
                 <span class="drag-handle">⋮⋮</span>
                 <input type="checkbox" checked>
+                <input type="text" value="Configuration" class="menu-name">
+                <div class="toggle-switch active" onclick="toggleSwitch(this)"></div>
+                <div class="actions">
+                    <button title="Add">+</button>
+                    <button title="Edit">✏️</button>
+                </div>
+            </div>
+
+            <div class="menu-item" draggable="true" data-id="1">
+                <span class="drag-handle">⋮⋮</span>
+                <input type="checkbox" checked>
                 <input type="text" value="Dashboard" class="menu-name">
+                <div class="toggle-switch active" onclick="toggleSwitch(this)"></div>
+                <div class="actions">
+                    <button title="Add">+</button>
+                    <button title="Edit">✏️</button>
+                </div>
+            </div>
+
+            <div class="menu-item" draggable="true" data-id="1">
+                <span class="drag-handle">⋮⋮</span>
+                <input type="checkbox" checked>
+                <input type="text" value="Organize Content" class="menu-name">
                 <div class="toggle-switch active" onclick="toggleSwitch(this)"></div>
                 <div class="actions">
                     <button title="Add">+</button>
@@ -1008,7 +1084,7 @@
             <div class="menu-item" draggable="true" data-id="2">
                 <span class="drag-handle">⋮⋮</span>
                 <input type="checkbox" checked>
-                <input type="text" value="Content Management" class="menu-name">
+                <input type="text" value="Structure" class="menu-name">
                 <div class="toggle-switch active" onclick="toggleSwitch(this)"></div>
                 <div class="actions">
                     <button title="Mega Menu Settings" onclick="openMegaMenuSettings('2')" style="background: #28a745;">🎨</button>
@@ -1022,7 +1098,7 @@
                 <div class="menu-item" draggable="true" data-id="2-1">
                     <span class="drag-handle">⋮⋮</span>
                     <input type="checkbox" checked>
-                    <input type="text" value="Pages" class="menu-name">
+                    <input type="text" value="Industory" class="menu-name">
                     <div class="actions">
                         <button title="Add">+</button>
                         <button title="Edit">✏️</button>
@@ -1031,7 +1107,7 @@
                 <div class="menu-item" draggable="true" data-id="2-2">
                     <span class="drag-handle">⋮⋮</span>
                     <input type="checkbox" checked>
-                    <input type="text" value="Posts" class="menu-name">
+                    <input type="text" value="Data Types" class="menu-name">
                     <div class="actions">
                         <button title="Add">+</button>
                         <button title="Edit">✏️</button>
@@ -1040,7 +1116,7 @@
                 <div class="menu-item" draggable="true" data-id="2-3">
                     <span class="drag-handle">⋮⋮</span>
                     <input type="checkbox" checked>
-                    <input type="text" value="Media Library" class="menu-name">
+                    <input type="text" value="Profiles" class="menu-name">
                     <div class="actions">
                         <button title="Add">+</button>
                         <button title="Edit">✏️</button>
@@ -1052,7 +1128,7 @@
             <div class="menu-item" draggable="true" data-id="3">
                 <span class="drag-handle">⋮⋮</span>
                 <input type="checkbox" checked>
-                <input type="text" value="User Management" class="menu-name">
+                <input type="text" value="Configuration" class="menu-name">
                 <div class="toggle-switch active" onclick="toggleSwitch(this)"></div>
                 <div class="actions">
                     <button title="Add">+</button>
@@ -1060,23 +1136,13 @@
                 </div>
             </div>
             
-            <!-- System Settings Left Sidebar Item -->
-            <div class="menu-item" draggable="true" data-id="4">
-                <span class="drag-handle">⋮⋮</span>
-                <input type="checkbox" checked>
-                <input type="text" value="System Settings" class="menu-name">
-                <div class="toggle-switch active" onclick="toggleSwitch(this)"></div>
-                <div class="actions">
-                    <button title="Add">+</button>
-                    <button title="Edit">✏️</button>
-                </div>
-            </div>
+
             
             <!-- Reports & Analytics Left Sidebar Item -->
             <div class="menu-item" draggable="true" data-id="5">
                 <span class="drag-handle">⋮⋮</span>
                 <input type="checkbox" checked>
-                <input type="text" value="Reports & Analytics" class="menu-name">
+                <input type="text" value="Menu Control" class="menu-name">
                 <span class="expand-icon">⌄</span>
                 <div class="actions">
                     <button title="Add">+</button>
@@ -1266,6 +1332,11 @@
                         
                         // Show success message
                         showNotification('Menu item reordered successfully!', 'success');
+                        
+                        // Auto-save to database
+                        setTimeout(() => {
+                            saveMenuItemsToDatabase();
+                        }, 500);
                     }
                 }
             });
@@ -1304,23 +1375,53 @@
             }, { passive: true });
         });
         
-        // Sub-menu Creation Helper Functions
+        // Sub-menu Creation Helper Functions - Support up to 3 levels deep
+        // Level 0 = Main Menu, Level 1 = First Sub-menu, Level 2 = Second Sub-menu, Level 3 = Third Sub-menu
         function shouldCreateSubMenu(targetItem, draggedItem) {
-            // Don't create sub-menu if dragging onto a sub-menu item
-            if (targetItem.closest('.sub-menu')) {
-                return false;
-            }
+            // Get the nesting level of target item
+            const targetLevel = getMenuLevel(targetItem);
             
-            // Don't create sub-menu if dragging a sub-menu item
-            if (draggedItem.closest('.sub-menu')) {
-                return false;
-            }
+            // Allow creating sub-menu if target is at Level 0, 1, or 2
+            // Level 0 (main) -> creates Level 1 sub-menu ✓
+            // Level 1 -> creates Level 2 sub-menu ✓
+            // Level 2 -> creates Level 3 sub-menu ✓
+            // Level 3 -> cannot create more (maximum reached) ✗
             
-            // Create sub-menu if dragging onto a main menu item
-            return true;
+            // Return true if targetLevel is 0, 1, or 2 (can create next level)
+            // Return false if targetLevel is 3 or more (maximum reached)
+            return targetLevel < 3;
         }
         
+        // Get the nesting level of a menu item (0 = main menu, 1 = first sub-menu, etc.)
+        function getMenuLevel(item) {
+            if (!item) return 0;
+            let level = 0;
+            let parent = item.parentElement;
+            
+            while (parent && parent !== document.getElementById('menu-links-list')) {
+                if (parent.classList.contains('sub-menu')) {
+                    level++;
+                }
+                parent = parent.parentElement;
+            }
+            
+            return level;
+        }
+        
+        // Make getMenuLevel globally accessible
+        window.getMenuLevel = getMenuLevel;
+        
         function createSubMenu(parentItem, childItem) {
+            // Check nesting level
+            const parentLevel = getMenuLevel(parentItem);
+            
+            // Allow: Level 0 -> Level 1, Level 1 -> Level 2, Level 2 -> Level 3
+            // Block: Level 3+ cannot create more sub-menus
+            if (parentLevel >= 3) {
+                showNotification('Maximum nesting level (3) reached! Cannot create more sub-menus.', 'warning');
+                return;
+            }
+            
             // Remove child from its current position
             childItem.parentNode.removeChild(childItem);
             
@@ -1341,11 +1442,16 @@
                     const icon = document.createElement('span');
                     icon.className = 'expand-icon';
                     icon.innerHTML = '⌄';
+                    icon.style.cursor = 'pointer';
+                    icon.style.marginLeft = '10px';
                     icon.onclick = function() {
                         toggleSubMenu(subMenu);
                     };
                     parentItem.appendChild(icon);
                 }
+                
+                // Add class to parent to indicate it has submenu
+                parentItem.classList.add('has-submenu');
             }
             
             // Add child to sub-menu
@@ -1354,12 +1460,14 @@
             
             // Update child's data attributes
             childItem.dataset.parentId = parentItem.dataset.id;
+            childItem.dataset.level = (parentLevel + 1).toString();
             
             // Re-initialize drag and drop for the moved item
             initializeDragAndDrop(childItem);
             
-            // Show success message
-            showNotification('Sub-menu created successfully!', 'success');
+            // Show success message with level info
+            const levelNames = ['', 'Sub-menu', 'Sub-sub-menu', 'Sub-sub-sub-menu'];
+            showNotification(levelNames[parentLevel + 1] + ' created successfully!', 'success');
             
             // Highlight the new sub-menu
             subMenu.style.background = '#d4edda';
@@ -1452,12 +1560,39 @@
             this.classList.add('drag-over');
             
             if (draggedElement && draggedElement !== this) {
+                const targetLevel = getMenuLevel(this);
+                const draggedLevel = getMenuLevel(draggedElement);
                 const isSubMenu = this.closest('.sub-menu');
                 const draggedIsSubMenu = draggedElement.closest('.sub-menu');
                 
-                if (isSubMenu && !draggedIsSubMenu) {
-                    showDropHint(this, 'Drop here to move to sub-menu');
+                // Check if we can create nested sub-menu (up to 3 levels: 0, 1, 2, 3)
+                // Level 0 (main) -> Level 1 -> Level 2 -> Level 3 (maximum)
+                if (!isSubMenu && !draggedIsSubMenu) {
+                    // Both are main menu items (Level 0) - can create Level 1 sub-menu
+                    showDropHint(this, 'Drop here to create sub-menu (Level 1)');
+                } else if (isSubMenu && !draggedIsSubMenu) {
+                    // Target is in sub-menu, dragged is main - can create nested sub-menu
+                    if (targetLevel < 3) {
+                        // Level 0, 1, or 2 can create next level sub-menu
+                        showDropHint(this, `Drop here to create Level ${targetLevel + 1} sub-menu`);
+                    } else {
+                        showDropHint(this, 'Maximum nesting level (3) reached!');
+                    }
+                } else if (isSubMenu && draggedIsSubMenu) {
+                    // Both are in sub-menus - can create nested sub-menu if levels allow
+                    if (targetLevel < 3) {
+                        // Can create next level (if targetLevel is 0, 1, or 2)
+                        if (targetLevel === draggedLevel) {
+                            showDropHint(this, `Drop here to create Level ${targetLevel + 1} sub-menu`);
+                        } else {
+                            showDropHint(this, `Drop here to move to Level ${targetLevel + 1}`);
+                        }
+                    } else {
+                        // Level 3 reached, cannot create more
+                        showDropHint(this, 'Drop here to reorder (Max level reached)');
+                    }
                 } else if (!isSubMenu && draggedIsSubMenu) {
+                    // Moving from sub-menu to main
                     showDropHint(this, 'Drop here to move to main menu');
                 } else {
                     showDropHint(this, 'Drop here to reorder');
@@ -1476,11 +1611,18 @@
             hideDropHint();
             
             if (draggedElement && draggedElement !== this) {
+                const targetLevel = getMenuLevel(this);
+                const draggedLevel = getMenuLevel(draggedElement);
                 const targetParent = this.closest('.sub-menu');
                 const draggedParent = draggedElement.closest('.sub-menu');
                 
-                // Move between main menu and sub-menu
-                if (targetParent && !draggedParent) {
+                // Check if we're creating a nested sub-menu
+                if (shouldCreateSubMenu(this, draggedElement) && 
+                    (targetLevel < draggedLevel || (!targetParent && !draggedParent) || 
+                     (targetParent && draggedParent && targetLevel === draggedLevel))) {
+                    // Create nested sub-menu
+                    createSubMenu(this, draggedElement);
+                } else if (targetParent && !draggedParent) {
                     // Moving from main to sub-menu
                     moveToSubMenu(this, draggedElement);
                 } else if (!targetParent && draggedParent) {
@@ -1497,18 +1639,30 @@
         }
         
         function moveToSubMenu(targetItem, draggedItem) {
+            // Get target level
+            const targetLevel = getMenuLevel(targetItem);
+            
+            // Allow moving to levels 0, 1, 2 (which can contain Level 1, 2, 3 sub-menus)
+            // Block moving to level 3+ (which cannot contain more sub-menus)
+            if (targetLevel >= 3) {
+                showNotification('Cannot move to level 3 sub-menu (maximum nesting reached)!', 'warning');
+                return;
+            }
+            
             // Remove from current position
             draggedItem.parentNode.removeChild(draggedItem);
             
             // Add to sub-menu
             const subMenu = targetItem.closest('.sub-menu');
             draggedItem.dataset.parentId = subMenu.previousElementSibling.dataset.id;
+            draggedItem.dataset.level = targetLevel.toString();
             subMenu.appendChild(draggedItem);
             
             // Re-initialize drag and drop
             initializeDragAndDrop(draggedItem);
             
-            showNotification('Moved to sub-menu successfully!', 'success');
+            const levelNames = ['', 'Sub-menu', 'Sub-sub-menu', 'Sub-sub-sub-menu'];
+            showNotification(`Moved to ${levelNames[targetLevel]} successfully!`, 'success');
         }
         
         function moveToMainMenu(targetItem, draggedItem) {
@@ -1766,17 +1920,46 @@
         modal.show();
     }
     
-    // Add sub-item function
+    // Add sub-item function - supports nested sub-menus up to 3 levels
     window.addSubItem = function(parentId) {
         const parentItem = document.querySelector(`[data-id="${parentId}"]`);
         if (!parentItem) return;
+        
+        // Check nesting level
+            const parentLevel = getMenuLevel(parentItem);
+            
+            // Allow: Level 0 (main) -> Level 1, Level 1 -> Level 2, Level 2 -> Level 3
+            // Maximum is Level 3, so parentLevel can be 0, 1, or 2
+            // Block: Level 3+ cannot create more sub-menus
+            if (parentLevel >= 3) {
+                showNotification('Maximum nesting level (3) reached! Cannot add more sub-items.', 'warning');
+                return;
+            }
         
         // Create sub-menu container if it doesn't exist
         let subMenu = parentItem.nextElementSibling;
         if (!subMenu || !subMenu.classList.contains('sub-menu')) {
             subMenu = document.createElement('div');
             subMenu.className = 'sub-menu';
+            subMenu.style.display = 'block';
             parentItem.parentNode.insertBefore(subMenu, parentItem.nextSibling);
+            
+            // Add expand icon to parent
+            const expandIcon = parentItem.querySelector('.expand-icon');
+            if (!expandIcon) {
+                const icon = document.createElement('span');
+                icon.className = 'expand-icon';
+                icon.innerHTML = '⌄';
+                icon.style.cursor = 'pointer';
+                icon.style.marginLeft = '10px';
+                icon.onclick = function() {
+                    toggleSubMenu(subMenu);
+                };
+                parentItem.appendChild(icon);
+            }
+            
+            // Add class to parent
+            parentItem.classList.add('has-submenu');
         }
         
         // Generate unique ID for sub-item
@@ -1784,10 +1967,10 @@
         
         // Create sub-menu item HTML
         const subMenuItem = `
-            <div class="menu-item" draggable="true" data-id="${newId}">
+            <div class="menu-item" draggable="true" data-id="${newId}" data-level="${parentLevel + 1}">
                 <span class="drag-handle">⋮⋮</span>
                 <input type="checkbox" checked>
-                <input type="text" value="New Sub Item" class="menu-name">
+                <input type="text" value="New Sub Item Level ${parentLevel + 1}" class="menu-name">
                 <div class="toggle-switch active" onclick="toggleSwitch(this)"></div>
                 <div class="actions">
                     <button title="Add" onclick="addSubItem('${newId}')">+</button>
@@ -1804,8 +1987,9 @@
         const newSubItem = subMenu.querySelector(`[data-id="${newId}"]`);
         initializeDragAndDrop(newSubItem);
         
-        // Show success message
-        showNotification('Sub-item added successfully!', 'success');
+        // Show success message with level info
+        const levelNames = ['', 'Sub-menu', 'Sub-sub-menu', 'Sub-sub-sub-menu'];
+        showNotification(`${levelNames[parentLevel + 1]} item added successfully!`, 'success');
         
         // Scroll to new sub-item
         newSubItem.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -1838,19 +2022,60 @@
         window.editingItemId = itemId;
     };
     
-    // Delete menu item function
+    // Delete menu item function - handles nested sub-menus recursively
     window.deleteMenuItem = function(itemId) {
-        if (confirm('Are you sure you want to delete this menu item?')) {
+        if (confirm('Are you sure you want to delete this menu item and all its nested sub-menus?')) {
             const menuItem = document.querySelector(`[data-id="${itemId}"]`);
             if (menuItem) {
-                // Also remove sub-menu if exists
-                const subMenu = menuItem.nextElementSibling;
-                if (subMenu && subMenu.classList.contains('sub-menu')) {
-                    subMenu.remove();
+                // Get level before deletion
+                const level = getMenuLevel(menuItem);
+                const levelNames = ['Main menu', 'Sub-menu', 'Sub-sub-menu', 'Sub-sub-sub-menu'];
+                
+                // Recursively remove all nested sub-menus
+                function removeSubMenus(item) {
+                    let nextSibling = item.nextElementSibling;
+                    while (nextSibling && nextSibling.classList.contains('sub-menu')) {
+                        // Get all items in this sub-menu
+                        const subItems = nextSibling.querySelectorAll('.menu-item');
+                        subItems.forEach(subItem => {
+                            removeSubMenus(subItem);
+                        });
+                        // Remove the sub-menu itself
+                        const toRemove = nextSibling;
+                        nextSibling = nextSibling.nextElementSibling;
+                        toRemove.remove();
+                    }
                 }
                 
+                // Remove all nested sub-menus
+                removeSubMenus(menuItem);
+                
+                // Remove the menu item itself
+                const itemId = menuItem.dataset.id;
                 menuItem.remove();
-                showNotification('Menu item deleted successfully!', 'success');
+                
+                // Delete from database if ID exists
+                if (itemId && itemId !== 'undefined') {
+                    fetch(`{{ route("config.menu-management.items.delete", ":id") }}`.replace(':id', itemId), {
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '{{ csrf_token() }}'
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            showNotification(`${levelNames[level]} item deleted successfully!`, 'success');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        showNotification(`${levelNames[level]} item removed from UI.`, 'warning');
+                    });
+                } else {
+                    showNotification(`${levelNames[level]} item deleted successfully!`, 'success');
+                }
             }
         }
     };
@@ -2857,6 +3082,111 @@
             }
         }
         
+        // Save menu items to database via AJAX
+        window.saveMenuItemsToDatabase = function() {
+            const menuItems = [];
+            let sortOrder = 0;
+            
+            // Show loading
+            const saveBtn = event?.target || document.querySelector('button[onclick*="saveMenuItemsToDatabase"]');
+            const originalText = saveBtn?.innerHTML;
+            if (saveBtn) {
+                saveBtn.disabled = true;
+                saveBtn.innerHTML = '<i class="ri-loader-4-line me-1"></i> Saving...';
+            }
+            
+            // Collect all menu items from the DOM
+            function collectMenuItem(element, parentId = null) {
+                const id = element.dataset.id;
+                const title = element.querySelector('.menu-name')?.value || '';
+                const isChecked = element.querySelector('input[type="checkbox"]')?.checked || false;
+                const isActive = element.querySelector('.toggle-switch')?.classList.contains('active') || false;
+                
+                // Skip if no title
+                if (!title.trim()) return;
+                
+                const menuData = element.dataset.menuData ? JSON.parse(element.dataset.menuData) : {};
+                
+                menuItems.push({
+                    id: id && id !== 'undefined' && !isNaN(id) ? parseInt(id) : null,
+                    menu_type: 'sidebar-left',
+                    title: title.trim(),
+                    alias: menuData.alias || title.toLowerCase().replace(/\s+/g, '-'),
+                    menu_item_type: menuData.menuItemType || menuData.menu_item_type || 'url',
+                    url: menuData.dynamicContent || menuData.url || '#',
+                    icon: menuData.icon || '',
+                    parent_id: parentId ? (isNaN(parentId) ? null : parseInt(parentId)) : null,
+                    sort_order: sortOrder++,
+                    is_active: isActive,
+                    is_visible: isChecked,
+                    target_window: menuData.targetWindow || menuData.target_window || '_self',
+                    access_level: menuData.accessLevel || menuData.access_level || 'public',
+                    styling: menuData.styling || null,
+                    advanced: menuData.advanced || null,
+                    mega_menu_settings: menuData.megaMenuSettings || menuData.mega_menu_settings || null,
+                });
+                
+                // Collect children
+                const subMenu = element.nextElementSibling;
+                if (subMenu && subMenu.classList.contains('sub-menu')) {
+                    const childItems = subMenu.querySelectorAll('.menu-item');
+                    childItems.forEach(child => {
+                        collectMenuItem(child, id);
+                    });
+                }
+            }
+            
+            // Collect all root menu items
+            const rootItems = document.querySelectorAll('#menu-links-list > .menu-item');
+            rootItems.forEach(item => {
+                collectMenuItem(item);
+            });
+            
+            if (menuItems.length === 0) {
+                showNotification('No menu items to save!', 'warning');
+                if (saveBtn) {
+                    saveBtn.disabled = false;
+                    saveBtn.innerHTML = originalText;
+                }
+                return;
+            }
+            
+            // Send to server
+            fetch('{{ route("config.menu-management.items.save") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({ items: menuItems })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showNotification('Menu items saved successfully! Sidebar will update automatically.', 'success');
+                    
+                    // Reload page after 1.5 second to show updated menu in sidebar
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1500);
+                } else {
+                    showNotification('Error saving menu items: ' + (data.message || 'Unknown error'), 'error');
+                    if (saveBtn) {
+                        saveBtn.disabled = false;
+                        saveBtn.innerHTML = originalText;
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showNotification('Error saving menu items. Please try again.', 'error');
+                if (saveBtn) {
+                    saveBtn.disabled = false;
+                    saveBtn.innerHTML = originalText;
+                }
+            });
+        };
+        
         // Enhanced save function with styling data
         window.saveNewMenu = function() {
             // Get basic form values
@@ -2999,6 +3329,11 @@
                     // Show success message
                     showNotification('Menu item "' + title + '" updated successfully!', 'success');
                     
+                    // Auto-save to database
+                    setTimeout(() => {
+                        saveMenuItemsToDatabase();
+                    }, 500);
+                    
                     // Clear editing state
                     window.editingItemId = null;
                 }
@@ -3049,6 +3384,11 @@
                 
                 // Show success message
                 showNotification('New menu item "' + title + '" added successfully!', 'success');
+                
+                // Auto-save to database
+                setTimeout(() => {
+                    saveMenuItemsToDatabase();
+                }, 500);
                 
                 // Scroll to new item
                 newItem.scrollIntoView({ behavior: 'smooth', block: 'center' });

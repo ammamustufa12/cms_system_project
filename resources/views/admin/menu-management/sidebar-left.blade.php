@@ -227,6 +227,19 @@
         padding: 5px;
     }
     
+    .menu-item .menu-url {
+        flex: 1.5;
+        min-width: 200px;
+        max-width: 400px;
+        font-size: 14px;
+        font-weight: 400;
+        color: #6c757d;
+    }
+    
+    .menu-item .menu-url:focus {
+        color: #212529;
+    }
+    
     .menu-item .toggle-switch {
         position: relative;
         width: 50px;
@@ -927,12 +940,36 @@
 <!-- Header Section -->
 <div class="d-flex justify-content-between align-items-center mb-4" style="margin-top: 80px;padding-left:30px;">
     <div>
-        <h2 class="mb-0">MENU LINKS - <span id="currentMenuType">Sidebar Left</span></h2>
-        <small class="text-muted">Manage menu items for different locations</small>
+        <h2 class="mb-0">MENU LINKS - <span id="currentMenuType">Sidebar Left - {{ ucfirst($routePrefix ?? 'Config') }}</span></h2>
+        <small class="text-muted">Manage menu items for {{ ucfirst($routePrefix ?? 'Config') }} section sidebar</small>
     </div>
     <div class="d-flex align-items-center gap-3">
-        <!-- Menu Type Selector -->
-        
+        <!-- Menu Control Menu -->
+        <div class="dropdown">
+            <button class="btn btn-outline-primary dropdown-toggle" type="button" id="menuControlDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="ri-folder-3-line me-1"></i> Menu Control
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="menuControlDropdown">
+                <li><a class="dropdown-item{{ request()->routeIs($routePrefix . '.menu-management.toolbar') ? ' active' : '' }}" href="{{ route($routePrefix . '.menu-management.toolbar') }}">
+                    <i class="ri-menu-line me-2"></i>ToolBar
+                </a></li>
+                <li><a class="dropdown-item{{ request()->routeIs($routePrefix . '.menu-management.top-menu') ? ' active' : '' }}" href="{{ route($routePrefix . '.menu-management.top-menu') }}">
+                    <i class="ri-menu-2-line me-2"></i>Top Menu
+                </a></li>
+                <li><a class="dropdown-item{{ request()->routeIs($routePrefix . '.menu-management.breadcrumbs') ? ' active' : '' }}" href="{{ route($routePrefix . '.menu-management.breadcrumbs') }}">
+                    <i class="ri-links-line me-2"></i>Breadcrumbs
+                </a></li>
+                <li><a class="dropdown-item{{ request()->routeIs($routePrefix . '.menu-management.sidebar-left') ? ' active' : '' }}" href="{{ route($routePrefix . '.menu-management.sidebar-left') }}">
+                    <i class="ri-layout-sidebar-line me-2"></i>Sidebar Left
+                </a></li>
+                <li><a class="dropdown-item{{ request()->routeIs($routePrefix . '.menu-management.sidebar-right') ? ' active' : '' }}" href="{{ route($routePrefix . '.menu-management.sidebar-right') }}">
+                    <i class="ri-layout-right-line me-2"></i>Sidebar Right
+                </a></li>
+                <li><a class="dropdown-item{{ request()->routeIs($routePrefix . '.menu-management.bottom-menu') ? ' active' : '' }}" href="{{ route($routePrefix . '.menu-management.bottom-menu') }}">
+                    <i class="ri-menu-unfold-line me-2"></i>Bottom Menu
+                </a></li>
+            </ul>
+        </div>
     </div>
 </div>
 
@@ -981,6 +1018,9 @@
             <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#newMenuModal">
                 <i class="ri-add-line me-1"></i> New Menu
             </button>
+            <button class="btn btn-info" data-bs-toggle="modal" data-bs-target="#bulkImportModal">
+                <i class="ri-upload-line me-1"></i> Bulk Import
+            </button>
             <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#defaultSettingsModal">
                 Default Settings
             </button>
@@ -992,143 +1032,486 @@
     <!-- Left Panel: Menu Links Management -->
     <div class="left-panel">
         <div class="menu-links-list" id="menu-links-list">
-            <!-- Home Menu Item -->
-            <div class="menu-item" draggable="true" data-id="1">
-                <span class="drag-handle">⋮⋮</span>
-                <input type="checkbox" checked>
-                <input type="text" value="Home" class="menu-name">
-                <div class="toggle-switch active" onclick="toggleSwitch(this)"></div>
-                <div class="actions">
-                    <button title="Add">+</button>
-                    <button title="Edit">✏️</button>
-                </div>
-            </div>
-            
-            <!-- Shop Menu Item with Mega Menu -->
-            <div class="menu-item" draggable="true" data-id="2">
-                <span class="drag-handle">⋮⋮</span>
-                <input type="checkbox" checked>
-                <input type="text" value="Shop" class="menu-name">
-                <div class="toggle-switch active" onclick="toggleSwitch(this)"></div>
-                <div class="actions">
-                    <button title="Mega Menu Settings" onclick="openMegaMenuSettings('2')" style="background: #28a745;">🎨</button>
-                    <button title="Add">+</button>
-                    <button title="Edit">✏️</button>
-                </div>
-            </div>
-            
-
-            <!-- Features Menu Item -->
-            <div class="menu-item" draggable="true" data-id="3">
-                <span class="drag-handle">⋮⋮</span>
-                <input type="checkbox" checked>
-                <input type="text" value="Features Fillures" class="menu-name">
-                <div class="actions">
-                    <button title="Add">+</button>
-                    <button title="Edit">✏️</button>
-                </div>
-            </div>
-            
-            <!-- Mega Menu Item -->
-            <div class="menu-item" draggable="true" data-id="4">
-                <span class="drag-handle">⋮⋮</span>
-                <input type="checkbox">
-                <input type="text" value="Mega menu" class="menu-name">
-                <div class="actions">
-                    <button title="Add">+</button>
-                    <button title="Edit">✏️</button>
-                </div>
-            </div>
-            
-            <!-- Services Menu Item -->
-            <div class="menu-item" draggable="true" data-id="5">
-                <span class="drag-handle">⋮⋮</span>
-                <input type="checkbox">
-                <input type="text" value="Services" class="menu-name">
-                <span class="expand-icon">⌄</span>
-                <div class="actions">
-                    <button title="Add">+</button>
-                    <button title="Edit">✏️</button>
-                </div>
-            </div>
-            
-            <!-- Services Sub-menu Items -->
-            <div class="sub-menu">
-                <div class="menu-item" draggable="true" data-id="5-1">
-                    <span class="drag-handle">⋮⋮</span>
-                    <input type="checkbox">
-                    <input type="text" value="Portfolio" class="menu-name">
-                    <div class="actions">
-                        <button title="Add">+</button>
-                        <button title="Edit">✏️</button>
+            @php
+                // Debug: Check if menuItems exist
+                $hasItems = isset($menuItems) && $menuItems->count() > 0;
+            @endphp
+            @if($hasItems)
+                @foreach($menuItems as $item)
+                    @php
+                        $hasChildren = $item->children && $item->children->count() > 0;
+                        $menuData = json_encode([
+                            'title' => $item->title,
+                            'alias' => $item->alias,
+                            'menuType' => $item->menu_type,
+                            'menuItemType' => $item->menu_item_type,
+                            'url' => $item->url,
+                            'icon' => $item->icon,
+                            'targetWindow' => $item->target_window,
+                            'accessLevel' => $item->access_level,
+                            'styling' => $item->styling,
+                            'advanced' => $item->advanced,
+                            'megaMenuSettings' => $item->mega_menu_settings,
+                        ]);
+                    @endphp
+                    
+                    <!-- Menu Item: {{ $item->title }} -->
+                    <div class="menu-item" draggable="true" data-id="{{ $item->id }}" data-menu-data="{{ htmlspecialchars($menuData, ENT_QUOTES, 'UTF-8') }}">
+                        <span class="drag-handle">⋮⋮</span>
+                        <input type="checkbox" {{ $item->is_visible ? 'checked' : '' }} onchange="updateMenuVisibility({{ $item->id }}, this.checked)">
+                        <input type="text" value="{{ $item->title }}" class="menu-name" onchange="updateMenuTitle({{ $item->id }}, this.value)">
+                        <div class="toggle-switch {{ $item->is_active ? 'active' : '' }}" onclick="toggleSwitch(this)"></div>
+                        @if($hasChildren)
+                            <span class="expand-icon" onclick="toggleSubMenuExpand(this, '{{ $item->id }}')" style="cursor: pointer;">⌄</span>
+                        @endif
+                        <div class="actions">
+                            @if($item->mega_menu_settings)
+                                <button title="Mega Menu Settings" onclick="openMegaMenuSettings('{{ $item->id }}')" style="background: #28a745;">🎨</button>
+                            @endif
+                            <button title="Add" onclick="addSubItem('{{ $item->id }}')">+</button>
+                            <button title="Edit" onclick="editMenuItem('{{ $item->id }}')">✏️</button>
+                            <button title="Delete" onclick="deleteMenuItem('{{ $item->id }}')" style="background: #dc3545;">🗑️</button>
+                        </div>
                     </div>
+                    
+                    @if($hasChildren)
+                        <!-- Sub-menu Items for {{ $item->title }} -->
+                        <div class="sub-menu" id="submenu-{{ $item->id }}" style="display: block;">
+                            @foreach($item->children as $child)
+                                @php
+                                    $childMenuData = json_encode([
+                                        'title' => $child->title,
+                                        'alias' => $child->alias,
+                                        'menuType' => $child->menu_type,
+                                        'menuItemType' => $child->menu_item_type,
+                                        'url' => $child->url,
+                                        'icon' => $child->icon,
+                                        'targetWindow' => $child->target_window,
+                                        'accessLevel' => $child->access_level,
+                                        'styling' => $child->styling,
+                                        'advanced' => $child->advanced,
+                                    ]);
+                                @endphp
+                                <div class="menu-item" draggable="true" data-id="{{ $child->id }}" data-menu-data="{{ htmlspecialchars($childMenuData, ENT_QUOTES, 'UTF-8') }}">
+                                    <span class="drag-handle">⋮⋮</span>
+                                    <input type="checkbox" {{ $child->is_visible ? 'checked' : '' }} onchange="updateMenuVisibility({{ $child->id }}, this.checked)">
+                                    <input type="text" value="{{ $child->title }}" class="menu-name" onchange="updateMenuTitle({{ $child->id }}, this.value)">
+                                    <div class="toggle-switch {{ $child->is_active ? 'active' : '' }}" onclick="toggleSwitch(this)"></div>
+                                    <div class="actions">
+                                        <button title="Add" onclick="addSubItem('{{ $child->id }}')">+</button>
+                                        <button title="Edit" onclick="editMenuItem('{{ $child->id }}')">✏️</button>
+                                        <button title="Delete" onclick="deleteMenuItem('{{ $child->id }}')" style="background: #dc3545;">🗑️</button>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    @endif
+                @endforeach
+            @else
+                <!-- No menu items found - show placeholder message -->
+                <div class="text-center p-5 text-muted">
+                    <p>No menu items found. Click "New Menu" button to create your first menu item.</p>
                 </div>
-                <div class="menu-item" draggable="true" data-id="5-2">
-                    <span class="drag-handle">⋮⋮</span>
-                    <input type="checkbox" checked>
-                    <input type="text" value="Pricing" class="menu-name">
-                    <div class="actions">
-                        <button title="Add">+</button>
-                        <button title="Edit">✏️</button>
-                    </div>
-                </div>
-                <div class="menu-item" draggable="true" data-id="5-3">
-                    <span class="drag-handle">⋮⋮</span>
-                    <input type="checkbox">
-                    <input type="text" value="Services" class="menu-name">
-                    <div class="actions">
-                        <button title="Add">+</button>
-                        <button title="Edit">✏️</button>
-                    </div>
-                </div>
-            </div>
-            
-            
-            <!-- Blog Menu Item -->
-            <div class="menu-item" draggable="true" data-id="6">
+            @endif
+        </div>
+        
+        <!-- Menu Control - Same Style as Menu Items -->
+        <div class="menu-item" draggable="true" data-id="menu-control" data-type="menu-control" style="margin-top: 20px;">
+            <span class="drag-handle">⋮⋮</span>
+            <input type="checkbox" checked onchange="updateMenuControlVisibility(this.checked)">
+            <input type="text" value="Menu Control" class="menu-name" onchange="updateMenuControlName(this.value)" placeholder="Menu Name">
+            <input type="text" value="" class="menu-url" onchange="updateMenuControlUrl(this.value)" placeholder="URL (optional)" style="flex: 1; margin: 0 10px; padding: 5px; border: 1px solid #ddd; border-radius: 4px;">
+            <div class="toggle-switch active" onclick="toggleMenuControlSwitch(this)"></div>
+            <span class="expand-icon" id="menuControlExpand" onclick="toggleMenuControl()" style="cursor: pointer; margin-left: 10px;">⌄</span>
+        </div>
+        
+        <div class="sub-menu" id="menuControlSubmenu" style="display: block; margin-left: 20px;">
+            <div class="menu-item" draggable="true" data-id="menu-control-toolbar" data-type="menu-control-item" data-url="{{ route($routePrefix . '.menu-management.toolbar') }}">
                 <span class="drag-handle">⋮⋮</span>
-                <input type="checkbox">
-                <input type="text" value="Blog" class="menu-name">
-                <div class="actions">
-                    <button title="Add">+</button>
-                    <button title="Edit">✏️</button>
-                </div>
+                <input type="checkbox" checked onchange="updateMenuControlItemVisibility('menu-control-toolbar', this.checked)">
+                <input type="text" value="ToolBar" class="menu-name" onchange="updateMenuControlItemName('menu-control-toolbar', this.value)" placeholder="Menu Name">
+                <input type="text" value="{{ route($routePrefix . '.menu-management.toolbar') }}" class="menu-url" onchange="updateMenuControlItemUrl('menu-control-toolbar', this.value)" placeholder="URL" style="flex: 1; margin: 0 10px; padding: 5px; border: 1px solid #ddd; border-radius: 4px;">
+                <div class="toggle-switch active" onclick="toggleMenuControlItemSwitch(this, 'menu-control-toolbar')"></div>
             </div>
-            
-            <!-- Contact Menu Item -->
-            <div class="menu-item" draggable="true" data-id="7">
+            <div class="menu-item" draggable="true" data-id="menu-control-top-menu" data-type="menu-control-item" data-url="{{ route($routePrefix . '.menu-management.top-menu') }}">
                 <span class="drag-handle">⋮⋮</span>
-                <input type="checkbox">
-                <input type="text" value="Contact" class="menu-name">
-                <span class="expand-icon">⌄</span>
-                <div class="actions">
-                    <button title="Add">+</button>
-                    <button title="Edit">✏️</button>
-                </div>
+                <input type="checkbox" checked onchange="updateMenuControlItemVisibility('menu-control-top-menu', this.checked)">
+                <input type="text" value="Top Menu" class="menu-name" onchange="updateMenuControlItemName('menu-control-top-menu', this.value)" placeholder="Menu Name">
+                <input type="text" value="{{ route($routePrefix . '.menu-management.top-menu') }}" class="menu-url" onchange="updateMenuControlItemUrl('menu-control-top-menu', this.value)" placeholder="URL" style="flex: 1; margin: 0 10px; padding: 5px; border: 1px solid #ddd; border-radius: 4px;">
+                <div class="toggle-switch active" onclick="toggleMenuControlItemSwitch(this, 'menu-control-top-menu')"></div>
             </div>
-            
-            <!-- About Menu Item -->
-            <div class="menu-item" draggable="true" data-id="8">
+            <div class="menu-item" draggable="true" data-id="menu-control-breadcrumbs" data-type="menu-control-item" data-url="{{ route($routePrefix . '.menu-management.breadcrumbs') }}">
                 <span class="drag-handle">⋮⋮</span>
-                <input type="checkbox">
-                <input type="text" value="About" class="menu-name">
-                <div class="actions">
-                    <button title="Add">+</button>
-                    <button title="Edit">✏️</button>
-                </div>
+                <input type="checkbox" checked onchange="updateMenuControlItemVisibility('menu-control-breadcrumbs', this.checked)">
+                <input type="text" value="Breadcrumbs" class="menu-name" onchange="updateMenuControlItemName('menu-control-breadcrumbs', this.value)" placeholder="Menu Name">
+                <input type="text" value="{{ route($routePrefix . '.menu-management.breadcrumbs') }}" class="menu-url" onchange="updateMenuControlItemUrl('menu-control-breadcrumbs', this.value)" placeholder="URL" style="flex: 1; margin: 0 10px; padding: 5px; border: 1px solid #ddd; border-radius: 4px;">
+                <div class="toggle-switch active" onclick="toggleMenuControlItemSwitch(this, 'menu-control-breadcrumbs')"></div>
+            </div>
+            <div class="menu-item" draggable="true" data-id="menu-control-sidebar-left" data-type="menu-control-item" data-url="{{ route($routePrefix . '.menu-management.sidebar-left') }}">
+                <span class="drag-handle">⋮⋮</span>
+                <input type="checkbox" checked onchange="updateMenuControlItemVisibility('menu-control-sidebar-left', this.checked)">
+                <input type="text" value="Sidebar Left" class="menu-name" onchange="updateMenuControlItemName('menu-control-sidebar-left', this.value)" placeholder="Menu Name">
+                <input type="text" value="{{ route($routePrefix . '.menu-management.sidebar-left') }}" class="menu-url" onchange="updateMenuControlItemUrl('menu-control-sidebar-left', this.value)" placeholder="URL" style="flex: 1; margin: 0 10px; padding: 5px; border: 1px solid #ddd; border-radius: 4px;">
+                <div class="toggle-switch active" onclick="toggleMenuControlItemSwitch(this, 'menu-control-sidebar-left')"></div>
+            </div>
+            <div class="menu-item" draggable="true" data-id="menu-control-sidebar-right" data-type="menu-control-item" data-url="{{ route($routePrefix . '.menu-management.sidebar-right') }}">
+                <span class="drag-handle">⋮⋮</span>
+                <input type="checkbox" checked onchange="updateMenuControlItemVisibility('menu-control-sidebar-right', this.checked)">
+                <input type="text" value="Sidebar Right" class="menu-name" onchange="updateMenuControlItemName('menu-control-sidebar-right', this.value)" placeholder="Menu Name">
+                <input type="text" value="{{ route($routePrefix . '.menu-management.sidebar-right') }}" class="menu-url" onchange="updateMenuControlItemUrl('menu-control-sidebar-right', this.value)" placeholder="URL" style="flex: 1; margin: 0 10px; padding: 5px; border: 1px solid #ddd; border-radius: 4px;">
+                <div class="toggle-switch active" onclick="toggleMenuControlItemSwitch(this, 'menu-control-sidebar-right')"></div>
+            </div>
+            <div class="menu-item" draggable="true" data-id="menu-control-bottom-menu" data-type="menu-control-item" data-url="{{ route($routePrefix . '.menu-management.bottom-menu') }}">
+                <span class="drag-handle">⋮⋮</span>
+                <input type="checkbox" checked onchange="updateMenuControlItemVisibility('menu-control-bottom-menu', this.checked)">
+                <input type="text" value="Bottom Menu" class="menu-name" onchange="updateMenuControlItemName('menu-control-bottom-menu', this.value)" placeholder="Menu Name">
+                <input type="text" value="{{ route($routePrefix . '.menu-management.bottom-menu') }}" class="menu-url" onchange="updateMenuControlItemUrl('menu-control-bottom-menu', this.value)" placeholder="URL" style="flex: 1; margin: 0 10px; padding: 5px; border: 1px solid #ddd; border-radius: 4px;">
+                <div class="toggle-switch active" onclick="toggleMenuControlItemSwitch(this, 'menu-control-bottom-menu')"></div>
             </div>
         </div>
     </div>
 </div>
 
 <script>
+    // Route-specific menu type
+    const currentMenuType = '{{ $menuType ?? "sidebar-left-config" }}';
+    const routePrefix = '{{ $routePrefix ?? "config" }}';
+    
+    // Helper function to get base URL for API calls
+    function getApiBaseUrl() {
+        // All routes have /admin/ prefix (Twill adds it automatically)
+        return '/admin/' + routePrefix + '/menu-management';
+    }
+    
     // Add interactivity to the menu management interface
     document.addEventListener('DOMContentLoaded', function() {
         let draggedElement = null;
+        let menuControlInitialIndex = null;
+        let menuControlPositionChanged = false;
         
         // Toggle switch functionality
         window.toggleSwitch = function(element) {
             element.classList.toggle('active');
+            const menuItem = element.closest('.menu-item');
+            const itemId = menuItem.dataset.id;
+            const isActive = element.classList.contains('active');
+            
+            // Update database via AJAX
+            if (itemId) {
+                fetch(getApiBaseUrl() + '/items/' + itemId, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
+                    },
+                    body: JSON.stringify({ is_active: isActive })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (!data.success) {
+                        element.classList.toggle('active');
+                        showNotification('Error updating menu item status', 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    element.classList.toggle('active');
+                });
+            }
+        };
+        
+        // Toggle sub-menu expand/collapse
+        window.toggleSubMenuExpand = function(element, itemId) {
+            const subMenu = document.getElementById('submenu-' + itemId);
+            if (subMenu) {
+                if (subMenu.style.display === 'none' || !subMenu.style.display) {
+                    subMenu.style.display = 'block';
+                    element.innerHTML = '⌄';
+                } else {
+                    subMenu.style.display = 'none';
+                    element.innerHTML = '▶';
+                }
+            }
+        };
+        
+        // Toggle Menu Control expand/collapse
+        window.toggleMenuControl = function() {
+            const subMenu = document.getElementById('menuControlSubmenu');
+            const expandIcon = document.getElementById('menuControlExpand');
+            if (subMenu && expandIcon) {
+                if (subMenu.style.display === 'none' || !subMenu.style.display) {
+                    subMenu.style.display = 'block';
+                    expandIcon.innerHTML = '⌄';
+                } else {
+                    subMenu.style.display = 'none';
+                    expandIcon.innerHTML = '▶';
+                }
+            }
+        };
+        
+        // Menu Control Functions - Save to localStorage
+        window.updateMenuControlName = function(name) {
+            if (!name || name.trim() === '') {
+                showNotification('Menu name cannot be empty', 'error');
+                return;
+            }
+            const menuControlData = JSON.parse(localStorage.getItem('menuControlData') || '{}');
+            menuControlData.name = name.trim();
+            localStorage.setItem('menuControlData', JSON.stringify(menuControlData));
+            showNotification('Menu Control name updated!', 'success');
+        };
+        
+        window.updateMenuControlUrl = function(url) {
+            const menuControlData = JSON.parse(localStorage.getItem('menuControlData') || '{}');
+            menuControlData.url = url.trim();
+            localStorage.setItem('menuControlData', JSON.stringify(menuControlData));
+            if (url.trim()) {
+                showNotification('Menu Control URL updated!', 'success');
+            }
+        };
+        
+        window.updateMenuControlVisibility = function(isVisible) {
+            const menuControlData = JSON.parse(localStorage.getItem('menuControlData') || '{}');
+            menuControlData.isVisible = isVisible;
+            localStorage.setItem('menuControlData', JSON.stringify(menuControlData));
+            showNotification('Menu Control visibility updated!', 'success');
+        };
+        
+        window.toggleMenuControlSwitch = function(element) {
+            element.classList.toggle('active');
+            const isActive = element.classList.contains('active');
+            const menuControlData = JSON.parse(localStorage.getItem('menuControlData') || '{}');
+            menuControlData.isActive = isActive;
+            localStorage.setItem('menuControlData', JSON.stringify(menuControlData));
+            showNotification('Menu Control status updated!', 'success');
+        };
+        
+        // Menu Control Item Functions
+        window.updateMenuControlItemName = function(itemId, name) {
+            if (!name || name.trim() === '') {
+                showNotification('Menu name cannot be empty', 'error');
+                return;
+            }
+            const menuControlItems = JSON.parse(localStorage.getItem('menuControlItems') || '{}');
+            if (!menuControlItems[itemId]) menuControlItems[itemId] = {};
+            menuControlItems[itemId].name = name.trim();
+            localStorage.setItem('menuControlItems', JSON.stringify(menuControlItems));
+            showNotification('Menu item name updated!', 'success');
+        };
+        
+        window.updateMenuControlItemUrl = function(itemId, url) {
+            const menuControlItems = JSON.parse(localStorage.getItem('menuControlItems') || '{}');
+            if (!menuControlItems[itemId]) menuControlItems[itemId] = {};
+            menuControlItems[itemId].url = url.trim();
+            localStorage.setItem('menuControlItems', JSON.stringify(menuControlItems));
+            
+            // Update data-url attribute for navigation
+            const menuItem = document.querySelector(`[data-id="${itemId}"]`);
+            if (menuItem) {
+                menuItem.setAttribute('data-url', url.trim());
+            }
+            
+            showNotification('Menu item URL updated!', 'success');
+        };
+        
+        window.updateMenuControlItemVisibility = function(itemId, isVisible) {
+            const menuControlItems = JSON.parse(localStorage.getItem('menuControlItems') || '{}');
+            if (!menuControlItems[itemId]) menuControlItems[itemId] = {};
+            menuControlItems[itemId].isVisible = isVisible;
+            localStorage.setItem('menuControlItems', JSON.stringify(menuControlItems));
+            showNotification('Menu item visibility updated!', 'success');
+        };
+        
+        window.toggleMenuControlItemSwitch = function(element, itemId) {
+            element.classList.toggle('active');
+            const isActive = element.classList.contains('active');
+            const menuControlItems = JSON.parse(localStorage.getItem('menuControlItems') || '{}');
+            if (!menuControlItems[itemId]) menuControlItems[itemId] = {};
+            menuControlItems[itemId].isActive = isActive;
+            localStorage.setItem('menuControlItems', JSON.stringify(menuControlItems));
+            showNotification('Menu item status updated!', 'success');
+        };
+        
+        // Load saved Menu Control data on page load
+        const menuControlData = JSON.parse(localStorage.getItem('menuControlData') || '{}');
+        if (menuControlData.name) {
+            const nameInput = document.querySelector('[data-id="menu-control"] .menu-name');
+            if (nameInput) nameInput.value = menuControlData.name;
+        }
+        if (menuControlData.url) {
+            const urlInput = document.querySelector('[data-id="menu-control"] .menu-url');
+            if (urlInput) urlInput.value = menuControlData.url;
+        }
+        
+        const menuControlItems = JSON.parse(localStorage.getItem('menuControlItems') || '{}');
+        Object.keys(menuControlItems).forEach(itemId => {
+            const item = menuControlItems[itemId];
+            const menuItem = document.querySelector(`[data-id="${itemId}"]`);
+            if (menuItem) {
+                if (item.name) {
+                    const nameInput = menuItem.querySelector('.menu-name');
+                    if (nameInput) nameInput.value = item.name;
+                }
+                if (item.url) {
+                    const urlInput = menuItem.querySelector('.menu-url');
+                    if (urlInput) urlInput.value = item.url;
+                    menuItem.setAttribute('data-url', item.url);
+                }
+            }
+        });
+        
+        // Show Save Position Button
+        window.showSavePositionButton = function(menuControlElement) {
+            // Remove existing button if any
+            hideSavePositionButton();
+            
+            console.log('Creating Save Position Button', menuControlElement);
+            
+            // Create save button container
+            const buttonContainer = document.createElement('div');
+            buttonContainer.id = 'saveMenuControlPositionBtn';
+            buttonContainer.style.cssText = 'margin: 10px 0; padding: 10px; background: #f8f9fa; border-radius: 6px; border: 1px dashed #28a745; display: flex; align-items: center; gap: 10px;';
+            
+            // Create info text
+            const infoText = document.createElement('span');
+            infoText.innerHTML = '⚠️ Position changed!';
+            infoText.style.cssText = 'color: #856404; font-weight: 500; margin-right: auto;';
+            buttonContainer.appendChild(infoText);
+            
+            // Create save button
+            const saveButton = document.createElement('button');
+            saveButton.className = 'btn btn-success btn-sm';
+            saveButton.innerHTML = '<i class="ri-save-line me-1"></i> Save Position';
+            saveButton.onclick = function() {
+                saveMenuControlPosition();
+            };
+            
+            // Create cancel button
+            const cancelButton = document.createElement('button');
+            cancelButton.className = 'btn btn-secondary btn-sm';
+            cancelButton.innerHTML = 'Cancel';
+            cancelButton.onclick = function() {
+                hideSavePositionButton();
+                menuControlPositionChanged = false;
+            };
+            
+            buttonContainer.appendChild(saveButton);
+            buttonContainer.appendChild(cancelButton);
+            
+            // Insert button container after Menu Control item (before sub-menu if exists)
+            if (menuControlElement && menuControlElement.parentNode) {
+                const subMenu = menuControlElement.nextElementSibling;
+                if (subMenu && subMenu.classList.contains('sub-menu')) {
+                    menuControlElement.parentNode.insertBefore(buttonContainer, subMenu);
+                    console.log('Button inserted before sub-menu');
+                } else {
+                    menuControlElement.parentNode.insertBefore(buttonContainer, menuControlElement.nextSibling);
+                    console.log('Button inserted after Menu Control');
+                }
+            } else {
+                console.error('Menu Control element or parent not found');
+            }
+        };
+        
+        // Hide Save Position Button
+        window.hideSavePositionButton = function() {
+            const existingBtn = document.getElementById('saveMenuControlPositionBtn');
+            if (existingBtn) {
+                existingBtn.remove();
+            }
+        };
+        
+        // Save Menu Control Position
+        window.saveMenuControlPosition = function() {
+            const menuControlItem = document.querySelector('[data-id="menu-control"], [data-type="menu-control"]');
+            
+            if (!menuControlItem) {
+                showNotification('Menu Control not found', 'error');
+                return;
+            }
+            
+            // Try to find menu-links-list first, otherwise use parent container
+            const menuList = document.getElementById('menu-links-list') || menuControlItem.closest('.left-panel') || menuControlItem.parentNode;
+            
+            if (!menuList) {
+                showNotification('Menu list not found', 'error');
+                return;
+            }
+            
+            // Get all menu items (excluding sub-menu items)
+            const allItems = Array.from(menuList.querySelectorAll('.menu-item:not(.sub-menu .menu-item)'));
+            
+            // Get current index
+            const currentIndex = allItems.indexOf(menuControlItem);
+            
+            if (currentIndex === -1) {
+                showNotification('Could not determine position', 'error');
+                return;
+            }
+            
+            // Save to localStorage
+            const menuControlData = JSON.parse(localStorage.getItem('menuControlData') || '{}');
+            menuControlData.position = currentIndex;
+            menuControlData.savedAt = new Date().toISOString();
+            localStorage.setItem('menuControlData', JSON.stringify(menuControlData));
+            
+            // Hide save button
+            hideSavePositionButton();
+            
+            // Show success notification
+            showNotification('Menu Control position saved successfully!', 'success');
+            
+            menuControlPositionChanged = false;
+        };
+        
+        // Update menu visibility
+        window.updateMenuVisibility = function(itemId, isVisible) {
+            fetch(getApiBaseUrl() + '/items/' + itemId, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
+                },
+                body: JSON.stringify({ is_visible: isVisible })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (!data.success) {
+                    showNotification('Error updating menu item visibility', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        };
+        
+        // Update menu title
+        window.updateMenuTitle = function(itemId, title) {
+            if (!title || title.trim() === '') {
+                showNotification('Menu title cannot be empty', 'error');
+                return;
+            }
+            
+            fetch(getApiBaseUrl() + '/items/' + itemId, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
+                },
+                body: JSON.stringify({ title: title.trim() })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showNotification('Menu title updated successfully!', 'success');
+                } else {
+                    showNotification('Error updating menu title', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showNotification('Error updating menu title', 'error');
+            });
         };
         
         // Alignment button functionality
@@ -1159,6 +1542,23 @@
             });
         });
         
+        // Add click navigation for Menu Control sub-items (but not when clicking inputs)
+        document.querySelectorAll('[data-type="menu-control-item"]').forEach(item => {
+            item.addEventListener('click', function(e) {
+                // Don't navigate if clicking on input fields, buttons, or drag handle
+                if (e.target.tagName === 'INPUT' || e.target.tagName === 'BUTTON' || 
+                    e.target.classList.contains('drag-handle') || e.target.classList.contains('toggle-switch') ||
+                    e.target.closest('.actions')) {
+                    return;
+                }
+                
+                const url = this.getAttribute('data-url');
+                if (url) {
+                    window.location.href = url;
+                }
+            });
+        });
+        
         // Enhanced Drag and Drop functionality with Sub-menu Creation
         const menuItems = document.querySelectorAll('.menu-item');
         
@@ -1171,6 +1571,16 @@
                 e.dataTransfer.setData('text/html', this.outerHTML);
                 e.dataTransfer.setData('text/plain', this.dataset.id);
                 
+                // Track initial position if it's Menu Control
+                if (this.dataset.type === 'menu-control' || this.dataset.id === 'menu-control') {
+                    // Try to find menu-links-list first, otherwise use parent container
+                    const menuList = document.getElementById('menu-links-list') || this.closest('.left-panel') || this.parentNode;
+                    if (menuList) {
+                        const allItems = Array.from(menuList.querySelectorAll('.menu-item:not(.sub-menu .menu-item)'));
+                        menuControlInitialIndex = allItems.indexOf(this);
+                    }
+                }
+                
                 // Add touch support for mobile
                 if (e.touches && e.touches.length > 0) {
                     e.preventDefault();
@@ -1180,7 +1590,34 @@
             // Drag end
             item.addEventListener('dragend', function(e) {
                 this.classList.remove('dragging');
+                
+                // Check if Menu Control position changed
+                if ((this.dataset.type === 'menu-control' || this.dataset.id === 'menu-control') && menuControlInitialIndex !== null) {
+                    // Try to find menu-links-list first, otherwise use parent container
+                    const menuList = document.getElementById('menu-links-list') || this.closest('.left-panel') || this.parentNode;
+                    if (menuList) {
+                        const allItems = Array.from(menuList.querySelectorAll('.menu-item:not(.sub-menu .menu-item)'));
+                        const newIndex = allItems.indexOf(this);
+                        console.log('Menu Control Position Check:', {
+                            initialIndex: menuControlInitialIndex,
+                            newIndex: newIndex,
+                            changed: newIndex !== menuControlInitialIndex
+                        });
+                        if (newIndex !== menuControlInitialIndex && newIndex !== -1) {
+                            menuControlPositionChanged = true;
+                            console.log('Showing Save Position Button');
+                            showSavePositionButton(this);
+                        } else {
+                            menuControlPositionChanged = false;
+                            hideSavePositionButton();
+                        }
+                    }
+                } else {
+                    hideSavePositionButton();
+                }
+                
                 draggedElement = null;
+                menuControlInitialIndex = null;
                 
                 // Remove all drag-over classes
                 document.querySelectorAll('.drag-over').forEach(el => {
@@ -1496,8 +1933,8 @@
             showNotification('Moved to main menu successfully!', 'success');
         }
         
-        // Notification function
-        function showNotification(message, type = 'info') {
+        // Notification function - Make it globally accessible
+        window.showNotification = function(message, type = 'info') {
             // Remove existing notifications
             const existingNotifications = document.querySelectorAll('.custom-notification');
             existingNotifications.forEach(notification => notification.remove());
@@ -1561,156 +1998,7 @@
         document.head.appendChild(style);
     });
     
-    // Save new menu function
-    window.saveNewMenu = function() {
-        // Get form values
-        const title = document.getElementById('menuTitle').value.trim();
-        const alias = document.getElementById('menuAlias').value.trim();
-        const menuType = document.getElementById('menuType').value;
-        const parentItem = document.getElementById('parentItem').value;
-        const menuOrder = document.getElementById('menuOrder').value;
-        const targetWindow = document.getElementById('targetWindow').value;
-        const accessLevel = document.getElementById('accessLevel').value;
-        const menuItemType = document.getElementById('menuItemType').value;
-        
-        // Get dynamic content based on item type
-        let dynamicContent = '';
-        let dynamicLabel = '';
-        
-        switch(menuItemType) {
-            case 'url':
-                dynamicContent = document.getElementById('menuUrl').value.trim();
-                dynamicLabel = 'URL';
-                break;
-            case 'page':
-                dynamicContent = document.getElementById('selectedPage').value;
-                dynamicLabel = 'Page';
-                break;
-            case 'category':
-                dynamicContent = document.getElementById('selectedCategory').value;
-                dynamicLabel = 'Category';
-                break;
-            case 'product':
-                dynamicContent = document.getElementById('selectedProduct').value;
-                dynamicLabel = 'Product';
-                break;
-            case 'custom':
-                dynamicContent = document.getElementById('customHtml').value.trim();
-                dynamicLabel = 'Custom HTML';
-                break;
-        }
-        
-        // Validation
-        if (!title) {
-            showNotification('Please enter a title for the menu item!', 'error');
-            document.getElementById('menuTitle').focus();
-            return;
-        }
-        
-        if (!menuType) {
-            showNotification('Please select a menu type!', 'error');
-            document.getElementById('menuType').focus();
-            return;
-        }
-        
-        if (!menuItemType) {
-            showNotification('Please select a menu item type!', 'error');
-            document.getElementById('menuItemType').focus();
-            return;
-        }
-        
-        if (menuItemType !== 'custom' && !dynamicContent) {
-            showNotification(`Please select a ${dynamicLabel.toLowerCase()}!`, 'error');
-            return;
-        }
-        
-        // Check if we're editing an existing item
-        if (window.editingItemId) {
-            // Update existing item
-            const existingItem = document.querySelector(`[data-id="${window.editingItemId}"]`);
-            if (existingItem) {
-                const nameInput = existingItem.querySelector('.menu-name');
-                nameInput.value = title;
-                
-                // Update stored data
-                existingItem.dataset.menuData = JSON.stringify({
-                    title, alias, menuType, parentItem, menuOrder, 
-                    targetWindow, accessLevel, menuItemType, dynamicContent
-                });
-                
-                // Show success message
-                showNotification('Menu item "' + title + '" updated successfully!', 'success');
-                
-                // Clear editing state
-                window.editingItemId = null;
-            }
-        } else {
-            // Create new item
-            const newId = Date.now();
-            
-            // Create new menu item HTML
-            const newMenuItem = `
-                <div class="menu-item" draggable="true" data-id="${newId}" data-menu-data='${JSON.stringify({
-                    title, alias, menuType, parentItem, menuOrder, 
-                    targetWindow, accessLevel, menuItemType, dynamicContent
-                })}'>
-                    <span class="drag-handle">⋮⋮</span>
-                    <input type="checkbox" checked>
-                    <input type="text" value="${title}" class="menu-name">
-                    <div class="toggle-switch active" onclick="toggleSwitch(this)"></div>
-                    <div class="actions">
-                        <button title="Add" onclick="addSubItem('${newId}')">+</button>
-                        <button title="Edit" onclick="editMenuItem('${newId}')">✏️</button>
-                        <button title="Delete" onclick="deleteMenuItem('${newId}')" style="background: #dc3545;">🗑️</button>
-                    </div>
-                </div>
-            `;
-            
-            // Add to menu list or parent
-            let targetContainer = document.getElementById('menu-links-list');
-            
-            if (parentItem) {
-                // Find parent item and add to its sub-menu
-                const parentElement = document.querySelector(`[data-id="${parentItem}"]`);
-                if (parentElement) {
-                    let subMenu = parentElement.nextElementSibling;
-                    if (!subMenu || !subMenu.classList.contains('sub-menu')) {
-                        subMenu = document.createElement('div');
-                        subMenu.className = 'sub-menu';
-                        parentElement.parentNode.insertBefore(subMenu, parentElement.nextSibling);
-                    }
-                    targetContainer = subMenu;
-                }
-            }
-            
-            targetContainer.insertAdjacentHTML('beforeend', newMenuItem);
-            
-            // Re-initialize drag and drop for new item
-            const newItem = targetContainer.querySelector(`[data-id="${newId}"]`);
-            initializeDragAndDrop(newItem);
-            
-            // Show success message
-            showNotification('New menu item "' + title + '" added successfully!', 'success');
-            
-            // Scroll to new item
-            newItem.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            
-            // Highlight new item briefly
-            newItem.style.background = '#d4edda';
-            setTimeout(() => {
-                newItem.style.background = '';
-            }, 2000);
-        }
-        
-        // Close modal
-        const modal = bootstrap.Modal.getInstance(document.getElementById('newMenuModal'));
-        if (modal) {
-            modal.hide();
-        }
-        
-        // Reset form
-        resetMenuForm();
-    };
+    // Old saveNewMenu function removed - using enhanced version below with API calls
     
     // Open edit modal
     function openEditModal(title, isChecked, isActive) {
@@ -1734,55 +2022,49 @@
         modal.show();
     }
     
-    // Add sub-item function
+    // Add sub-item function - Opens modal with parent pre-selected
     window.addSubItem = function(parentId) {
-        const parentItem = document.querySelector(`[data-id="${parentId}"]`);
-        if (!parentItem) return;
+        console.log('addSubItem called with parentId:', parentId);
         
-        // Create sub-menu container if it doesn't exist
-        let subMenu = parentItem.nextElementSibling;
-        if (!subMenu || !subMenu.classList.contains('sub-menu')) {
-            subMenu = document.createElement('div');
-            subMenu.className = 'sub-menu';
-            parentItem.parentNode.insertBefore(subMenu, parentItem.nextSibling);
-        }
+        // Reset form
+        resetMenuForm();
         
-        // Generate unique ID for sub-item
-        const newId = Date.now();
+        // Populate parent items dropdown first
+        populateParentItems();
         
-        // Create sub-menu item HTML
-        const subMenuItem = `
-            <div class="menu-item" draggable="true" data-id="${newId}">
-                <span class="drag-handle">⋮⋮</span>
-                <input type="checkbox" checked>
-                <input type="text" value="New Sub Item" class="menu-name">
-                <div class="toggle-switch active" onclick="toggleSwitch(this)"></div>
-                <div class="actions">
-                    <button title="Add" onclick="addSubItem('${newId}')">+</button>
-                    <button title="Edit" onclick="editMenuItem('${newId}')">✏️</button>
-                    <button title="Delete" onclick="deleteMenuItem('${newId}')" style="background: #dc3545;">🗑️</button>
-                </div>
-            </div>
-        `;
-        
-        // Add to sub-menu
-        subMenu.insertAdjacentHTML('beforeend', subMenuItem);
-        
-        // Re-initialize drag and drop for new sub-item
-        const newSubItem = subMenu.querySelector(`[data-id="${newId}"]`);
-        initializeDragAndDrop(newSubItem);
-        
-        // Show success message
-        showNotification('Sub-item added successfully!', 'success');
-        
-        // Scroll to new sub-item
-        newSubItem.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        
-        // Highlight new sub-item briefly
-        newSubItem.style.background = '#d4edda';
+        // Set parent item in dropdown after a small delay to ensure dropdown is populated
         setTimeout(() => {
-            newSubItem.style.background = '';
-        }, 2000);
+            const parentSelect = document.getElementById('parentItem');
+            if (parentSelect) {
+                console.log('Setting parent value:', parentId, 'Available options:', Array.from(parentSelect.options).map(opt => ({value: opt.value, text: opt.text})));
+                parentSelect.value = parentId;
+                
+                // Verify the value was set
+                if (parentSelect.value === parentId) {
+                    console.log('Parent value set successfully');
+                } else {
+                    console.error('Failed to set parent value. Current value:', parentSelect.value);
+                    // Try setting by finding the option
+                    const option = Array.from(parentSelect.options).find(opt => opt.value === String(parentId));
+                    if (option) {
+                        parentSelect.selectedIndex = option.index;
+                        console.log('Parent value set via option index');
+                    }
+                }
+                
+                // Trigger change event to update UI if needed
+                parentSelect.dispatchEvent(new Event('change'));
+            } else {
+                console.error('Parent select element not found!');
+            }
+        }, 200);
+        
+        // Open modal for adding sub-item
+        const modal = new bootstrap.Modal(document.getElementById('newMenuModal'));
+        modal.show();
+        
+        // Show notification
+        showNotification('Please fill the form to create a sub-menu item. Parent is pre-selected.', 'info');
     };
     
     // Edit menu item function
@@ -1809,17 +2091,50 @@
     // Delete menu item function
     window.deleteMenuItem = function(itemId) {
         if (confirm('Are you sure you want to delete this menu item?')) {
-            const menuItem = document.querySelector(`[data-id="${itemId}"]`);
-            if (menuItem) {
-                // Also remove sub-menu if exists
-                const subMenu = menuItem.nextElementSibling;
-                if (subMenu && subMenu.classList.contains('sub-menu')) {
-                    subMenu.remove();
+            // Delete from database via API
+            fetch(getApiBaseUrl() + '/items/' + itemId, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
                 }
-                
-                menuItem.remove();
-                showNotification('Menu item deleted successfully!', 'success');
-            }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const menuItem = document.querySelector(`[data-id="${itemId}"]`);
+                    if (menuItem) {
+                        // Also remove sub-menu if exists
+                        const subMenu = menuItem.nextElementSibling;
+                        if (subMenu && subMenu.classList.contains('sub-menu')) {
+                            subMenu.remove();
+                        }
+                        
+                        menuItem.remove();
+                        
+                        // Check if menu list is empty and show placeholder
+                        const menuList = document.getElementById('menu-links-list');
+                        const remainingItems = menuList.querySelectorAll('.menu-item:not([data-type="menu-control"])');
+                        if (remainingItems.length === 0) {
+                            const placeholder = document.createElement('div');
+                            placeholder.className = 'text-center p-5 text-muted';
+                            placeholder.innerHTML = '<p>No menu items found. Click "New Menu" button to create your first menu item.</p>';
+                            menuList.appendChild(placeholder);
+                        }
+                        
+                        // Update parent items dropdown
+                        populateParentItems();
+                        
+                        showNotification('Menu item deleted successfully!', 'success');
+                    }
+                } else {
+                    showNotification(data.message || 'Error deleting menu item!', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showNotification('Error deleting menu item: ' + error.message, 'error');
+            });
         }
     };
     
@@ -2075,10 +2390,15 @@
         // Clear existing options except first
         parentSelect.innerHTML = '<option value="">Root Level (No Parent)</option>';
         
-        // Get all existing menu items
-        const menuItems = document.querySelectorAll('.menu-item');
+        // Get all root-level menu items only (not submenu items)
+        const menuItems = document.querySelectorAll('#menu-links-list > .menu-item:not(.sub-menu .menu-item)');
         menuItems.forEach(item => {
-            const title = item.querySelector('.menu-name').value;
+            // Skip menu control items
+            if (item.dataset.type === 'menu-control' || item.dataset.id === 'menu-control') {
+                return;
+            }
+            
+            const title = item.querySelector('.menu-name')?.value;
             const id = item.dataset.id;
             
             if (title && id) {
@@ -2111,6 +2431,69 @@
         
         // Clear editing state
         window.editingItemId = null;
+    }
+    
+    // Create menu item HTML from server response
+    function createMenuItemHTML(menuItem, parentId) {
+        const menuData = {
+            title: menuItem.title,
+            alias: menuItem.alias,
+            menuType: menuItem.menu_type,
+            menuItemType: menuItem.menu_item_type,
+            url: menuItem.url,
+            icon: menuItem.icon,
+            targetWindow: menuItem.target_window,
+            accessLevel: menuItem.access_level,
+            styling: menuItem.styling,
+            advanced: menuItem.advanced
+        };
+        
+        // Check if item has children (from database or existing DOM)
+        const hasChildren = (menuItem.children && Array.isArray(menuItem.children) && menuItem.children.length > 0) || false;
+        const isActive = menuItem.is_active ? 'active' : '';
+        const isVisible = menuItem.is_visible !== false; // Default to true if not specified
+        const expandIcon = hasChildren ? '<span class="expand-icon" onclick="toggleSubMenuExpand(this, \'' + menuItem.id + '\')" style="cursor: pointer;">⌄</span>' : '';
+        
+        // Escape menu data for HTML attribute
+        const menuDataStr = JSON.stringify(menuData).replace(/'/g, "&#39;").replace(/"/g, "&quot;");
+        
+        let html = `
+            <div class="menu-item" draggable="true" data-id="${menuItem.id}" data-menu-data="${menuDataStr}">
+                <span class="drag-handle">⋮⋮</span>
+                <input type="checkbox" ${isVisible ? 'checked' : ''} onchange="updateMenuVisibility(${menuItem.id}, this.checked)">
+                <input type="text" value="${escapeHtml(menuItem.title)}" class="menu-name" onchange="updateMenuTitle(${menuItem.id}, this.value)">
+                <div class="toggle-switch ${isActive}" onclick="toggleSwitch(this)"></div>
+                ${expandIcon}
+                <div class="actions">
+                    <button title="Add" onclick="addSubItem('${menuItem.id}')">+</button>
+                    <button title="Edit" onclick="editMenuItem('${menuItem.id}')">✏️</button>
+                    <button title="Delete" onclick="deleteMenuItem('${menuItem.id}')" style="background: #dc3545;">🗑️</button>
+                </div>
+            </div>
+        `;
+        
+        // Add sub-menu container if has children (children will be loaded from database on page load)
+        if (hasChildren && menuItem.children && Array.isArray(menuItem.children) && menuItem.children.length > 0) {
+            html += `<div class="sub-menu" id="submenu-${menuItem.id}" style="display: block;">`;
+            menuItem.children.forEach(child => {
+                html += createMenuItemHTML(child, menuItem.id);
+            });
+            html += `</div>`;
+        }
+        
+        return html;
+    }
+    
+    // Escape HTML to prevent XSS
+    function escapeHtml(text) {
+        const map = {
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#039;'
+        };
+        return text ? text.replace(/[&<>"']/g, m => map[m]) : '';
     }
     
     // Enhanced edit function
@@ -2825,17 +3208,26 @@
             }
         }
         
-        // Enhanced save function with styling data
+        // Enhanced save function with styling data - Already global via window
         window.saveNewMenu = function() {
             // Get basic form values
             const title = document.getElementById('menuTitle').value.trim();
             const alias = document.getElementById('menuAlias').value.trim();
-            const menuType = document.getElementById('menuType').value;
-            const parentItem = document.getElementById('parentItem').value;
-            const menuOrder = document.getElementById('menuOrder').value;
-            const targetWindow = document.getElementById('targetWindow').value;
-            const accessLevel = document.getElementById('accessLevel').value;
-            const menuItemType = document.getElementById('menuItemType').value;
+            // Use route-specific menu type instead of form value
+            const menuType = currentMenuType;
+            const parentItem = document.getElementById('parentItem')?.value || '';
+            const menuOrder = document.getElementById('menuOrder')?.value || '0';
+            const targetWindow = document.getElementById('targetWindow')?.value || '_self';
+            const accessLevel = document.getElementById('accessLevel')?.value || 'public';
+            const menuItemType = document.getElementById('menuItemType')?.value || '';
+            
+            console.log('Form Values:', {
+                title,
+                menuType,
+                parentItem,
+                menuItemType,
+                hasParent: parentItem !== ''
+            });
             
             // Get styling data
             const styling = {
@@ -2927,8 +3319,7 @@
             }
             
             if (!menuType) {
-                showNotification('Please select a menu type!', 'error');
-                document.getElementById('menuType').focus();
+                showNotification('Menu type is not set!', 'error');
                 return;
             }
             
@@ -2943,89 +3334,279 @@
                 return;
             }
             
-            // Create menu item data
-            const menuData = {
-                title, alias, menuType, parentItem, menuOrder, 
-                targetWindow, accessLevel, menuItemType, dynamicContent,
-                styling, advanced
+            // Prepare data for API
+            const parentIdValue = (parentItem && parentItem !== '') ? parseInt(parentItem) : null;
+            
+            console.log('Parent Item Info:', {
+                rawValue: parentItem,
+                parsedValue: parentIdValue,
+                isSubmenu: parentIdValue !== null
+            });
+            
+            const apiData = {
+                menu_type: menuType,
+                title: title,
+                alias: alias || title.toLowerCase().replace(/\s+/g, '-'),
+                menu_item_type: menuItemType,
+                url: dynamicContent || '#',
+                icon: null, // Icon field can be added later if needed
+                parent_id: parentIdValue,
+                sort_order: parseInt(menuOrder) || 0,
+                is_active: true,
+                is_visible: true,
+                target_window: targetWindow || '_self',
+                access_level: accessLevel || 'public',
+                styling: styling || null,
+                advanced: advanced || null
             };
             
             // Check if we're editing an existing item
             if (window.editingItemId) {
-                // Update existing item
-                const existingItem = document.querySelector(`[data-id="${window.editingItemId}"]`);
-                if (existingItem) {
-                    const nameInput = existingItem.querySelector('.menu-name');
-                    nameInput.value = title;
-                    
-                    // Update stored data
-                    existingItem.dataset.menuData = JSON.stringify(menuData);
-                    
-                    // Apply styling
-                    applyMenuStyling(existingItem, styling);
-                    
-                    // Show success message
-                    showNotification('Menu item "' + title + '" updated successfully!', 'success');
-                    
-                    // Clear editing state
-                    window.editingItemId = null;
-                }
-            } else {
-                // Create new item
-                const newId = Date.now();
+                // Update existing item via API
+                const updateUrl = getApiBaseUrl() + '/items/' + window.editingItemId;
                 
-                // Create new menu item HTML
-                const newMenuItem = `
-                    <div class="menu-item" draggable="true" data-id="${newId}" data-menu-data='${JSON.stringify(menuData)}'>
-                        <span class="drag-handle">⋮⋮</span>
-                        <input type="checkbox" checked>
-                        <input type="text" value="${title}" class="menu-name">
-                        <div class="toggle-switch active" onclick="toggleSwitch(this)"></div>
-                        <div class="actions">
-                            <button title="Add" onclick="addSubItem('${newId}')">+</button>
-                            <button title="Edit" onclick="editMenuItem('${newId}')">✏️</button>
-                            <button title="Delete" onclick="deleteMenuItem('${newId}')" style="background: #dc3545;">🗑️</button>
-                        </div>
-                    </div>
-                `;
+                console.log('Updating menu item:', apiData);
+                console.log('API URL:', updateUrl);
                 
-                // Add to menu list or parent
-                let targetContainer = document.getElementById('menu-links-list');
-                
-                if (parentItem) {
-                    // Find parent item and add to its sub-menu
-                    const parentElement = document.querySelector(`[data-id="${parentItem}"]`);
-                    if (parentElement) {
-                        let subMenu = parentElement.nextElementSibling;
-                        if (!subMenu || !subMenu.classList.contains('sub-menu')) {
-                            subMenu = document.createElement('div');
-                            subMenu.className = 'sub-menu';
-                            parentElement.parentNode.insertBefore(subMenu, parentElement.nextSibling);
-                        }
-                        targetContainer = subMenu;
+                fetch(updateUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify(apiData)
+                })
+                .then(response => {
+                    console.log('Response status:', response.status);
+                    if (!response.ok) {
+                        return response.json().then(err => {
+                            throw new Error(err.message || 'Server error: ' + response.status);
+                        });
                     }
-                }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Response data:', data);
+                    if (data.success) {
+                        // Update existing item in DOM
+                        const existingItem = document.querySelector(`[data-id="${window.editingItemId}"]`);
+                        if (existingItem) {
+                            const nameInput = existingItem.querySelector('.menu-name');
+                            if (nameInput) nameInput.value = title;
+                            
+                            // Update stored data
+                            existingItem.dataset.menuData = JSON.stringify({
+                                title, alias, menuType, parentItem, menuOrder, 
+                                targetWindow, accessLevel, menuItemType, dynamicContent,
+                                styling, advanced
+                            });
+                            
+                            // Apply styling
+                            applyMenuStyling(existingItem, styling);
+                        }
+                        
+                        showNotification('Menu item "' + title + '" updated successfully!', 'success');
+                        
+                        // Clear editing state
+                        window.editingItemId = null;
+                        
+                        // Close modal
+                        const modal = bootstrap.Modal.getInstance(document.getElementById('newMenuModal'));
+                        if (modal) {
+                            modal.hide();
+                        }
+                        
+                        // Reset form
+                        resetMenuForm();
+                    } else {
+                        showNotification(data.message || 'Error updating menu item!', 'error');
+                        if (data.errors) {
+                            console.error('Validation errors:', data.errors);
+                            const firstError = Object.values(data.errors)[0];
+                            if (firstError && firstError.length > 0) {
+                                showNotification(firstError[0], 'error');
+                            }
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showNotification('Error updating menu item: ' + error.message, 'error');
+                });
                 
-                targetContainer.insertAdjacentHTML('beforeend', newMenuItem);
+                // Return early to prevent creating new item
+                return;
+            } else {
+                // Create new item via API
+                const saveUrl = getApiBaseUrl() + '/item';
                 
-                // Apply styling to new item
-                const newItem = targetContainer.querySelector(`[data-id="${newId}"]`);
-                applyMenuStyling(newItem, styling);
+                console.log('=== SAVING MENU ITEM ===');
+                console.log('API URL:', saveUrl);
+                console.log('Form parentItem value:', parentItem);
+                console.log('Parsed parentIdValue:', parentIdValue);
+                console.log('Full API Data:', apiData);
+                console.log('Is Submenu:', parentIdValue !== null);
                 
-                // Re-initialize drag and drop for new item
-                initializeDragAndDrop(newItem);
+                fetch(saveUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify(apiData)
+                })
+                .then(response => {
+                    console.log('Response status:', response.status);
+                    if (!response.ok) {
+                        return response.json().then(err => {
+                            throw new Error(err.message || 'Server error: ' + response.status);
+                        });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Response data:', data);
+                    if (data.success && data.menu_item) {
+                        const menuItem = data.menu_item;
+                        
+                        console.log('Menu item received from server:', {
+                            id: menuItem.id,
+                            title: menuItem.title,
+                            parent_id: menuItem.parent_id,
+                            menu_type: menuItem.menu_type
+                        });
+                        
+                        // Remove "No menu items" message if exists
+                        const noItemsMsg = document.querySelector('#menu-links-list .text-center.p-5.text-muted');
+                        if (noItemsMsg) {
+                            noItemsMsg.remove();
+                        }
+                        
+                        // Create menu item HTML
+                        const menuItemHtml = createMenuItemHTML(menuItem, parentItem);
+                        
+                        // Determine where to add the item
+                        let targetContainer = document.getElementById('menu-links-list');
+                        
+                        // Check if this is a submenu item (has parent_id)
+                        const actualParentId = menuItem.parent_id || (parentItem && parentItem !== '' ? parseInt(parentItem) : null);
+                        
+                        console.log('Adding menu item to DOM:', {
+                            menuItemId: menuItem.id,
+                            menuItemParentId: menuItem.parent_id,
+                            formParentItem: parentItem,
+                            actualParentId: actualParentId,
+                            isSubmenu: actualParentId !== null,
+                            parentIdType: typeof actualParentId
+                        });
+                        
+                        if (actualParentId) {
+                            // Find parent item and add to its sub-menu
+                            const parentElement = document.querySelector(`[data-id="${actualParentId}"]`);
+                            console.log('Parent element search:', {
+                                searchingFor: actualParentId,
+                                found: parentElement !== null,
+                                parentElement: parentElement
+                            });
+                            
+                            if (parentElement) {
+                                let subMenu = parentElement.nextElementSibling;
+                                if (!subMenu || !subMenu.classList.contains('sub-menu')) {
+                                    console.log('Creating new sub-menu container');
+                                    subMenu = document.createElement('div');
+                                    subMenu.className = 'sub-menu';
+                                    subMenu.id = 'submenu-' + actualParentId;
+                                    subMenu.style.display = 'block';
+                                    parentElement.parentNode.insertBefore(subMenu, parentElement.nextSibling);
+                                    
+                                    // Add expand icon to parent if not exists
+                                    if (!parentElement.querySelector('.expand-icon')) {
+                                        const expandIcon = document.createElement('span');
+                                        expandIcon.className = 'expand-icon';
+                                        expandIcon.innerHTML = '⌄';
+                                        expandIcon.onclick = function() {
+                                            toggleSubMenuExpand(expandIcon, actualParentId);
+                                        };
+                                        expandIcon.style.cursor = 'pointer';
+                                        parentElement.appendChild(expandIcon);
+                                    }
+                                } else {
+                                    console.log('Sub-menu already exists');
+                                }
+                                targetContainer = subMenu;
+                                console.log('Submenu found/created, adding item to submenu');
+                            } else {
+                                console.error('Parent element not found for parent_id:', actualParentId);
+                                console.log('Available menu items:', Array.from(document.querySelectorAll('.menu-item')).map(item => ({
+                                    id: item.dataset.id,
+                                    title: item.querySelector('.menu-name')?.value
+                                })));
+                                // Fallback: add to root level if parent not found
+                                targetContainer = document.getElementById('menu-links-list');
+                                showNotification('Warning: Parent not found, adding to root level', 'warning');
+                            }
+                        } else {
+                            console.log('Root level item, adding to main list');
+                        }
+                        
+                        // Add menu item to DOM
+                        console.log('Adding HTML to container:', targetContainer);
+                        targetContainer.insertAdjacentHTML('beforeend', menuItemHtml);
+                        
+                        // Re-initialize drag and drop for new item
+                        const newItem = targetContainer.querySelector(`[data-id="${menuItem.id}"]`);
+                        if (newItem) {
+                            console.log('New item added successfully:', newItem);
+                            initializeDragAndDrop(newItem);
+                            
+                            // Scroll to new item
+                            newItem.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            
+                            // Highlight new item briefly
+                            newItem.style.background = '#d4edda';
+                            setTimeout(() => {
+                                newItem.style.background = '';
+                            }, 2000);
+                        } else {
+                            console.error('New item not found in DOM after insertion!');
+                        }
+                        
+                        // Update parent items dropdown
+                        populateParentItems();
+                        
+                        showNotification('New menu item "' + title + '" saved successfully!', 'success');
+                        
+                        // Close modal
+                        const modal = bootstrap.Modal.getInstance(document.getElementById('newMenuModal'));
+                        if (modal) {
+                            modal.hide();
+                        }
+                        
+                        // Reset form
+                        resetMenuForm();
+                    } else {
+                        const errorMsg = data.message || 'Error saving menu item!';
+                        console.error('Save failed:', data);
+                        showNotification(errorMsg, 'error');
+                        if (data.errors) {
+                            console.error('Validation errors:', data.errors);
+                            // Show first validation error
+                            const firstError = Object.values(data.errors)[0];
+                            if (firstError && firstError.length > 0) {
+                                showNotification(firstError[0], 'error');
+                            }
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Error saving menu item:', error);
+                    showNotification('Error saving menu item: ' + error.message, 'error');
+                });
                 
-                // Show success message
-                showNotification('New menu item "' + title + '" added successfully!', 'success');
-                
-                // Scroll to new item
-                newItem.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                
-                // Highlight new item briefly
-                newItem.style.background = '#d4edda';
-                setTimeout(() => {
-                    newItem.style.background = '';
-                }, 2000);
+                // Return early to prevent DOM manipulation before API call completes
+                return;
             }
             
             // Close modal
@@ -3104,22 +3685,10 @@
                         </div>
                         
                         <div class="form-group mb-3">
-                            <label class="form-label">Menu Type *</label>
-                            <select class="form-control" id="menuType" required>
-                                <option value="">Select Menu Type</option>
-                                <option value="toolbar">Toolbar</option>
-                                <option value="top-menu">Top Menu</option>
-                                <option value="bottom-menu">Bottom Menu</option>
-                                <option value="breadcrumbs">Breadcrumbs</option>
-                                <option value="sidebar-right">Sidebar Right</option>
-                                <option value="sidebar-left">Sidebar Left</option>
-                                <option value="footer">Footer Menu</option>
-                                <option value="mobile">Mobile Menu</option>
-                                <option value="admin">Admin Menu</option>
-                                <option value="user">User Menu</option>
-                            </select>
-                            <div class="invalid-feedback">Please select a menu type.</div>
-                            <small class="text-muted">Choose the location where this menu will appear</small>
+                            <label class="form-label">Menu Type</label>
+                            <input type="text" class="form-control" value="Sidebar Left - {{ ucfirst($routePrefix ?? 'Config') }}" readonly style="background-color: #e9ecef;">
+                            <small class="text-muted">Menu items will appear in {{ ucfirst($routePrefix ?? 'Config') }} section sidebar only</small>
+                            <input type="hidden" id="menuType" value="{{ $menuType ?? 'sidebar-left-config' }}">
                         </div>
                         
                         <div class="form-group mb-3">
@@ -4236,4 +4805,463 @@ Home & Garden</textarea>
         </div>
     </div>
 </div>
+
+<!-- Bulk Import Modal -->
+<div class="modal fade" id="bulkImportModal" tabindex="-1" aria-labelledby="bulkImportModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="bulkImportModalLabel">
+                    <i class="ri-upload-line me-2"></i> Bulk Import Menu Items
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Tab Navigation -->
+                <ul class="nav nav-tabs mb-3" id="importTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="excel-tab" data-bs-toggle="tab" data-bs-target="#excel-pane" type="button" role="tab">
+                            <i class="ri-file-excel-line me-1"></i> Excel File
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="text-tab" data-bs-toggle="tab" data-bs-target="#text-pane" type="button" role="tab">
+                            <i class="ri-file-text-line me-1"></i> Text/JSON
+                        </button>
+                    </li>
+                </ul>
+                
+                <!-- Tab Content -->
+                <div class="tab-content" id="importTabContent">
+                    <!-- Excel Tab -->
+                    <div class="tab-pane fade show active" id="excel-pane" role="tabpanel">
+                        <div class="alert alert-info">
+                            <strong>Excel Format:</strong>
+                            <ul class="mb-0 mt-2">
+                                <li>First row should contain headers: <code>Title</code>, <code>URL</code>, <code>Parent Title</code> (optional), <code>Icon</code> (optional), <code>Sort Order</code> (optional)</li>
+                                <li>Supported formats: .xlsx, .xls, .csv</li>
+                                <li>Example: Title in column A, URL in column B, Parent Title in column C</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="excelFileInput" class="form-label">Upload Excel File</label>
+                            <input 
+                                type="file" 
+                                class="form-control" 
+                                id="excelFileInput" 
+                                accept=".xlsx,.xls,.csv"
+                                onchange="handleExcelFile(event)">
+                            <small class="form-text text-muted">Select Excel file (.xlsx, .xls) or CSV file</small>
+                        </div>
+                        
+                        <div id="excelPreview" class="mt-3" style="display: none;">
+                            <h6>Preview:</h6>
+                            <div class="table-responsive" style="max-height: 300px; overflow-y: auto;">
+                                <table class="table table-sm table-bordered">
+                                    <thead id="excelPreviewHead"></thead>
+                                    <tbody id="excelPreviewBody"></tbody>
+                                </table>
+                            </div>
+                            <div class="mt-2">
+                                <button type="button" class="btn btn-success btn-sm" onclick="importFromExcel()">
+                                    <i class="ri-upload-line me-1"></i> Import from Excel
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Text/JSON Tab -->
+                    <div class="tab-pane fade" id="text-pane" role="tabpanel">
+                        <div class="alert alert-info">
+                            <strong>Format Options:</strong>
+                            <ul class="mb-0 mt-2">
+                                <li><strong>JSON Format:</strong> Array of menu items with properties (title, url, parent_title, etc.)</li>
+                                <li><strong>Simple Format:</strong> One item per line: <code>Title|URL|Parent Title (optional)</code></li>
+                            </ul>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="bulkImportTextarea" class="form-label">Menu Items List</label>
+                            <textarea 
+                                class="form-control" 
+                                id="bulkImportTextarea" 
+                                rows="15" 
+                                placeholder='JSON Format Example:&#10;[&#10;  {"title": "Home", "url": "/", "menu_item_type": "url"},&#10;  {"title": "About", "url": "/about", "menu_item_type": "url"},&#10;  {"title": "Services", "url": "/services", "parent_title": "About", "menu_item_type": "url"}&#10;]&#10;&#10;Simple Format Example:&#10;Home|/&#10;About|/about&#10;Services|/services|About'></textarea>
+                        </div>
+                        
+                        <div class="alert alert-warning">
+                            <strong>Note:</strong> Parent items must be listed before their children in simple format.
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="importTextBtn" onclick="bulkImportMenus()" style="display: none;">
+                    <i class="ri-upload-line me-1"></i> Import Menu Items
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Load SheetJS library for Excel parsing -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+<script>
+    // Store parsed Excel data
+    let excelData = [];
+    
+    // Handle Excel file upload
+    window.handleExcelFile = function(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, { type: 'array' });
+                
+                // Get first sheet
+                const firstSheetName = workbook.SheetNames[0];
+                const worksheet = workbook.Sheets[firstSheetName];
+                
+                // Convert to JSON
+                const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+                
+                if (jsonData.length === 0) {
+                    showNotification('Excel file is empty!', 'error');
+                    return;
+                }
+                
+                // Process Excel data
+                excelData = processExcelData(jsonData);
+                
+                // Show preview
+                showExcelPreview(excelData);
+                
+            } catch (error) {
+                console.error('Error reading Excel file:', error);
+                showNotification('Error reading Excel file: ' + error.message, 'error');
+            }
+        };
+        
+        reader.readAsArrayBuffer(file);
+    };
+    
+    // Process Excel data to menu items format
+    function processExcelData(jsonData) {
+        if (jsonData.length === 0) return [];
+        
+        // First row is headers
+        const headers = jsonData[0].map(h => (h || '').toString().toLowerCase().trim());
+        
+        // Find column indices
+        const titleIndex = headers.findIndex(h => h.includes('title') || h.includes('name'));
+        const urlIndex = headers.findIndex(h => h.includes('url') || h.includes('link'));
+        const parentIndex = headers.findIndex(h => h.includes('parent'));
+        const iconIndex = headers.findIndex(h => h.includes('icon'));
+        const sortIndex = headers.findIndex(h => h.includes('sort') || h.includes('order'));
+        
+        // If no headers found, assume first row is data
+        let dataStartRow = 1;
+        if (titleIndex === -1 && urlIndex === -1) {
+            // No headers, assume first row is data
+            dataStartRow = 0;
+        }
+        
+        const menuItems = [];
+        
+        for (let i = dataStartRow; i < jsonData.length; i++) {
+            const row = jsonData[i];
+            if (!row || row.length === 0) continue;
+            
+            const item = {
+                title: (row[titleIndex] || row[0] || '').toString().trim(),
+                url: (row[urlIndex] || row[1] || '#').toString().trim(),
+                parent_title: parentIndex >= 0 ? (row[parentIndex] || '').toString().trim() : null,
+                icon: iconIndex >= 0 ? (row[iconIndex] || '').toString().trim() : null,
+                sort_order: sortIndex >= 0 ? parseInt(row[sortIndex]) || i - dataStartRow : i - dataStartRow,
+                menu_item_type: 'url',
+                is_active: true,
+                is_visible: true
+            };
+            
+            if (item.title) {
+                menuItems.push(item);
+            }
+        }
+        
+        return menuItems;
+    }
+    
+    // Show Excel preview
+    function showExcelPreview(data) {
+        if (data.length === 0) {
+            document.getElementById('excelPreview').style.display = 'none';
+            return;
+        }
+        
+        const previewHead = document.getElementById('excelPreviewHead');
+        const previewBody = document.getElementById('excelPreviewBody');
+        
+        // Create header
+        previewHead.innerHTML = '<tr><th>Title</th><th>URL</th><th>Parent Title</th><th>Icon</th><th>Sort Order</th></tr>';
+        
+        // Create body
+        previewBody.innerHTML = '';
+        data.forEach((item, index) => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${item.title || ''}</td>
+                <td>${item.url || '#'}</td>
+                <td>${item.parent_title || '-'}</td>
+                <td>${item.icon || '-'}</td>
+                <td>${item.sort_order || index}</td>
+            `;
+            previewBody.appendChild(row);
+        });
+        
+        document.getElementById('excelPreview').style.display = 'block';
+    }
+    
+    // Import from Excel
+    window.importFromExcel = function() {
+        if (excelData.length === 0) {
+            showNotification('No data to import!', 'error');
+            return;
+        }
+        
+        const menuType = currentMenuType;
+        
+        // Process menu items
+        const rootItems = [];
+        const childItems = [];
+        
+        excelData.forEach((item) => {
+            if (!item.parent_title || item.parent_title === '') {
+                rootItems.push({
+                    menu_type: menuType,
+                    title: item.title,
+                    alias: item.title.toLowerCase().replace(/\s+/g, '-'),
+                    menu_item_type: item.menu_item_type || 'url',
+                    url: item.url || '#',
+                    icon: item.icon || null,
+                    parent_id: null,
+                    sort_order: item.sort_order || 0,
+                    is_active: item.is_active !== undefined ? item.is_active : true,
+                    is_visible: item.is_visible !== undefined ? item.is_visible : true,
+                    target_window: item.target_window || '_self',
+                    access_level: item.access_level || 'public'
+                });
+            } else {
+                childItems.push(item);
+            }
+        });
+        
+        // Import menu items
+        importMenuItemsBulk(rootItems, childItems, menuType);
+    };
+    
+    // Update import button visibility based on active tab
+    document.addEventListener('DOMContentLoaded', function() {
+        const excelTab = document.getElementById('excel-tab');
+        const textTab = document.getElementById('text-tab');
+        const importTextBtn = document.getElementById('importTextBtn');
+        
+        if (excelTab && textTab && importTextBtn) {
+            excelTab.addEventListener('shown.bs.tab', function() {
+                importTextBtn.style.display = 'none';
+            });
+            
+            textTab.addEventListener('shown.bs.tab', function() {
+                importTextBtn.style.display = 'inline-block';
+            });
+        }
+    });
+    
+    // Bulk Import Functions
+    window.bulkImportMenus = function() {
+        const importText = document.getElementById('bulkImportTextarea').value.trim();
+        
+        if (!importText) {
+            showNotification('Please enter menu items list!', 'error');
+            return;
+        }
+        
+        let menuItems = [];
+        
+        try {
+            // Try to parse as JSON
+            menuItems = JSON.parse(importText);
+            
+            // If it's not an array, wrap it
+            if (!Array.isArray(menuItems)) {
+                menuItems = [menuItems];
+            }
+        } catch (e) {
+            // If JSON parsing fails, try to parse as simple text format
+            // Format: Title|URL|Parent Title (optional)
+            const lines = importText.split('\n').filter(line => line.trim());
+            menuItems = lines.map((line, index) => {
+                const parts = line.split('|').map(p => p.trim());
+                return {
+                    title: parts[0] || `Menu Item ${index + 1}`,
+                    url: parts[1] || '#',
+                    parent_title: parts[2] || null,
+                    menu_item_type: 'url',
+                    sort_order: index,
+                    is_active: true,
+                    is_visible: true
+                };
+            });
+        }
+        
+        if (menuItems.length === 0) {
+            showNotification('No menu items found in the list!', 'error');
+            return;
+        }
+        
+        console.log('Importing menu items:', menuItems);
+        
+        // Get current menu type
+        const menuType = currentMenuType;
+        
+        // Process menu items and create parent-child mapping
+        const processedItems = [];
+        const titleToIdMap = {}; // Map to track created items by title
+        
+        // First pass: Create all root items
+        menuItems.forEach((item, index) => {
+            if (!item.parent_title || item.parent_title === '') {
+                processedItems.push({
+                    menu_type: menuType,
+                    title: item.title || `Menu Item ${index + 1}`,
+                    alias: item.alias || item.title?.toLowerCase().replace(/\s+/g, '-') || `menu-item-${index + 1}`,
+                    menu_item_type: item.menu_item_type || 'url',
+                    url: item.url || item.link || '#',
+                    icon: item.icon || null,
+                    parent_id: null,
+                    sort_order: item.sort_order !== undefined ? item.sort_order : index,
+                    is_active: item.is_active !== undefined ? item.is_active : true,
+                    is_visible: item.is_visible !== undefined ? item.is_visible : true,
+                    target_window: item.target_window || '_self',
+                    access_level: item.access_level || 'public',
+                    styling: item.styling || null,
+                    advanced: item.advanced || null
+                });
+            }
+        });
+        
+        // Second pass: Create child items (will be handled after parent items are created)
+        const childItems = menuItems.filter(item => item.parent_title && item.parent_title !== '');
+        
+        // Import menu items via API
+        importMenuItemsBulk(processedItems, childItems, menuType);
+    };
+    
+    // Function to import menu items in bulk
+    async function importMenuItemsBulk(rootItems, childItems, menuType) {
+        showNotification('Importing menu items...', 'info');
+        
+        try {
+            // First, create all root items
+            let createdItems = [];
+            let parentTitleMap = {}; // Map parent titles to IDs
+            
+            for (let i = 0; i < rootItems.length; i++) {
+                const item = rootItems[i];
+                try {
+                    const response = await fetch(getApiBaseUrl() + '/item', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify(item)
+                    });
+                    
+                    const data = await response.json();
+                    if (data.success && data.menu_item) {
+                        createdItems.push(data.menu_item);
+                        parentTitleMap[item.title] = data.menu_item.id;
+                        console.log(`Created root item: ${item.title} (ID: ${data.menu_item.id})`);
+                    }
+                } catch (error) {
+                    console.error(`Error creating item ${item.title}:`, error);
+                }
+            }
+            
+            // Now create child items
+            for (let i = 0; i < childItems.length; i++) {
+                const item = childItems[i];
+                const parentId = parentTitleMap[item.parent_title];
+                
+                if (!parentId) {
+                    console.warn(`Parent "${item.parent_title}" not found for item "${item.title}"`);
+                    continue;
+                }
+                
+                const childItem = {
+                    menu_type: menuType,
+                    title: item.title || `Child Item ${i + 1}`,
+                    alias: item.alias || item.title?.toLowerCase().replace(/\s+/g, '-') || `child-item-${i + 1}`,
+                    menu_item_type: item.menu_item_type || 'url',
+                    url: item.url || item.link || '#',
+                    icon: item.icon || null,
+                    parent_id: parentId,
+                    sort_order: item.sort_order !== undefined ? item.sort_order : i,
+                    is_active: item.is_active !== undefined ? item.is_active : true,
+                    is_visible: item.is_visible !== undefined ? item.is_visible : true,
+                    target_window: item.target_window || '_self',
+                    access_level: item.access_level || 'public',
+                    styling: item.styling || null,
+                    advanced: item.advanced || null
+                };
+                
+                try {
+                    const response = await fetch(getApiBaseUrl() + '/item', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify(childItem)
+                    });
+                    
+                    const data = await response.json();
+                    if (data.success) {
+                        console.log(`Created child item: ${item.title} under parent ${item.parent_title}`);
+                    }
+                } catch (error) {
+                    console.error(`Error creating child item ${item.title}:`, error);
+                }
+            }
+            
+            // Close modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('bulkImportModal'));
+            if (modal) {
+                modal.hide();
+            }
+            
+            // Clear textarea
+            document.getElementById('bulkImportTextarea').value = '';
+            
+            // Reload page to show new items
+            showNotification(`Successfully imported ${createdItems.length} menu items!`, 'success');
+            setTimeout(() => {
+                window.location.reload();
+            }, 1500);
+            
+        } catch (error) {
+            console.error('Error importing menu items:', error);
+            showNotification('Error importing menu items: ' + error.message, 'error');
+        }
+    }
+</script>
+
 @endsection
