@@ -131,9 +131,7 @@ Route::prefix('active-area/menu-management')->name('active-area.menu-management.
     })->name('breadcrumbs');
     
     // Sidebar Left
-    Route::get('/sidebar-left', function () {
-        return view('admin.menu.active-area.sidebar-left');
-    })->name('sidebar-left');
+    Route::get('/sidebar-left', [App\Http\Controllers\Admin\MenuManagementController::class, 'sidebarLeft'])->name('sidebar-left');
     
     // Sidebar Right
     Route::get('/sidebar-right', function () {
@@ -144,6 +142,13 @@ Route::prefix('active-area/menu-management')->name('active-area.menu-management.
     Route::get('/bottom-menu', function () {
         return view('admin.menu.active-area.bottom-menu');
     })->name('bottom-menu');
+    
+    // API Routes for Menu Items
+    Route::post('/items/save', [App\Http\Controllers\Admin\MenuManagementController::class, 'saveItems'])->name('items.save');
+    Route::post('/item', [App\Http\Controllers\Admin\MenuManagementController::class, 'saveItem'])->name('item.save');
+    Route::post('/items/{id}', [App\Http\Controllers\Admin\MenuManagementController::class, 'updateItem'])->name('items.update');
+    Route::delete('/items/{id}', [App\Http\Controllers\Admin\MenuManagementController::class, 'deleteItem'])->name('items.delete');
+    Route::get('/items/{menuType}', [App\Http\Controllers\Admin\MenuManagementController::class, 'getItems'])->name('items.get');
 });
 
 Route::resource('roles', RoleController::class)->middleware('admin.only');
@@ -338,34 +343,29 @@ Route::prefix('content-types/{contentType}')->name('content-types.')->group(func
 // Config Menu Management Routes
 Route::prefix('admin/config/menu-management')->name('config.menu-management.')->group(function () {
     // Toolbar Menu
-    Route::get('/toolbar', function () {
-        return view('admin.menu.config.toolbar');
-    })->name('toolbar');
+    Route::get('/toolbar', [App\Http\Controllers\Admin\MenuManagementController::class, 'toolbar'])->name('toolbar');
     
     // Top Menu
-    Route::get('/top-menu', function () {
-        return view('admin.menu.config.top-menu');
-    })->name('top-menu');
+    Route::get('/top-menu', [App\Http\Controllers\Admin\MenuManagementController::class, 'topMenu'])->name('top-menu');
     
     // Breadcrumbs
-    Route::get('/breadcrumbs', function () {
-        return view('admin.menu.config.breadcrumbs');
-    })->name('breadcrumbs');
+    Route::get('/breadcrumbs', [App\Http\Controllers\Admin\MenuManagementController::class, 'breadcrumbs'])->name('breadcrumbs');
     
     // Sidebar Left
-    Route::get('/sidebar-left', function () {
-        return view('admin.menu.config.sidebar-left');
-    })->name('sidebar-left');
+    Route::get('/sidebar-left', [App\Http\Controllers\Admin\MenuManagementController::class, 'sidebarLeft'])->name('sidebar-left');
     
     // Sidebar Right
-    Route::get('/sidebar-right', function () {
-        return view('admin.menu.config.sidebar-right');
-    })->name('sidebar-right');
+    Route::get('/sidebar-right', [App\Http\Controllers\Admin\MenuManagementController::class, 'sidebarRight'])->name('sidebar-right');
     
     // Bottom Menu
-    Route::get('/bottom-menu', function () {
-        return view('admin.menu.config.bottom-menu');
-    })->name('bottom-menu');
+    Route::get('/bottom-menu', [App\Http\Controllers\Admin\MenuManagementController::class, 'bottomMenu'])->name('bottom-menu');
+    
+    // API Routes for Menu Items
+    Route::post('/items/save', [App\Http\Controllers\Admin\MenuManagementController::class, 'saveItems'])->name('items.save');
+    Route::post('/item', [App\Http\Controllers\Admin\MenuManagementController::class, 'saveItem'])->name('item.save');
+    Route::post('/items/{id}', [App\Http\Controllers\Admin\MenuManagementController::class, 'updateItem'])->name('items.update');
+    Route::delete('/items/{id}', [App\Http\Controllers\Admin\MenuManagementController::class, 'deleteItem'])->name('items.delete');
+    Route::get('/items/{menuType}', [App\Http\Controllers\Admin\MenuManagementController::class, 'getItems'])->name('items.get');
 });
 
 // Setup Menu Management Routes
@@ -386,9 +386,7 @@ Route::prefix('admin/setup/menu-management')->name('setup.menu-management.')->gr
     })->name('breadcrumbs');
     
     // Sidebar Left
-    Route::get('/sidebar-left', function () {
-        return view('admin.menu.setup.sidebar-left');
-    })->name('sidebar-left');
+    Route::get('/sidebar-left', [App\Http\Controllers\Admin\MenuManagementController::class, 'sidebarLeft'])->name('sidebar-left');
     
     // Sidebar Right
     Route::get('/sidebar-right', function () {
@@ -399,6 +397,13 @@ Route::prefix('admin/setup/menu-management')->name('setup.menu-management.')->gr
     Route::get('/bottom-menu', function () {
         return view('admin.menu.setup.bottom-menu');
     })->name('bottom-menu');
+    
+    // API Routes for Menu Items
+    Route::post('/items/save', [App\Http\Controllers\Admin\MenuManagementController::class, 'saveItems'])->name('items.save');
+    Route::post('/item', [App\Http\Controllers\Admin\MenuManagementController::class, 'saveItem'])->name('item.save');
+    Route::post('/items/{id}', [App\Http\Controllers\Admin\MenuManagementController::class, 'updateItem'])->name('items.update');
+    Route::delete('/items/{id}', [App\Http\Controllers\Admin\MenuManagementController::class, 'deleteItem'])->name('items.delete');
+    Route::get('/items/{menuType}', [App\Http\Controllers\Admin\MenuManagementController::class, 'getItems'])->name('items.get');
 });
 
 // Field Manager Routes

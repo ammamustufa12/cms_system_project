@@ -7,69 +7,110 @@
           padding-right: 4px;
           /* Optional: space for scrollbar */
       }
+
+      /* Menu Control Position & Alignment Styles */
+      .menu-control-wrapper {
+          position: relative;
+          width: 100%;
+          margin-bottom: 10px;
+      }
+
+      /* Position Controls */
+      .menu-control-wrapper.position-top {
+          order: -1;
+          /* Move to top */
+      }
+
+      .menu-control-wrapper.position-bottom {
+          order: 999;
+          /* Move to bottom */
+      }
+
+      .menu-control-wrapper.position-custom {
+          order: 0;
+          /* Default position */
+      }
+
+      /* Alignment Controls */
+      .menu-control-wrapper.align-left .nav-link {
+          text-align: left;
+          justify-content: flex-start;
+      }
+
+      .menu-control-wrapper.align-center .nav-link {
+          text-align: center;
+          justify-content: center;
+      }
+
+      .menu-control-wrapper.align-right .nav-link {
+          text-align: right;
+          justify-content: flex-end;
+      }
+
+      /* Menu Control Styling */
+      .menu-control-wrapper .nav-item {
+          width: 100%;
+      }
+
+      .menu-control-wrapper .nav-link {
+          display: flex;
+          align-items: center;
+          padding: 10px 15px;
+          transition: all 0.3s ease;
+      }
+
+      .menu-control-wrapper .nav-link i {
+          margin-right: 10px;
+          font-size: 18px;
+      }
+
+      .menu-control-wrapper .menu-dropdown {
+          padding-left: 20px;
+      }
+
+      .menu-control-wrapper .menu-dropdown .nav-link {
+          padding: 8px 15px;
+          font-size: 14px;
+      }
+
+      /* Active State */
+      .menu-control-wrapper .nav-item.active .nav-link {
+          background-color: rgba(0, 123, 255, 0.1);
+          border-left: 3px solid #007bff;
+      }
+
+      .menu-control-wrapper .nav-link.active {
+          color: #007bff;
+          font-weight: 500;
+      }
   </style>
   <div id="scrollbar">
       <div class="container-fluid">
-
-
           <div id="two-column-menu">
           </div>
           <ul class="navbar-nav" id="navbar-nav">
-              @if (request()->routeIs([
-                      'config.*',
-                      'admin.field-manager.*',
-                      'admin.field-groups.*',
-                      'admin.fields.*',
-                      'admin.industries.*',
-                      'admin.data-types.*',
-                      'admin.profiles.*',
-                      'admin.category-groups.*',
-                      'admin.categories.*',
-                      'config.menu-management.*',
-                  ]))
-                  <!-- CONFIG PAGE SIDEBAR -->
-                  <!-- DEFAULT SIDEBAR -->
-                  <li class="menu-title"><span data-key="t-menu">CONFIGURATION</span></li>
+              @if (request()->routeIs(['config.*']))
 
-                  <li class="nav-item">
-                      <a class="nav-link menu-link" href="" data-bs-toggle="collapse" role="button"
-                          aria-expanded="false" aria-controls="sidebarDashboards">
-                          <i class="ri-dashboard-2-line"></i> <span data-key="t-dashboards">Dashboards</span>
-                      </a>
-                  </li> <!-- end Dashboard Menu -->
+                  @php
+                      // For config routes, use route-specific sidebar-left menu type
+                      // This ensures menu items added from config sidebar-left page appear only in config sidebar
+                      $menuType = 'sidebar-left-config';
 
-                  <li class="menu-title"><span data-key="t-menu">Organize Content</span></li>
+                      // Get menu items from database - get ALL visible and active items
+                      $menuItems = \App\Models\MenuItem::ofType($menuType)
+                          ->root()
+                          ->where('is_visible', true)
+                          ->where('is_active', true)
+                          ->with([
+                              'children' => function ($query) {
+                                  $query->where('is_visible', true)->where('is_active', true)->orderBy('sort_order');
+                              },
+                          ])
+                          ->orderBy('sort_order')
+                          ->get();
+                  @endphp
 
-
-                  <!-- Organize Content Structure -->
-                  <li class="nav-item">
-                      <a class="nav-link menu-link" href="#sidebarOrganizeContent" data-bs-toggle="collapse"
-                          role="button" aria-expanded="false" aria-controls="sidebarOrganizeContent">
-                          <i class="ri-organization-chart"></i> <span>Structure</span>
-                      </a>
-                      <div class="collapse menu-dropdown" id="sidebarOrganizeContent">
-                          <ul class="nav nav-sm flex-column">
-                              <li class="nav-item"><a href="{{ route('admin.industries.index') }}"
-                                      class="nav-link">Industry</a></li>
-                              <li class="nav-item"><a href="{{ route('admin.data-types.index') }}" class="nav-link">Data
-                                      Types</a>
-                              </li>
-                              <li class="nav-item"><a href="{{ route('admin.profiles.index') }}"
-                                      class="nav-link">Profiles</a>
-                              </li>
-
-                          </ul>
-                      </div>
-                  </li>
-
-
-
-
-                  <!-- SETUP PAGE SIDEBAR -->
-                  <li class="menu-title"><span>Configuration</span></li>
-                  <!-- Company PAGE SIDEBAR -->
-
-                  <!-- Custom Content Types Dropdown -->
+                  {{-- Menu Control - Simple Format like sidebar.blade copy.php --}}
                   <li class="nav-item">
                       <a class="nav-link menu-link" href="#sidebarmenucontrol" data-bs-toggle="collapse" role="button"
                           aria-expanded="false" aria-controls="sidebarmenucontrol">
@@ -98,1221 +139,131 @@
                       </div>
                   </li>
 
+                  {{-- Database Menu Items - Display like Menu Control --}}
+                  @if ($menuItems->count() > 0)
+                      @foreach ($menuItems as $item)
+                          @php
+                              $hasChildren = $item->children && $item->children->count() > 0;
+                              $url = \App\Helpers\MenuHelper::getMenuItemUrl($item);
+                              $target = $item->target_window === '_blank' ? ' target="_blank"' : '';
+                              $icon = $item->icon ?? 'ri-menu-line';
+                              $isActive = request()->url() === $url || request()->routeIs($item->url ?? '');
 
-                  <!-- Roles & Permissions -->
-                  <li class="nav-item">
-                      <a class="nav-link menu-link" href="#sidebarCompanyStructure" data-bs-toggle="collapse"
-                          role="button" aria-expanded="false" aria-controls="sidebarCompanyStructure">
-                          <i class="ri-organization-chart"></i> <span>Category Manager</span>
-                      </a>
-                      <div class="collapse menu-dropdown" id="sidebarCompanyStructure">
-                          <ul class="nav nav-sm flex-column">
-                              <li class="nav-item"><a href="{{ route('admin.category-groups.index') }}"
-                                      class="nav-link">Category Groups</a></li>
-                              <li class="nav-item"><a href="{{ route('admin.categories.index') }}"
-                                      class="nav-link">View
-                                      Categories</a>
-                              </li>
+                              // Check if icon is a URL or class
+                              $isIconUrl =
+                                  $icon &&
+                                  (str_starts_with($icon, 'http://') ||
+                                      str_starts_with($icon, 'https://') ||
+                                      str_starts_with($icon, '/') ||
+                                      str_starts_with($icon, 'uploaded://'));
+                              $iconHtml = '';
+                              if ($isIconUrl) {
+                                  // Icon is an image URL
+                                  $iconHtml =
+                                      '<img src="' .
+                                      e($icon) .
+                                      '" alt="icon" style="width: 18px; height: 18px; margin-right: 8px; vertical-align: middle;">';
+                              } else {
+                                  // Icon is a CSS class
+                                  $iconHtml = '<i class="' . e($icon) . '"></i>';
+                              }
 
-                          </ul>
-                      </div>
-                  </li>
+                              // Generate unique collapse ID
+                              $collapseId = 'sidebar' . Str::slug($item->title) . $item->id;
+                          @endphp
 
-                  <!-- Activity Logs -->
-
-                  <!-- Field Manager -->
-                  <li class="nav-item">
-                      <a class="nav-link menu-link" href="#sidebarFieldManager" data-bs-toggle="collapse" role="button"
-                          aria-expanded="false" aria-controls="sidebarFieldManager">
-                          <i class="ri-settings-3-line"></i> <span>Field Manager</span>
-                      </a>
-                      <div class="collapse menu-dropdown" id="sidebarFieldManager">
-                          <ul class="nav nav-sm flex-column">
-                              <li class="nav-item"><a href="{{ route('admin.field-manager.install') }}"
-                                      class="nav-link">Install Field Type</a></li>
-                              <li class="nav-item"><a href="{{ route('admin.field-groups.index') }}"
-                                      class="nav-link">Field Groups</a>
-                              </li>
-                              <li class="nav-item"><a href="{{ route('admin.fields.index') }}" class="nav-link">View
-                                      Fields</a>
-                              </li>
-
-                          </ul>
-                      </div>
-                  </li>
-
-                  <!-- Activity Logs -->
-                  <li class="nav-item">
-                      <a class="nav-link menu-link" href="#sidebarCompanyStructure" data-bs-toggle="collapse"
-                          role="button" aria-expanded="false" aria-controls="sidebarCompanyStructure">
-                          <i class="ri-organization-chart"></i> <span>List Manager</span>
-                      </a>
-                      <div class="collapse menu-dropdown" id="sidebarCompanyStructure">
-                          <ul class="nav nav-sm flex-column">
-                              <li class="nav-item"><a href="{{ route('config.menu-management.toolbar') }}"
-                                      class="nav-link">Admin</a></li>
-                              <li class="nav-item"><a href="{{ route('config.menu-management.top-menu') }}"
-                                      class="nav-link">Frontend</a>
-                              </li>
-
-
-                          </ul>
-                      </div>
-                  </li>
-
-                  <!-- Start --->
-
-
-
-
-
-                  <!-- SYSTEM SETTINGS -->
-                  <li class="menu-title"><i class="ri-settings-3-line"></i>
-                      <span>SYSTEM SETTINGS</span>
-                  </li>
-
-                  <!-- Users -->
-                  <li class="nav-item">
-                      <a class="nav-link menu-link" href="{{ route('users.index') }}">
-                          <i class="ri-settings-4-line"></i> <span>Global Configuration</span>
-                      </a>
-                  </li>
-
-                  <!-- Roles & Permissions -->
-                  <li class="nav-item">
-                      <a class="nav-link menu-link" href="{{ route('roles.index') }}">
-                          <i class="ri-building-line"></i> <span>Your Company</span>
-                      </a>
-                  </li>
-
-                  <!-- Activity Logs -->
-                  <li class="nav-item">
-                      <a class="nav-link menu-link" href="{{ route('activity_logs.index') }}">
-                          <i class="ri-team-line"></i> <span>User Management</span>
-                      </a>
-                  </li>
-
-                  <!-- Activity Logs -->
-                  <li class="nav-item">
-                      <a class="nav-link menu-link" href="{{ route('activity_logs.index') }}">
-                          <i class="ri-folder-line"></i> <span>Category Management</span>
-                      </a>
-                  </li>
-
-                  <!-- Start --->
-
-
-                  <!-- YOUR COMPANY -->
-                  <li class="menu-title"><i class="ri-building-2-line"></i>
-                      <span>YOUR COMPANY</span>
-                  </li>
-
-                  <!-- Settings -->
-                  <li class="nav-item">
-                      <a class="nav-link menu-link" href="{{ route('users.index') }}">
-                          <i class="ri-settings-3-line"></i> <span>Settings</span>
-                      </a>
-                  </li>
-
-                  <!-- Company List -->
-                  <li class="nav-item">
-                      <a class="nav-link menu-link" href="{{ route('roles.index') }}">
-                          <i class="ri-list-check-2"></i> <span>Company List</span>
-                      </a>
-                  </li>
-
-                  <!-- Organize Content -->
-                  <li class="nav-item">
-                      <a class="nav-link menu-link" href="#sidebarOrganizeContent" data-bs-toggle="collapse"
-                          role="button" aria-expanded="false" aria-controls="sidebarOrganizeContent">
-                          <i class="ri-organization-chart"></i> <span>Structure</span>
-                      </a>
-                      <div class="collapse menu-dropdown" id="sidebarOrganizeContent">
-                          <ul class="nav nav-sm flex-column">
-                              <li class="nav-item"><a href="{{ route('config.menu-management.toolbar') }}"
-                                      class="nav-link">Industry</a></li>
-                              <li class="nav-item"><a href="{{ route('config.menu-management.top-menu') }}"
-                                      class="nav-link">Data Types</a>
-                              </li>
-                              <li class="nav-item"><a href="{{ route('config.menu-management.breadcrumbs') }}"
-                                      class="nav-link">Profiles</a>
-                              </li>
-                          </ul>
-                      </div>
-                  </li>
-
-                  <!-- Location Structure -->
-                  <li class="nav-item">
-                      <a class="nav-link menu-link" href="#sidebarLocationStructure" data-bs-toggle="collapse"
-                          role="button" aria-expanded="false" aria-controls="sidebarLocationStructure">
-                          <i class="ri-map-pin-line"></i> <span>Location Structure</span>
-                      </a>
-                      <div class="collapse menu-dropdown" id="sidebarLocationStructure">
-                          <ul class="nav nav-sm flex-column">
-                              <li class="nav-item"><a href="{{ route('config.menu-management.toolbar') }}"
-                                      class="nav-link">Field Groups</a></li>
-                              <li class="nav-item"><a href="{{ route('config.menu-management.top-menu') }}"
-                                      class="nav-link">Field Manager</a>
-                              </li>
-                              <li class="nav-item"><a href="{{ route('config.menu-management.breadcrumbs') }}"
-                                      class="nav-link">Layout Builder</a>
-                              </li>
-                          </ul>
-                      </div>
-                  </li>
-
-
-                  <!-- Department Structure -->
-                  <li class="nav-item">
-                      <a class="nav-link menu-link" href="#sidebarDepartmentStructure" data-bs-toggle="collapse"
-                          role="button" aria-expanded="false" aria-controls="sidebarDepartmentStructure">
-                          <i class="ri-briefcase-line"></i> <span>Department Structure</span>
-                      </a>
-                      <div class="collapse menu-dropdown" id="sidebarDepartmentStructure">
-                          <ul class="nav nav-sm flex-column">
-                              <li class="nav-item"><a href="{{ route('config.menu-management.toolbar') }}"
-                                      class="nav-link">Field Groups</a></li>
-                              <li class="nav-item"><a href="{{ route('config.menu-management.top-menu') }}"
-                                      class="nav-link">Field Manager</a>
-                              </li>
-                              <li class="nav-item"><a href="{{ route('config.menu-management.breadcrumbs') }}"
-                                      class="nav-link">Layout Builder</a>
-                              </li>
-                          </ul>
-                      </div>
-                  </li>
-
-
-                  <!-- Employee Structure -->
-                  <li class="nav-item">
-                      <a class="nav-link menu-link" href="#sidebarEmployeeStructure" data-bs-toggle="collapse"
-                          role="button" aria-expanded="false" aria-controls="sidebarEmployeeStructure">
-                          <i class="ri-user-settings-line"></i> <span>Employee Structure</span>
-                      </a>
-                      <div class="collapse menu-dropdown" id="sidebarEmployeeStructure">
-                          <ul class="nav nav-sm flex-column">
-                              <li class="nav-item"><a href="{{ route('config.menu-management.toolbar') }}"
-                                      class="nav-link">Field Groups</a></li>
-                              <li class="nav-item"><a href="{{ route('config.menu-management.top-menu') }}"
-                                      class="nav-link">Field Manager</a>
-                              </li>
-                              <li class="nav-item"><a href="{{ route('config.menu-management.breadcrumbs') }}"
-                                      class="nav-link">Layout Builder</a>
-                              </li>
-                          </ul>
-                      </div>
-                  </li>
-
-
-                  <!-- USER MANAGEMENT -->
-                  <li class="menu-title"><i class="ri-user-settings-line"></i>
-                      <span>USER MANAGEMENT</span>
-                  </li>
-
-                  <!-- Settings  -->
-                  <li class="nav-item">
-                      <a class="nav-link menu-link" href="{{ route('users.index') }}">
-                          <i class="ri-settings-3-line"></i> <span>Settings</span>
-                      </a>
-                  </li>
-
-                  <!-- User Group -->
-                  <li class="nav-item">
-                      <a class="nav-link menu-link" href="{{ route('roles.index') }}">
-                          <i class="ri-group-line"></i> <span>User Group</span>
-                      </a>
-                  </li>
-
-                  <!-- Activity Logs -->
-                  <li class="nav-item">
-                      <a class="nav-link menu-link" href="{{ route('activity_logs.index') }}">
-                          <i class="ri-team-line"></i> <span>User Management</span>
-                      </a>
-                  </li>
-
-                  <!-- Access Roles -->
-                  <li class="nav-item">
-                      <a class="nav-link menu-link" href="{{ route('activity_logs.index') }}">
-                          <i class="ri-shield-keyhole-line"></i> <span>Access Roles</span>
-                      </a>
-                  </li>
-
-                  <!-- Access Levels -->
-                  <li class="nav-item">
-                      <a class="nav-link menu-link" href="{{ route('activity_logs.index') }}">
-                          <i class="ri-lock-password-line"></i> <span>Access Levels</span>
-                      </a>
-                  </li>
-
-                  <!-- ADMIN TEMPLATE -->
-                  <li class="menu-title"><i class="ri-layout-line"></i>
-                      <span>ADMIN TEMPLATE</span>
-                  </li>
-
-                  <!-- Template Structure  -->
-                  <li class="nav-item">
-                      <a class="nav-link menu-link" href="{{ route('users.index') }}">
-                          <i class="ri-layout-grid-line"></i> <span>Template Structure</span>
-                      </a>
-                  </li>
-
-                  <!-- Design -->
-                  <li class="nav-item">
-                      <a class="nav-link menu-link" href="#sidebarAdminDesign" data-bs-toggle="collapse"
-                          role="button" aria-expanded="false" aria-controls="sidebarAdminDesign">
-                          <i class="ri-palette-line"></i> <span>Design</span>
-                      </a>
-                      <div class="collapse menu-dropdown" id="sidebarAdminDesign">
-                          <ul class="nav nav-sm flex-column">
-                              <li class="nav-item"><a href="{{ route('config.menu-management.toolbar') }}"
-                                      class="nav-link">Layout</a></li>
-                              <li class="nav-item"><a href="{{ route('config.menu-management.top-menu') }}"
-                                      class="nav-link">Styling</a>
-                              </li>
-                              <li class="nav-item"><a href="{{ route('config.menu-management.breadcrumbs') }}"
-                                      class="nav-link">Toolbar</a>
-                              </li>
-                              <li class="nav-item"><a href="{{ route('config.menu-management.breadcrumbs') }}"
-                                      class="nav-link">Sidebar</a>
-                              </li>
-                          </ul>
-                      </div>
-                  </li>
-
-                  <!-- Theme  -->
-                  <li class="nav-item">
-                      <a class="nav-link menu-link" href="{{ route('users.index') }}">
-                          <i class="ri-palette-line"></i> <span>Theme</span>
-                      </a>
-                  </li>
-
-                  <!-- Components -->
-                  <li class="nav-item">
-                      <a class="nav-link menu-link" href="#sidebarComponents" data-bs-toggle="collapse"
-                          role="button" aria-expanded="false" aria-controls="sidebarComponents">
-                          <i class="ri-puzzle-line"></i> <span>Components</span>
-                      </a>
-                      <div class="collapse menu-dropdown" id="sidebarComponents">
-                          <ul class="nav nav-sm flex-column">
-                              <li class="nav-item">
-                                  <a href="#sidebarBaseUI" data-bs-toggle="collapse" role="button"
-                                      class="nav-link">
-                                      Base UI
+                          <li class="nav-item{{ $isActive ? ' active' : '' }}" draggable="true"
+                              data-menu-item-id="{{ $item->id }}"
+                              data-menu-item-parent="{{ $item->parent_id ?? '' }}" style="cursor: move;">
+                              @if ($hasChildren)
+                                  {{-- Menu Item with Children - Collapse/Expand like Menu Control --}}
+                                  <a class="nav-link menu-link{{ $isActive ? ' active' : '' }}"
+                                      href="#{{ $collapseId }}" data-bs-toggle="collapse" role="button"
+                                      aria-expanded="{{ $isActive ? 'true' : 'false' }}"
+                                      aria-controls="{{ $collapseId }}">
+                                      {!! $iconHtml !!} <span>{{ $item->title }}</span>
                                   </a>
-                                  <div class="collapse" id="sidebarBaseUI">
-                                      <ul class="nav nav-sm flex-column ms-3">
-                                          <li class="nav-item"><a href="#" class="nav-link">Cards</a></li>
-                                          <li class="nav-item"><a href="#" class="nav-link">Carousel</a></li>
-                                          <li class="nav-item"><a href="#" class="nav-link">Dropdowns</a></li>
-                                          <li class="nav-item"><a href="#" class="nav-link">Grid</a></li>
-                                          <li class="nav-item"><a href="#" class="nav-link">Images</a></li>
-                                          <li class="nav-item"><a href="#" class="nav-link">Tabs</a></li>
-                                          <li class="nav-item"><a href="#" class="nav-link">Accordion &
-                                                  Collapse</a></li>
-                                          <li class="nav-item"><a href="#" class="nav-link">Modals</a></li>
-                                          <li class="nav-item"><a href="#" class="nav-link">Offcanvas</a></li>
-                                          <li class="nav-item"><a href="#" class="nav-link">Placeholders</a>
-                                          </li>
-                                          <li class="nav-item"><a href="#" class="nav-link">Progress</a></li>
-                                          <li class="nav-item"><a href="#" class="nav-link">Notifications</a>
-                                          </li>
-                                          <li class="nav-item"><a href="#" class="nav-link">Media object</a>
-                                          </li>
-                                          <li class="nav-item"><a href="#" class="nav-link">Embed Video</a>
-                                          </li>
-                                          <li class="nav-item"><a href="#" class="nav-link">Typography</a></li>
-                                          <li class="nav-item"><a href="#" class="nav-link">Lists</a></li>
-                                          <li class="nav-item"><a href="#" class="nav-link">LinksNew</a></li>
-                                          <li class="nav-item"><a href="#" class="nav-link">General</a></li>
-                                          <li class="nav-item"><a href="#" class="nav-link">Ribbons</a></li>
-                                          <li class="nav-item"><a href="#" class="nav-link">Utilities</a></li>
+                                  <div class="collapse menu-dropdown{{ $isActive ? ' show' : '' }}"
+                                      id="{{ $collapseId }}">
+                                      <ul class="nav nav-sm flex-column">
+                                          @foreach ($item->children as $child)
+                                              @php
+                                                  $childUrl = \App\Helpers\MenuHelper::getMenuItemUrl($child);
+                                                  $childTarget =
+                                                      $child->target_window === '_blank' ? ' target="_blank"' : '';
+                                                  $childActive =
+                                                      request()->url() === $childUrl || request()->routeIs($child->url);
+                                                  $childIcon = $child->icon ?? null;
+
+                                                  // Check if child icon is a URL or class
+                                                  $childIsIconUrl =
+                                                      $childIcon &&
+                                                      (str_starts_with($childIcon, 'http://') ||
+                                                          str_starts_with($childIcon, 'https://') ||
+                                                          str_starts_with($childIcon, '/') ||
+                                                          str_starts_with($childIcon, 'uploaded://'));
+                                                  $childIconHtml = '';
+                                                  if ($childIcon) {
+                                                      if ($childIsIconUrl) {
+                                                          // Child icon is an image URL
+                                                          $childIconHtml =
+                                                              '<img src="' .
+                                                              e($childIcon) .
+                                                              '" alt="icon" style="width: 16px; height: 16px; margin-right: 6px; vertical-align: middle;">';
+                                                      } else {
+                                                          // Child icon is a CSS class
+                                                          $childIconHtml =
+                                                              '<i class="' .
+                                                              e($childIcon) .
+                                                              '" style="font-size: 14px;"></i> ';
+                                                      }
+                                                  }
+                                              @endphp
+                                              <li class="nav-item">
+                                                  <a href="{{ $childUrl }}"
+                                                      class="nav-link{{ $childActive ? ' active' : '' }}"{{ $childTarget }}>
+                                                      {!! $childIconHtml !!}{{ $child->title }}
+                                                  </a>
+                                              </li>
+                                          @endforeach
                                       </ul>
                                   </div>
-                              </li>
-                              <li class="nav-item">
-                                  <a href="#sidebarAdvancedUI" data-bs-toggle="collapse" role="button"
-                                      class="nav-link">
-                                      Advanced UI
+                              @else
+                                  {{-- Menu Item without Children - Simple Link --}}
+                                  <a class="nav-link menu-link{{ $isActive ? ' active' : '' }}"
+                                      href="{{ $url }}"{{ $target }}>
+                                      {!! $iconHtml !!} <span>{{ $item->title }}</span>
                                   </a>
-                                  <div class="collapse" id="sidebarAdvancedUI">
-                                      <ul class="nav nav-sm flex-column ms-3">
-                                          <li class="nav-item"><a href="#" class="nav-link">Sweet Alerts</a>
-                                          </li>
-                                          <li class="nav-item"><a href="#" class="nav-link">Nestable List</a>
-                                          </li>
-                                          <li class="nav-item"><a href="#" class="nav-link">Scrollbar</a></li>
-                                          <li class="nav-item"><a href="#" class="nav-link">Animation</a></li>
-                                          <li class="nav-item"><a href="#" class="nav-link">Tour</a></li>
-                                          <li class="nav-item"><a href="#" class="nav-link">Swiper Slider</a>
-                                          </li>
-                                          <li class="nav-item"><a href="#" class="nav-link">Ratings</a></li>
-                                          <li class="nav-item"><a href="#" class="nav-link">Highlight</a></li>
-                                      </ul>
-                                  </div>
-                              </li>
-                          </ul>
-                      </div>
-                  </li>
-
-                  <!-- Frontend Template MANAGEMENT -->
-                  <li class="menu-title"><i class="ri-shopping-bag-line"></i>
-                      <span>Frontend Template</span>
-                  </li>
-
-                  <!-- Settings  -->
-                  <li class="nav-item">
-                      <a class="nav-link menu-link" href="{{ route('users.index') }}">
-                          <i class="ri-shopping-bag-3-line"></i> <span>templates</span>
-                      </a>
-                  </li>
-
-                  <!-- Design -->
-                  <li class="nav-item">
-                      <a class="nav-link menu-link" href="#sidebarFrontendDefault" data-bs-toggle="collapse"
-                          role="button" aria-expanded="false" aria-controls="sidebarFrontendDefault">
-                          <i class="ri-palette-line"></i> <span>Default</span>
-                      </a>
-                      <div class="collapse menu-dropdown" id="sidebarFrontendDefault">
-                          <ul class="nav nav-sm flex-column">
-                              <li class="nav-item"><a href="{{ route('config.menu-management.toolbar') }}"
-                                      class="nav-link">Settings</a></li>
-                              <li class="nav-item"><a href="{{ route('config.menu-management.top-menu') }}"
-                                      class="nav-link">Layout</a>
-                              </li>
-                              <li class="nav-item"><a href="{{ route('config.menu-management.breadcrumbs') }}"
-                                      class="nav-link">Colors</a>
-                              </li>
-                              <li class="nav-item"><a href="{{ route('config.menu-management.breadcrumbs') }}"
-                                      class="nav-link">Tools</a>
-                              </li>
-                              <li class="nav-item"><a href="{{ route('config.menu-management.breadcrumbs') }}"
-                                      class="nav-link">Tools</a>
-                              </li>
-                          </ul>
-                      </div>
-                  </li>
-
-                  <!-- Template   -->
-                  <li class="nav-item">
-                      <a class="nav-link menu-link" href="{{ route('users.index') }}">
-                          <i class="ri-shopping-bag-3-line"></i> <span>Template </span>
-                      </a>
-                  </li>
-
-                  <!-- ADMIN TEMPLATE -->
-                  <li class="menu-title"><i class="ri-layout-line"></i>
-                      <span>ADMIN TEMPLATE</span>
-                  </li>
-
-                  <!-- Template Structure -->
-                  <li class="nav-item">
-                      <a class="nav-link menu-link" href="{{ route('users.index') }}">
-                          <i class="ri-layout-grid-line"></i> <span>Template Structure</span>
-                      </a>
-                  </li>
-
-                  <!-- Design -->
-                  <li class="nav-item">
-                      <a class="nav-link menu-link" href="#sidebarDesign" data-bs-toggle="collapse" role="button"
-                          aria-expanded="false" aria-controls="sidebarDesign">
-                          <i class="ri-palette-line"></i> <span>Design</span>
-                      </a>
-                      <div class="collapse menu-dropdown" id="sidebarDesign">
-                          <ul class="nav nav-sm flex-column">
-                              <li class="nav-item"><a href="#" class="nav-link">Layout</a></li>
-                              <li class="nav-item"><a href="#" class="nav-link">Styling</a></li>
-                              <li class="nav-item"><a href="#" class="nav-link">Toolbar</a></li>
-                              <li class="nav-item"><a href="#" class="nav-link">Sidebar</a></li>
-                          </ul>
-                      </div>
-                  </li>
-
-                  <!-- Theme -->
-                  <li class="nav-item">
-                      <a class="nav-link menu-link" href="{{ route('users.index') }}">
-                          <i class="ri-palette-line"></i> <span>Theme</span>
-                      </a>
-                  </li>
-
-                  <!-- Components -->
-                  <li class="nav-item">
-                      <a class="nav-link menu-link" href="#sidebarComponents" data-bs-toggle="collapse"
-                          role="button" aria-expanded="false" aria-controls="sidebarComponents">
-                          <i class="ri-puzzle-line"></i> <span>Components</span>
-                      </a>
-                      <div class="collapse menu-dropdown" id="sidebarComponents">
-                          <ul class="nav nav-sm flex-column">
-                              <li class="nav-item">
-                                  <a href="#sidebarBaseUI" data-bs-toggle="collapse" role="button"
-                                      class="nav-link">
-                                      Base UI
-                                  </a>
-                                  <div class="collapse" id="sidebarBaseUI">
-                                      <ul class="nav nav-sm flex-column ms-3">
-                                          <li class="nav-item"><a href="#" class="nav-link">Cards</a></li>
-                                          <li class="nav-item"><a href="#" class="nav-link">Carousel</a></li>
-                                          <li class="nav-item"><a href="#" class="nav-link">Dropdowns</a></li>
-                                          <li class="nav-item"><a href="#" class="nav-link">Grid</a></li>
-                                          <li class="nav-item"><a href="#" class="nav-link">Images</a></li>
-                                          <li class="nav-item"><a href="#" class="nav-link">Tabs</a></li>
-                                      </ul>
-                                  </div>
-                              </li>
-                              <li class="nav-item"><a href="#" class="nav-link">Accordion & Collapse</a></li>
-                              <li class="nav-item"><a href="#" class="nav-link">Modals</a></li>
-                              <li class="nav-item"><a href="#" class="nav-link">Offcanvas</a></li>
-                              <li class="nav-item"><a href="#" class="nav-link">Placeholders</a></li>
-                              <li class="nav-item"><a href="#" class="nav-link">Progress</a></li>
-                              <li class="nav-item"><a href="#" class="nav-link">Notifications</a></li>
-                              <li class="nav-item"><a href="#" class="nav-link">Media object</a></li>
-                              <li class="nav-item"><a href="#" class="nav-link">Embed Video</a></li>
-                              <li class="nav-item"><a href="#" class="nav-link">Typography</a></li>
-                              <li class="nav-item"><a href="#" class="nav-link">Lists</a></li>
-                              <li class="nav-item"><a href="#" class="nav-link">LinksNew</a></li>
-                              <li class="nav-item"><a href="#" class="nav-link">General</a></li>
-                              <li class="nav-item"><a href="#" class="nav-link">Ribbons</a></li>
-                              <li class="nav-item"><a href="#" class="nav-link">Utilities</a></li>
-                          </ul>
-                      </div>
-                  </li>
-
-                  <!-- LAYOUT BUILDER -->
-                  <li class="menu-title"><i class="ri-layout-masonry-line"></i>
-                      <span>LAYOUT BUILDER</span>
-                  </li>
-
-                  <!-- Settings -->
-                  <li class="nav-item">
-                      <a class="nav-link menu-link" href="{{ route('users.index') }}">
-                          <i class="ri-settings-3-line"></i> <span>Settings</span>
-                      </a>
-                  </li>
-
-                  <!-- Admin -->
-                  <li class="nav-item">
-                      <a class="nav-link menu-link" href="{{ route('users.index') }}">
-                          <i class="ri-admin-line"></i> <span>Admin</span>
-                      </a>
-                  </li>
-
-                  <!-- Components -->
-                  <li class="nav-item">
-                      <a class="nav-link menu-link" href="#sidebarLayoutComponents" data-bs-toggle="collapse"
-                          role="button" aria-expanded="false" aria-controls="sidebarLayoutComponents">
-                          <i class="ri-puzzle-line"></i> <span>Components</span>
-                      </a>
-                      <div class="collapse menu-dropdown" id="sidebarLayoutComponents">
-                          <ul class="nav nav-sm flex-column">
-                              <li class="nav-item"><a href="#" class="nav-link">Base</a></li>
-                              <li class="nav-item"><a href="#" class="nav-link">Columns</a></li>
-                              <li class="nav-item"><a href="#" class="nav-link">Tab</a></li>
-                              <li class="nav-item"><a href="#" class="nav-link">Accordion</a></li>
-                              <li class="nav-item"><a href="#" class="nav-link">Button</a></li>
-                              <li class="nav-item"><a href="#" class="nav-link">Specials</a></li>
-                          </ul>
-                      </div>
-                  </li>
-
-                  <!-- Blocks -->
-                  <li class="nav-item">
-                      <a class="nav-link menu-link" href="#sidebarLayoutBlocks" data-bs-toggle="collapse"
-                          role="button" aria-expanded="false" aria-controls="sidebarLayoutBlocks">
-                          <i class="ri-layout-grid-line"></i> <span>Blocks</span>
-                      </a>
-                      <div class="collapse menu-dropdown" id="sidebarLayoutBlocks">
-                          <ul class="nav nav-sm flex-column">
-                              <li class="nav-item"><a href="#" class="nav-link">Core</a></li>
-                              <li class="nav-item"><a href="#" class="nav-link">Hero</a></li>
-                              <li class="nav-item"><a href="#" class="nav-link">Bootstrap</a></li>
-                              <li class="nav-item"><a href="#" class="nav-link">etc...</a></li>
-                          </ul>
-                      </div>
-                  </li>
-
-                  <!-- Variables -->
-                  <li class="nav-item">
-                      <a class="nav-link menu-link" href="#sidebarLayoutVariables" data-bs-toggle="collapse"
-                          role="button" aria-expanded="false" aria-controls="sidebarLayoutVariables">
-                          <i class="ri-variable-line"></i> <span>Variables</span>
-                      </a>
-                      <div class="collapse menu-dropdown" id="sidebarLayoutVariables">
-                          <ul class="nav nav-sm flex-column">
-                              <li class="nav-item"><a href="#" class="nav-link">Font</a></li>
-                              <li class="nav-item"><a href="#" class="nav-link">Color</a></li>
-                              <li class="nav-item"><a href="#" class="nav-link">Dimensions</a></li>
-                              <li class="nav-item"><a href="#" class="nav-link">CSS Class</a></li>
-                          </ul>
-                      </div>
-                  </li>
-
-                  <!-- Frontend -->
-                  <li class="nav-item">
-                      <a class="nav-link menu-link" href="#sidebarLayoutFrontend" data-bs-toggle="collapse"
-                          role="button" aria-expanded="false" aria-controls="sidebarLayoutFrontend">
-                          <i class="ri-window-line"></i> <span>Frontend</span>
-                      </a>
-                      <div class="collapse menu-dropdown" id="sidebarLayoutFrontend">
-                          <ul class="nav nav-sm flex-column">
-                              <li class="nav-item"><a href="#" class="nav-link">(similar to admin but more
-                                      options)</a></li>
-                          </ul>
-                      </div>
-                  </li>
-
-                  <!-- Content Lists -->
-                  <li class="nav-item">
-                      <a class="nav-link menu-link" href="{{ route('users.index') }}">
-                          <i class="ri-list-check-2"></i> <span>Content Lists</span>
-                      </a>
-                  </li>
-
-
-                  <!-- Admin Menu management -->
-                  <li class="menu-title"><i class="ri-save-line"></i>
-                      <span>Admin Menu Management</span>
-                  </li>
-
-                  <!-- Settings  -->
-                  <li class="nav-item">
-                      <a class="nav-link menu-link" href="{{ route('users.index') }}">
-                          <i class="ri-cloud-line"></i> <span>Settings</span>
-                      </a>
-                  </li>
-
-
-                  <!-- Category management -->
-                  <li class="menu-title"><i class="ri-save-line"></i>
-                      <span>Category Management</span>
-                  </li>
-
-                  <!-- Settings  -->
-                  <li class="nav-item">
-                      <a class="nav-link menu-link" href="{{ route('users.index') }}">
-                          <i class="ri-cloud-line"></i> <span>Settings</span>
-                      </a>
-                  </li>
-
-                  <!-- CONNECTION MANAGEMENT -->
-                  <li class="menu-title"><i class="ri-shopping-bag-line"></i>
-                      <span>Connection Management</span>
-                  </li>
-
-                  <!-- Settings  -->
-                  <li class="nav-item">
-                      <a class="nav-link menu-link" href="{{ route('users.index') }}">
-                          <i class="ri-shopping-bag-3-line"></i> <span>Settings</span>
-                      </a>
-                  </li>
-                  <!-- Connection Type  -->
-                  <li class="nav-item">
-                      <a class="nav-link menu-link" href="{{ route('users.index') }}">
-                          <i class="ri-shopping-bag-3-line"></i> <span>Connection Type</span>
-                      </a>
-                  </li>
-                  <!-- Connection Layout  -->
-                  <li class="nav-item">
-                      <a class="nav-link menu-link" href="{{ route('users.index') }}">
-                          <i class="ri-shopping-bag-3-line"></i> <span>Connection Layout</span>
-                      </a>
-                  </li>
-                  <!-- Search & Filter  -->
-                  <li class="nav-item">
-                      <a class="nav-link menu-link" href="{{ route('users.index') }}">
-                          <i class="ri-shopping-bag-3-line"></i> <span>Search & Filter</span>
-                      </a>
-                  </li>
-
-
-
-
-                  <!-- Product Management -->
-                  <li class="menu-title"><i class="ri-shopping-bag-line"></i>
-                      <span>Product Management</span>
-                  </li>
-
-                  <!-- Settings  -->
-                  <li class="nav-item">
-                      <a class="nav-link menu-link" href="{{ route('users.index') }}">
-                          <i class="ri-shopping-bag-3-line"></i> <span>Settings</span>
-                      </a>
-                  </li>
-
-                  <!-- Content Management -->
-                  <li class="menu-title"><i class="ri-file-text-line"></i>
-                      <span>Content Management</span>
-                  </li>
-
-                  <!-- Settings  -->
-                  <li class="nav-item">
-                      <a class="nav-link menu-link" href="{{ route('users.index') }}">
-                          <i class="ri-file-settings-line"></i> <span>Settings</span>
-                      </a>
-                  </li>
-
-                  <!-- Content List Management -->
-                  <li class="menu-title"><i class="ri-list-check"></i>
-                      <span>Content List</span>
-                  </li>
-
-                  <!-- Settings  -->
-                  <li class="nav-item">
-                      <a class="nav-link menu-link" href="{{ route('users.index') }}">
-                          <i class="ri-list-settings-line"></i> <span>Settings</span>
-                      </a>
-                  </li>
-
-                  <!-- Field Types Management -->
-                  <li class="menu-title"><i class="ri-input-method-line"></i>
-                      <span>Field Types</span>
-                  </li>
-
-                  <!-- Settings  -->
-                  <li class="nav-item">
-                      <a class="nav-link menu-link" href="{{ route('users.index') }}">
-                          <i class="ri-input-method-settings-line"></i> <span>Settings</span>
-                      </a>
-                  </li>
-
-                  <!-- Import Function Management -->
-                  <li class="menu-title"><i class="ri-download-line"></i>
-                      <span>Import Function</span>
-                  </li>
-
-                  <!-- Settings  -->
-                  <li class="nav-item">
-                      <a class="nav-link menu-link" href="{{ route('users.index') }}">
-                          <i class="ri-download-settings-line"></i> <span>Settings</span>
-                      </a>
-                  </li>
-
-                  <!-- Export Function Management -->
-                  <li class="menu-title"><i class="ri-upload-line"></i>
-                      <span>Export Function</span>
-                  </li>
-
-                  <!-- Settings  -->
-
-                  <li class="nav-item">
-                      <a class="nav-link menu-link" href="{{ route('users.index') }}">
-                          <i class="ri-upload-settings-line"></i> <span>Settings</span>
-                      </a>
-                  </li>
-
-
-                  <!-- Income Management -->
-                  <li class="menu-title"><i class="ri-money-dollar-circle-line"></i>
-                      <span>Income</span>
-                  </li>
-
-                  <!-- Settings  -->
-                  <li class="nav-item">
-                      <a class="nav-link menu-link" href="{{ route('users.index') }}">
-                          <i class="ri-money-settings-line"></i> <span>Settings</span>
-                      </a>
-                  </li>
-
-                  <!-- Expenses Management -->
-                  <li class="menu-title"><i class="ri-bank-card-line"></i>
-                      <span>Expenses</span>
-                  </li>
-
-                  <!-- Settings  -->
-                  <li class="nav-item">
-                      <a class="nav-link menu-link" href="{{ route('users.index') }}">
-                          <i class="ri-bank-card-settings-line"></i> <span>Settings</span>
-                      </a>
-                  </li>
-
-                  <!-- E-Commerce Management -->
-                  <li class="menu-title"><i class="ri-shopping-cart-line"></i>
-                      <span>E-Commerce</span>
-                  </li>
-
-                  <!-- Settings  -->
-                  <li class="nav-item">
-                      <a class="nav-link menu-link" href="{{ route('users.index') }}">
-                          <i class="ri-shopping-cart-settings-line"></i> <span>Settings</span>
-                      </a>
-                  </li>
-
-                  <!-- Human Resources Management -->
-                  <li class="menu-title"><i class="ri-team-line"></i>
-                      <span>Human Resources</span>
-                  </li>
-
-                  <!-- Settings  -->
-                  <li class="nav-item">
-                      <a class="nav-link menu-link" href="{{ route('users.index') }}">
-                          <i class="ri-settings-3-line"></i> <span>Settings</span>
-                      </a>
-                  </li>
-
-                  <!-- Accounting Management -->
-                  <li class="menu-title"><i class="ri-calculator-line"></i>
-                      <span>Accounting</span>
-                  </li>
-
-                  <!-- Settings  -->
-                  <li class="nav-item">
-                      <a class="nav-link menu-link" href="{{ route('users.index') }}">
-                          <i class="ri-settings-3-line"></i> <span>Settings</span>
-                      </a>
-                  </li>
-
-                  <!-- FINANCIAL Management -->
-                  <li class="menu-title"><i class="ri-bank-line"></i>
-                      <span>Financial</span>
-                  </li>
-
-                  <!-- Settings  -->
-                  <li class="nav-item">
-                      <a class="nav-link menu-link" href="{{ route('users.index') }}">
-                          <i class="ri-settings-3-line"></i> <span>Settings</span>
-                      </a>
-                  </li>
-
-                  <!-- Taxes Management -->
-                  <li class="menu-title"><i class="ri-percent-line"></i>
-                      <span>Taxes</span>
-                  </li>
-
-                  <!-- Settings  -->
-                  <li class="nav-item">
-                      <a class="nav-link menu-link" href="{{ route('users.index') }}">
-                          <i class="ri-settings-3-line"></i> <span>Settings</span>
-                      </a>
-                  </li>
-
-
-                  <!-- Taxes Management -->
-                  <li class="menu-title"><i class="ri-percent-line"></i>
-                      <span>Taxes</span>
-                  </li>
-
-                  <!-- Settings  -->
-                  <li class="nav-item">
-                      <a class="nav-link menu-link" href="{{ route('users.index') }}">
-                          <i class="ri-settings-3-line"></i> <span>Settings</span>
-                      </a>
-                  </li>
-
-                  <!-- INSTALL DATASETS -->
-                  <li class="menu-title"><i class="ri-database-2-line"></i>
-                      <span>Install Datasets</span>
-                  </li>
-
-                  <!-- Install Datasets  -->
-                  <li class="nav-item">
-                      <a class="nav-link menu-link" href="{{ route('users.index') }}">
-                          <i class="ri-download-cloud-line"></i> <span>Install Datasets</span>
-                      </a>
-                  </li>
-
-
-                  <!-- Backup management -->
-                  <li class="menu-title"><i class="ri-save-line"></i>
-                      <span>Backup Management</span>
-                  </li>
-
-                  <!-- Backup  -->
-                  <li class="nav-item">
-                      <a class="nav-link menu-link" href="{{ route('users.index') }}">
-                          <i class="ri-cloud-line"></i> <span>Backup</span>
-                      </a>
-                  </li>
-
-                  <!-- Start --->
-
-
-
-
-
-
-
-                  {{-- <li class="nav-item">
-                      <a class="nav-link menu-link" href="#sidebarAdminTemplate" data-bs-toggle="collapse"
-                          role="button" aria-expanded="false" aria-controls="sidebarAdminTemplate">
-                          <span>ADMIN TEMPLATE</span>
-                      </a>
-                      <div class="collapse menu-dropdown" id="sidebarAdminTemplate">
-                          <ul class="nav nav-sm flex-column">
-                              <li class="nav-item"><a href="" class="nav-link">Template Structure</a></li>
-                              <li class="nav-item">
-                                  <a href="#sidebarDesign" data-bs-toggle="collapse" role="button"
-                                      class="nav-link">
-                                      Design
-                                  </a>
-                                  <div class="collapse menu-dropdown" id="sidebarDesign">
-                                      <ul class="nav nav-sm flex-column">
-                                          <li class="nav-item"><a href="" class="nav-link">Layout</a></li>
-                                          <li class="nav-item"><a href="" class="nav-link">Styling</a></li>
-                                          <li class="nav-item"><a href="" class="nav-link">Toolbar</a></li>
-                                          <li class="nav-item"><a href="" class="nav-link">Sidebar</a></li>
-                                      </ul>
-                                  </div>
-                              </li>
-                              <li class="nav-item"><a href="" class="nav-link">Theme</a></li>
-                              <li class="nav-item">
-                                  <a href="#sidebarComponents" data-bs-toggle="collapse" role="button"
-                                      class="nav-link">
-                                      Components
-                                  </a>
-                                  <div class="collapse menu-dropdown" id="sidebarComponents">
-                                      <ul class="nav nav-sm flex-column">
-                                          <li class="nav-item">
-                                              <a href="#sidebarBaseUI" data-bs-toggle="collapse" role="button"
-                                                  class="nav-link">
-                                                  Base UI
-                                              </a>
-                                              <div class="collapse menu-dropdown" id="sidebarBaseUI">
-                                                  <ul class="nav nav-sm flex-column">
-                                                      <li class="nav-item"><a href=""
-                                                              class="nav-link">Cards</a></li>
-                                                      <li class="nav-item"><a href=""
-                                                              class="nav-link">Carousel</a></li>
-                                                      <li class="nav-item"><a href=""
-                                                              class="nav-link">Dropdowns</a></li>
-                                                      <li class="nav-item"><a href=""
-                                                              class="nav-link">Grid</a></li>
-                                                      <li class="nav-item"><a href=""
-                                                              class="nav-link">Images</a></li>
-                                                      <li class="nav-item"><a href=""
-                                                              class="nav-link">Tabs</a></li>
-                                                      <li class="nav-item"><a href=""
-                                                              class="nav-link">Accordion & Collapse</a></li>
-                                                      <li class="nav-item"><a href=""
-                                                              class="nav-link">Modals</a></li>
-                                                      <li class="nav-item"><a href=""
-                                                              class="nav-link">Offcanvas</a></li>
-                                                      <li class="nav-item"><a href=""
-                                                              class="nav-link">Placeholders</a></li>
-                                                      <li class="nav-item"><a href=""
-                                                              class="nav-link">Progress</a></li>
-                                                      <li class="nav-item"><a href=""
-                                                              class="nav-link">Notifications</a></li>
-                                                      <li class="nav-item"><a href="" class="nav-link">Media
-                                                              object</a></li>
-                                                      <li class="nav-item"><a href="" class="nav-link">Embed
-                                                              Video</a></li>
-                                                      <li class="nav-item"><a href=""
-                                                              class="nav-link">Typography</a></li>
-                                                      <li class="nav-item"><a href=""
-                                                              class="nav-link">Lists</a></li>
-                                                      <li class="nav-item"><a href="" class="nav-link">Links
-                                                              New</a></li>
-                                                  </ul>
-                                              </div>
-                                          </li>
-                                          <li class="nav-item">
-                                              <a href="#sidebarAdvancedUI" data-bs-toggle="collapse" role="button"
-                                                  class="nav-link">
-                                                  Advanced UI
-                                              </a>
-                                              <div class="collapse menu-dropdown" id="sidebarAdvancedUI">
-                                                  <ul class="nav nav-sm flex-column">
-                                                      <li class="nav-item"><a href="" class="nav-link">Sweet
-                                                              Alerts</a></li>
-                                                      <li class="nav-item"><a href=""
-                                                              class="nav-link">Nestable List</a></li>
-                                                      <li class="nav-item"><a href=""
-                                                              class="nav-link">Scrollbar</a></li>
-                                                      <li class="nav-item"><a href=""
-                                                              class="nav-link">Animation</a></li>
-                                                      <li class="nav-item"><a href=""
-                                                              class="nav-link">Tour</a></li>
-                                                      <li class="nav-item"><a href="" class="nav-link">Swiper
-                                                              Slider</a></li>
-                                                      <li class="nav-item"><a href=""
-                                                              class="nav-link">Ratings</a></li>
-                                                      <li class="nav-item"><a href=""
-                                                              class="nav-link">Highlight</a></li>
-                                                      <li class="nav-item"><a href=""
-                                                              class="nav-link">ScrollSpy</a></li>
-                                                  </ul>
-                                              </div>
-                                          </li>
-                                      </ul>
-                                  </div>
-                              </li>
-                              <li class="nav-item"><a href="" class="nav-link">Widgets</a></li>
-                              <li class="nav-item">
-                                  <a href="#sidebarForms" data-bs-toggle="collapse" role="button" class="nav-link">
-                                      Forms
-                                  </a>
-                                  <div class="collapse menu-dropdown" id="sidebarForms">
-                                      <ul class="nav nav-sm flex-column">
-                                          <li class="nav-item"><a href="" class="nav-link">Basic Elements</a>
-                                          </li>
-                                          <li class="nav-item"><a href="" class="nav-link">Form Select</a>
-                                          </li>
-                                          <li class="nav-item"><a href="" class="nav-link">Checkboxes &
-                                                  Radios</a></li>
-                                          <li class="nav-item"><a href="" class="nav-link">Pickers</a></li>
-                                          <li class="nav-item"><a href="" class="nav-link">Input Masks</a>
-                                          </li>
-                                          <li class="nav-item"><a href="" class="nav-link">Advanced</a></li>
-                                          <li class="nav-item"><a href="" class="nav-link">Range Slider</a>
-                                          </li>
-                                          <li class="nav-item"><a href="" class="nav-link">Validation</a></li>
-                                          <li class="nav-item"><a href="" class="nav-link">Wizard</a></li>
-                                          <li class="nav-item"><a href="" class="nav-link">Editors</a></li>
-                                          <li class="nav-item"><a href="" class="nav-link">File Uploads</a>
-                                          </li>
-                                          <li class="nav-item"><a href="" class="nav-link">Form Layouts</a>
-                                          </li>
-                                          <li class="nav-item"><a href="" class="nav-link">Select2</a></li>
-                                      </ul>
-                                  </div>
-                              </li>
-                              <li class="nav-item">
-                                  <a href="#sidebarTables" data-bs-toggle="collapse" role="button"
-                                      class="nav-link">
-                                      Tables
-                                  </a>
-                                  <div class="collapse menu-dropdown" id="sidebarTables">
-                                      <ul class="nav nav-sm flex-column">
-                                          <li class="nav-item"><a href="" class="nav-link">Basic Tables</a>
-                                          </li>
-                                          <li class="nav-item"><a href="" class="nav-link">Grid Js</a></li>
-                                          <li class="nav-item"><a href="" class="nav-link">List Js</a></li>
-                                          <li class="nav-item"><a href="" class="nav-link">Datatables</a></li>
-                                      </ul>
-                                  </div>
-                              </li>
-                              <li class="nav-item">
-                                  <a href="#sidebarCharts" data-bs-toggle="collapse" role="button"
-                                      class="nav-link">
-                                      Charts
-                                  </a>
-                                  <div class="collapse menu-dropdown" id="sidebarCharts">
-                                      <ul class="nav nav-sm flex-column">
-                                          <li class="nav-item">
-                                              <a href="#sidebarApexcharts" data-bs-toggle="collapse" role="button"
-                                                  class="nav-link">
-                                                  Apexcharts
-                                              </a>
-                                              <div class="collapse menu-dropdown" id="sidebarApexcharts">
-                                                  <ul class="nav nav-sm flex-column">
-                                                      <li class="nav-item"><a href=""
-                                                              class="nav-link">Line</a></li>
-                                                      <li class="nav-item"><a href=""
-                                                              class="nav-link">Area</a></li>
-                                                      <li class="nav-item"><a href=""
-                                                              class="nav-link">Column</a></li>
-                                                      <li class="nav-item"><a href="" class="nav-link">Bar</a>
-                                                      </li>
-                                                      <li class="nav-item"><a href=""
-                                                              class="nav-link">Mixed</a></li>
-                                                      <li class="nav-item"><a href=""
-                                                              class="nav-link">Timeline</a></li>
-                                                      <li class="nav-item"><a href="" class="nav-link">Range
-                                                              Area</a></li>
-                                                      <li class="nav-item"><a href=""
-                                                              class="nav-link">Funnel</a></li>
-                                                      <li class="nav-item"><a href=""
-                                                              class="nav-link">Candlestick</a></li>
-                                                      <li class="nav-item"><a href=""
-                                                              class="nav-link">Boxplot</a></li>
-                                                      <li class="nav-item"><a href=""
-                                                              class="nav-link">Bubble</a></li>
-                                                      <li class="nav-item"><a href=""
-                                                              class="nav-link">Scatter</a></li>
-                                                      <li class="nav-item"><a href=""
-                                                              class="nav-link">Heatmap</a></li>
-                                                      <li class="nav-item"><a href=""
-                                                              class="nav-link">Treemap</a></li>
-                                                      <li class="nav-item"><a href="" class="nav-link">Pie</a>
-                                                      </li>
-                                                      <li class="nav-item"><a href=""
-                                                              class="nav-link">Radialbar</a></li>
-                                                      <li class="nav-item"><a href=""
-                                                              class="nav-link">Radar</a></li>
-                                                      <li class="nav-item"><a href="" class="nav-link">Polar
-                                                              Area</a></li>
-                                                      <li class="nav-item"><a href="" class="nav-link">Slope
-                                                              New</a></li>
-                                                  </ul>
-                                              </div>
-                                          </li>
-                                          <li class="nav-item"><a href="" class="nav-link">Chartjs</a></li>
-                                          <li class="nav-item"><a href="" class="nav-link">Echarts</a></li>
-                                      </ul>
-                                  </div>
-                              </li>
-                              <li class="nav-item">
-                                  <a href="#sidebarIcons" data-bs-toggle="collapse" role="button" class="nav-link">
-                                      Icons
-                                  </a>
-                                  <div class="collapse menu-dropdown" id="sidebarIcons">
-                                      <ul class="nav nav-sm flex-column">
-                                          <li class="nav-item"><a href="" class="nav-link">Remix</a></li>
-                                          <li class="nav-item"><a href="" class="nav-link">Boxicons</a></li>
-                                          <li class="nav-item"><a href="" class="nav-link">Material Design</a>
-                                          </li>
-                                          <li class="nav-item"><a href="" class="nav-link">Line Awesome</a>
-                                          </li>
-                                          <li class="nav-item"><a href="" class="nav-link">Feather</a></li>
-                                      </ul>
-                                  </div>
-                              </li>
-                              <li class="nav-item">
-                                  <a href="#sidebarMaps" data-bs-toggle="collapse" role="button" class="nav-link">
-                                      Maps
-                                  </a>
-                                  <div class="collapse menu-dropdown" id="sidebarMaps">
-                                      <ul class="nav nav-sm flex-column">
-                                          <li class="nav-item"><a href="" class="nav-link">Google</a></li>
-                                          <li class="nav-item"><a href="" class="nav-link">Vector</a></li>
-                                          <li class="nav-item"><a href="" class="nav-link">Leaflet</a></li>
-                                      </ul>
-                                  </div>
-                              </li>
-
-
-                          </ul>
-                      </div>
-                  </li>
-
-                  <li class="nav-item">
-                      <a href="#sidebarIcons" data-bs-toggle="collapse" role="button" class="nav-link">
-                          Admin Menu Management
-                      </a>
-                      <div class="collapse menu-dropdown" id="sidebarIcons">
-                          <ul class="nav nav-sm flex-column">
-                              <li class="nav-item"><a href="" class="nav-link">Settings</a></li>
-                          </ul>
-                      </div>
-                  </li>
-
-                  <li class="nav-item">
-                      <a href="#sidebarIcons" data-bs-toggle="collapse" role="button" class="nav-link">
-                          Category Management
-                      </a>
-                      <div class="collapse menu-dropdown" id="sidebarIcons">
-                          <ul class="nav nav-sm flex-column">
-                              <li class="nav-item"><a href="" class="nav-link">Settings</a></li>
-
-                          </ul>
-                      </div>
-                  </li>
-                  <li class="nav-item">
-                      <a href="#layoutBuilder" data-bs-toggle="collapse" role="button" class="nav-link">
-                          Layout Builder
-                      </a>
-                      <div class="collapse menu-dropdown" id="layoutBuilder">
-                          <ul class="nav nav-sm flex-column">
-                              <li class="nav-item">
-                                  <a href="#lbSettings" data-bs-toggle="collapse" class="nav-link">Settings</a>
-                                  <div class="collapse menu-dropdown" id="lbSettings">
-                                      <ul class="nav nav-sm flex-column">
-                                          <li class="nav-item"><a href="#" class="nav-link">Admin</a></li>
-                                          <li class="nav-item"><a href="#" class="nav-link">Frontend</a></li>
-                                          <li class="nav-item"><a href="#" class="nav-link">Content Lists</a>
-                                          </li>
-                                      </ul>
-                                  </div>
-                              </li>
-
-                              <li class="nav-item">
-                                  <a href="#lbAdmin" data-bs-toggle="collapse" class="nav-link">Admin</a>
-                                  <div class="collapse menu-dropdown" id="lbAdmin">
-                                      <ul class="nav nav-sm flex-column">
-                                          <li class="nav-item"><a href="#" class="nav-link">Components</a></li>
-                                          <li class="nav-item"><a href="#" class="nav-link">Blocks</a></li>
-                                          <li class="nav-item"><a href="#" class="nav-link">Variables</a></li>
-                                      </ul>
-                                  </div>
-                              </li>
-
-                              <li class="nav-item">
-                                  <a href="#lbFrontend" data-bs-toggle="collapse" class="nav-link">Frontend</a>
-                                  <div class="collapse menu-dropdown" id="lbFrontend">
-                                      <ul class="nav nav-sm flex-column">
-                                          <li class="nav-item"><a href="#" class="nav-link">Similar to Admin
-                                                  (more options)</a></li>
-                                      </ul>
-                                  </div>
-                              </li>
-                          </ul>
-                      </div>
-                  </li>
-
-                  <li class="nav-item">
-                      <a href="#frontendTemplate" data-bs-toggle="collapse" role="button" class="nav-link">
-                          Frontend Template
-                      </a>
-                      <div class="collapse menu-dropdown" id="frontendTemplate">
-                          <ul class="nav nav-sm flex-column">
-                              <li class="nav-item">
-                                  <a href="#templateDefault" data-bs-toggle="collapse" class="nav-link">Default
-                                      Template</a>
-                                  <div class="collapse menu-dropdown" id="templateDefault">
-                                      <ul class="nav nav-sm flex-column">
-                                          <li class="nav-item"><a href="#" class="nav-link">Settings</a></li>
-                                          <li class="nav-item"><a href="#" class="nav-link">Layout</a></li>
-                                          <li class="nav-item"><a href="#" class="nav-link">Colors</a></li>
-                                          <li class="nav-item"><a href="#" class="nav-link">Tools</a></li>
-                                      </ul>
-                                  </div>
-                              </li>
-                              <li class="nav-item"><a href="#" class="nav-link">Template 2</a></li>
-                          </ul>
-                      </div>
-                  </li> --}}
-                  {{-- @elseif(request()->routeIs('setup.*')) --}}
-                  {{-- @elseif(request()->routeIs('setup.*')) --}}
+                              @endif
+                          </li>
+                      @endforeach
+                  @endif
+                  {{-- Default Menu Control is always shown, followed by database menu items --}}
               @elseif (request()->routeIs(['setup.*', 'content-types.*', 'page.index']))
-                  <!-- SETUP PAGE SIDEBAR -->
-                  <li class="menu-title"><span>SETUP</span></li>
 
+                  @php
+                      // For setup routes, use route-specific sidebar-left menu type
+                      // This ensures menu items added from setup sidebar-left page appear only in setup sidebar
+                      $menuType = 'sidebar-left-setup';
+
+                      // Get menu items from database - get ALL visible and active items
+                      $menuItems = \App\Models\MenuItem::ofType($menuType)
+                          ->root()
+                          ->where('is_visible', true)
+                          ->where('is_active', true)
+                          ->with([
+                              'children' => function ($query) {
+                                  $query->where('is_visible', true)->where('is_active', true)->orderBy('sort_order');
+                              },
+                          ])
+                          ->orderBy('sort_order')
+                          ->get();
+                  @endphp
+
+                  {{-- Menu Control - Simple Format like sidebar.blade copy.php --}}
                   <li class="nav-item">
-                      <a class="nav-link menu-link" href="" data-bs-toggle="collapse" role="button"
-                          aria-expanded="false" aria-controls="sidebarDashboards">
-                          <i class="ri-dashboard-2-line"></i> <span data-key="t-dashboards">Dashboards</span>
-                      </a>
-                  </li> <!-- end Dashboard Menu -->
-                  <!-- SETUP PAGE SIDEBAR -->
-                  <li class="menu-title"><span>Company Structure</span></li>
-                  <!-- Company PAGE SIDEBAR -->
-
-                  <!-- Company Management -->
-                  <li class="nav-item">
-                      <a class="nav-link menu-link" href="{{ route('setup.company.index') }}">
-                          <i class="ri-building-line"></i> <span>Companies</span>
-                      </a>
-                  </li>
-
-                  <!-- Location Management -->
-                  <li class="nav-item">
-                      <a class="nav-link menu-link" href="{{ route('setup.location.index') }}">
-                          <i class="ri-map-pin-line"></i> <span>Locations</span>
-                      </a>
-                  </li>
-
-                  <!-- Department Management -->
-                  <li class="nav-item">
-                      <a class="nav-link menu-link" href="{{ route('setup.department.index') }}">
-                          <i class="ri-building-2-line"></i> <span>Departments</span>
-                      </a>
-                  </li>
-
-                  <!-- Employee Management -->
-                  <li class="nav-item">
-                      <a class="nav-link menu-link" href="{{ route('setup.employee.index') }}">
-                          <i class="ri-user-line"></i> <span>Employees</span>
-                      </a>
-                  </li>
-
-
-
-                  <!-- SETUP PAGE SIDEBAR -->
-                  <li class="menu-title"><span>Configuration</span></li>
-                  <!-- Company PAGE SIDEBAR -->
-
-                  <!-- Custom Content Types Dropdown -->
-                  <li class="nav-item">
-                      <a class="nav-link menu-link" href="#sidebarmenucontrol" data-bs-toggle="collapse"
-                          role="button" aria-expanded="false" aria-controls="sidebarmenucontrol">
+                      <a class="nav-link menu-link" href="#sidebarmenucontrol" data-bs-toggle="collapse" role="button"
+                          aria-expanded="false" aria-controls="sidebarmenucontrol">
                           <i class="ri-folder-3-line"></i> <span>Menu Control</span>
                       </a>
                       <div class="collapse menu-dropdown" id="sidebarmenucontrol">
@@ -1338,79 +289,257 @@
                       </div>
                   </li>
 
+                  {{-- Database Menu Items - Display like Menu Control --}}
+                  @if ($menuItems->count() > 0)
+                      @foreach ($menuItems as $item)
+                          @php
+                              $hasChildren = $item->children && $item->children->count() > 0;
+                              $url = \App\Helpers\MenuHelper::getMenuItemUrl($item);
+                              $target = $item->target_window === '_blank' ? ' target="_blank"' : '';
+                              $icon = $item->icon ?? 'ri-menu-line';
+                              $isActive = request()->url() === $url || request()->routeIs($item->url ?? '');
 
+                              // Check if icon is a URL or class
+                              $isIconUrl =
+                                  $icon &&
+                                  (str_starts_with($icon, 'http://') ||
+                                      str_starts_with($icon, 'https://') ||
+                                      str_starts_with($icon, '/') ||
+                                      str_starts_with($icon, 'uploaded://'));
+                              $iconHtml = '';
+                              if ($isIconUrl) {
+                                  // Icon is an image URL
+                                  $iconHtml =
+                                      '<img src="' .
+                                      e($icon) .
+                                      '" alt="icon" style="width: 18px; height: 18px; margin-right: 8px; vertical-align: middle;">';
+                              } else {
+                                  // Icon is a CSS class
+                                  $iconHtml = '<i class="' . e($icon) . '"></i>';
+                              }
 
-                  <li class="menu-title"><i class="ri-shopping-cart-line"></i>
-                      <span data-key="t-ecommerce">Content Management</span>
-                  </li>
+                              // Generate unique collapse ID
+                              $collapseId = 'sidebar' . Str::slug($item->title) . $item->id;
+                          @endphp
 
-                  <!-- Pages -->
+                          <li class="nav-item{{ $isActive ? ' active' : '' }}" draggable="true"
+                              data-menu-item-id="{{ $item->id }}"
+                              data-menu-item-parent="{{ $item->parent_id ?? '' }}" style="cursor: move;">
+                              @if ($hasChildren)
+                                  {{-- Menu Item with Children - Collapse/Expand like Menu Control --}}
+                                  <a class="nav-link menu-link{{ $isActive ? ' active' : '' }}"
+                                      href="#{{ $collapseId }}" data-bs-toggle="collapse" role="button"
+                                      aria-expanded="{{ $isActive ? 'true' : 'false' }}"
+                                      aria-controls="{{ $collapseId }}">
+                                      {!! $iconHtml !!} <span>{{ $item->title }}</span>
+                                  </a>
+                                  <div class="collapse menu-dropdown{{ $isActive ? ' show' : '' }}"
+                                      id="{{ $collapseId }}">
+                                      <ul class="nav nav-sm flex-column">
+                                          @foreach ($item->children as $child)
+                                              @php
+                                                  $childUrl = \App\Helpers\MenuHelper::getMenuItemUrl($child);
+                                                  $childTarget =
+                                                      $child->target_window === '_blank' ? ' target="_blank"' : '';
+                                                  $childActive =
+                                                      request()->url() === $childUrl || request()->routeIs($child->url);
+                                                  $childIcon = $child->icon ?? null;
+
+                                                  // Check if child icon is a URL or class
+                                                  $childIsIconUrl =
+                                                      $childIcon &&
+                                                      (str_starts_with($childIcon, 'http://') ||
+                                                          str_starts_with($childIcon, 'https://') ||
+                                                          str_starts_with($childIcon, '/') ||
+                                                          str_starts_with($childIcon, 'uploaded://'));
+                                                  $childIconHtml = '';
+                                                  if ($childIcon) {
+                                                      if ($childIsIconUrl) {
+                                                          // Child icon is an image URL
+                                                          $childIconHtml =
+                                                              '<img src="' .
+                                                              e($childIcon) .
+                                                              '" alt="icon" style="width: 16px; height: 16px; margin-right: 6px; vertical-align: middle;">';
+                                                      } else {
+                                                          // Child icon is a CSS class
+                                                          $childIconHtml =
+                                                              '<i class="' .
+                                                              e($childIcon) .
+                                                              '" style="font-size: 14px;"></i> ';
+                                                      }
+                                                  }
+                                              @endphp
+                                              <li class="nav-item">
+                                                  <a href="{{ $childUrl }}"
+                                                      class="nav-link{{ $childActive ? ' active' : '' }}"{{ $childTarget }}>
+                                                      {!! $childIconHtml !!}{{ $child->title }}
+                                                  </a>
+                                              </li>
+                                          @endforeach
+                                      </ul>
+                                  </div>
+                              @else
+                                  {{-- Menu Item without Children - Simple Link --}}
+                                  <a class="nav-link menu-link{{ $isActive ? ' active' : '' }}"
+                                      href="{{ $url }}"{{ $target }}>
+                                      {!! $iconHtml !!} <span>{{ $item->title }}</span>
+                                  </a>
+                              @endif
+                          </li>
+                      @endforeach
+                  @endif
+                  {{-- Default Menu Control is always shown, followed by database menu items --}}
+              @elseif(request()->routeIs('active-area.*'))
+
+                  @php
+                      // For active-area routes, use route-specific sidebar-left menu type
+                      // This ensures menu items added from active-area sidebar-left page appear only in active-area sidebar
+                      $menuType = 'sidebar-left-active-area';
+
+                      // Get menu items from database - get ALL visible and active items
+                      $menuItems = \App\Models\MenuItem::ofType($menuType)
+                          ->root()
+                          ->where('is_visible', true)
+                          ->where('is_active', true)
+                          ->with([
+                              'children' => function ($query) {
+                                  $query->where('is_visible', true)->where('is_active', true)->orderBy('sort_order');
+                              },
+                          ])
+                          ->orderBy('sort_order')
+                          ->get();
+                  @endphp
+
+                  {{-- Menu Control - Simple Format like sidebar.blade copy.php --}}
                   <li class="nav-item">
-                      <a class="nav-link menu-link" href="{{ route('content-types.index') }}">
-                          <i class="ri-pages-line"></i> <span>Content Type</span>
+                      <a class="nav-link menu-link" href="#sidebarmenucontrol" data-bs-toggle="collapse" role="button"
+                          aria-expanded="false" aria-controls="sidebarmenucontrol">
+                          <i class="ri-folder-3-line"></i> <span>Menu Control</span>
                       </a>
-                  </li>
-
-                  <!-- Pages -->
-                  <li class="nav-item">
-                      <a class="nav-link menu-link" href="{{ route('pages.index') }}">
-                          <i class="ri-pages-line"></i> <span>Pages</span>
-                      </a>
-                  </li>
-
-                  <!-- Blog / News / Articles -->
-                  <li class="nav-item">
-                      <a class="nav-link menu-link" href="/admin/posts">
-                          <i class="ri-article-line"></i> <span>Blog Posts</span>
-                      </a>
-                  </li>
-
-                  <!-- Blog Categories -->
-                  <li class="nav-item">
-                      <a class="nav-link menu-link" href="/admin/categories">
-                          <i class="ri-price-tag-3-line"></i> <span>Blog Categories</span>
-                      </a>
-                  </li>
-
-
-                  <!-- Media Library -->
-                  <li class="nav-item">
-                      <a class="nav-link menu-link" href="/admin/media-library">
-                          <i class="ri-image-line"></i> <span>Media Library</span>
-                      </a>
-                  </li>
-
-                  <!-- Menu -->
-                  <li class="nav-item">
-                      <a class="nav-link menu-link" href="{{ route('menu.index') }}">
-                          <i class="ri-image-line"></i> <span>Menu</span>
-                      </a>
-                  </li>
-
-                  <!-- Custom Content Types Dropdown -->
-                  <li class="nav-item">
-                      <a class="nav-link menu-link" href="#sidebarCustomContent" data-bs-toggle="collapse"
-                          role="button" aria-expanded="false" aria-controls="sidebarCustomContent">
-                          <i class="ri-folder-3-line"></i> <span>Custom Content</span>
-                      </a>
-                      <div class="collapse menu-dropdown" id="sidebarCustomContent">
+                      <div class="collapse menu-dropdown" id="sidebarmenucontrol">
                           <ul class="nav nav-sm flex-column">
-                              <li class="nav-item"><a href="{{ route('config.menu-management.toolbar') }}"
-                                      class="nav-link">Projects</a></li>
-                              <li class="nav-item"><a href="{{ route('config.menu-management.top-menu') }}"
-                                      class="nav-link">Case Studies</a>
+                              <li class="nav-item"><a href="{{ route('active-area.menu-management.toolbar') }}"
+                                      class="nav-link">ToolBar</a></li>
+                              <li class="nav-item"><a href="{{ route('active-area.menu-management.top-menu') }}"
+                                      class="nav-link">Top Menu</a>
                               </li>
-                              <li class="nav-item"><a href="{{ route('config.menu-management.breadcrumbs') }}"
-                                      class="nav-link">Testimonials</a>
+                              <li class="nav-item"><a href="{{ route('active-area.menu-management.breadcrumbs') }}"
+                                      class="nav-link">Breadcrumbs</a>
+                              </li>
+                              <li class="nav-item"><a href="{{ route('active-area.menu-management.sidebar-left') }}"
+                                      class="nav-link">Sidebar Left</a>
+                              </li>
+                              <li class="nav-item"><a href="{{ route('active-area.menu-management.sidebar-right') }}"
+                                      class="nav-link">Sidebar Right</a>
+                              </li>
+                              <li class="nav-item"><a href="{{ route('active-area.menu-management.bottom-menu') }}"
+                                      class="nav-link">Bottom Menu</a>
                               </li>
                           </ul>
                       </div>
                   </li>
 
+                  {{-- Database Menu Items - Display like Menu Control --}}
+                  @if ($menuItems->count() > 0)
+                      @foreach ($menuItems as $item)
+                          @php
+                              $hasChildren = $item->children && $item->children->count() > 0;
+                              $url = \App\Helpers\MenuHelper::getMenuItemUrl($item);
+                              $target = $item->target_window === '_blank' ? ' target="_blank"' : '';
+                              $icon = $item->icon ?? 'ri-menu-line';
+                              $isActive = request()->url() === $url || request()->routeIs($item->url ?? '');
 
+                              // Check if icon is a URL or class
+                              $isIconUrl =
+                                  $icon &&
+                                  (str_starts_with($icon, 'http://') ||
+                                      str_starts_with($icon, 'https://') ||
+                                      str_starts_with($icon, '/') ||
+                                      str_starts_with($icon, 'uploaded://'));
+                              $iconHtml = '';
+                              if ($isIconUrl) {
+                                  // Icon is an image URL
+                                  $iconHtml =
+                                      '<img src="' .
+                                      e($icon) .
+                                      '" alt="icon" style="width: 18px; height: 18px; margin-right: 8px; vertical-align: middle;">';
+                              } else {
+                                  // Icon is a CSS class
+                                  $iconHtml = '<i class="' . e($icon) . '"></i>';
+                              }
 
+                              // Generate unique collapse ID
+                              $collapseId = 'sidebar' . Str::slug($item->title) . $item->id;
+                          @endphp
 
-                  <!-- End  -->
+                          <li class="nav-item{{ $isActive ? ' active' : '' }}" draggable="true"
+                              data-menu-item-id="{{ $item->id }}"
+                              data-menu-item-parent="{{ $item->parent_id ?? '' }}" style="cursor: move;">
+                              @if ($hasChildren)
+                                  {{-- Menu Item with Children - Collapse/Expand like Menu Control --}}
+                                  <a class="nav-link menu-link{{ $isActive ? ' active' : '' }}"
+                                      href="#{{ $collapseId }}" data-bs-toggle="collapse" role="button"
+                                      aria-expanded="{{ $isActive ? 'true' : 'false' }}"
+                                      aria-controls="{{ $collapseId }}">
+                                      {!! $iconHtml !!} <span>{{ $item->title }}</span>
+                                  </a>
+                                  <div class="collapse menu-dropdown{{ $isActive ? ' show' : '' }}"
+                                      id="{{ $collapseId }}">
+                                      <ul class="nav nav-sm flex-column">
+                                          @foreach ($item->children as $child)
+                                              @php
+                                                  $childUrl = \App\Helpers\MenuHelper::getMenuItemUrl($child);
+                                                  $childTarget =
+                                                      $child->target_window === '_blank' ? ' target="_blank"' : '';
+                                                  $childActive =
+                                                      request()->url() === $childUrl || request()->routeIs($child->url);
+                                                  $childIcon = $child->icon ?? null;
+
+                                                  // Check if child icon is a URL or class
+                                                  $childIsIconUrl =
+                                                      $childIcon &&
+                                                      (str_starts_with($childIcon, 'http://') ||
+                                                          str_starts_with($childIcon, 'https://') ||
+                                                          str_starts_with($childIcon, '/') ||
+                                                          str_starts_with($childIcon, 'uploaded://'));
+                                                  $childIconHtml = '';
+                                                  if ($childIcon) {
+                                                      if ($childIsIconUrl) {
+                                                          // Child icon is an image URL
+                                                          $childIconHtml =
+                                                              '<img src="' .
+                                                              e($childIcon) .
+                                                              '" alt="icon" style="width: 16px; height: 16px; margin-right: 6px; vertical-align: middle;">';
+                                                      } else {
+                                                          // Child icon is a CSS class
+                                                          $childIconHtml =
+                                                              '<i class="' .
+                                                              e($childIcon) .
+                                                              '" style="font-size: 14px;"></i> ';
+                                                      }
+                                                  }
+                                              @endphp
+                                              <li class="nav-item">
+                                                  <a href="{{ $childUrl }}"
+                                                      class="nav-link{{ $childActive ? ' active' : '' }}"{{ $childTarget }}>
+                                                      {!! $childIconHtml !!}{{ $child->title }}
+                                                  </a>
+                                              </li>
+                                          @endforeach
+                                      </ul>
+                                  </div>
+                              @else
+                                  {{-- Menu Item without Children - Simple Link --}}
+                                  <a class="nav-link menu-link{{ $isActive ? ' active' : '' }}"
+                                      href="{{ $url }}"{{ $target }}>
+                                      {!! $iconHtml !!} <span>{{ $item->title }}</span>
+                                  </a>
+                              @endif
+                          </li>
+                      @endforeach
+                  @endif
+                  {{-- Default Menu Control is always shown, followed by database menu items --}}
+              @else
 
 
                   <!-- USER MANAGEMENT -->
@@ -1652,8 +781,8 @@
 
                   <!-- Decentralized Collapse -->
                   <li class="nav-item">
-                      <a class="nav-link menu-link" href="#decentralized" data-bs-toggle="collapse"
-                          role="button" aria-expanded="false" aria-controls="decentralized">
+                      <a class="nav-link menu-link" href="#decentralized" data-bs-toggle="collapse" role="button"
+                          aria-expanded="false" aria-controls="decentralized">
                           <i class="ri-global-line"></i> <span>Decentralized</span>
                       </a>
                       <div class="collapse menu-dropdown" id="decentralized">
@@ -1988,8 +1117,8 @@
 
                   <!-- Frontend Dropdown -->
                   <li class="nav-item">
-                      <a class="nav-link menu-link" href="#frontendMenu" data-bs-toggle="collapse"
-                          role="button" aria-expanded="false" aria-controls="frontendMenu">
+                      <a class="nav-link menu-link" href="#frontendMenu" data-bs-toggle="collapse" role="button"
+                          aria-expanded="false" aria-controls="frontendMenu">
                           <i class="ri-window-line"></i> <span>Frontend</span>
                       </a>
                       <div class="collapse menu-dropdown" id="frontendMenu">
@@ -2000,32 +1129,32 @@
                                           class="ri-folder-2-line"></i> Group Name 2</a></li>
                           </ul>
                       </div>
-                  </li>
+                  </li> --}}
 
 
                   <!-- CONNECTION MANAGEMENT -->
-                  <li class="menu-title"><span>Connection Management</span></li>
+                  {{-- <li class="menu-title"><span>Connection Management</span></li>
                   <li class="nav-item"><a class="nav-link menu-link" href="#"><i
                               class="ri-settings-3-line"></i> Settings</a></li>
                   <li class="nav-item"><a class="nav-link menu-link" href="#"><i class="ri-node-tree"></i>
                           Connection Type</a></li>
-                  <li class="nav-item"><a class="nav-link menu-link" href="#"><i
-                              class="ri-layout-2-line"></i> Connection Layout</a></li>
-                  <li class="nav-item"><a class="nav-link menu-link" href="#"><i
-                              class="ri-search-line"></i> Search & Filter</a></li>
+                  <li class="nav-item"><a class="nav-link menu-link" href="#"><i class="ri-layout-2-line"></i>
+                          Connection Layout</a></li>
+                  <li class="nav-item"><a class="nav-link menu-link" href="#"><i class="ri-search-line"></i>
+                          Search & Filter</a></li>
 
                   <!-- INCOME -->
                   <li class="menu-title"><span>Income</span></li>
-                  <li class="nav-item"><a class="nav-link menu-link" href="#"><i
-                              class="ri-group-line"></i> Sales Team</a></li>
+                  <li class="nav-item"><a class="nav-link menu-link" href="#"><i class="ri-group-line"></i>
+                          Sales Team</a></li>
                   <li class="nav-item"><a class="nav-link menu-link" href="#"><i
                               class="ri-shopping-cart-line"></i> eCommerce</a></li>
                   <li class="nav-item"><a class="nav-link menu-link" href="#"><i class="ri-bill-line"></i>
                           Recurring Billing</a></li>
-                  <li class="nav-item"><a class="nav-link menu-link" href="#"><i
-                              class="ri-store-2-line"></i> Marketplace</a></li>
-                  <li class="nav-item"><a class="nav-link menu-link" href="#"><i
-                              class="ri-links-line"></i> Connected Network</a></li>
+                  <li class="nav-item"><a class="nav-link menu-link" href="#"><i class="ri-store-2-line"></i>
+                          Marketplace</a></li>
+                  <li class="nav-item"><a class="nav-link menu-link" href="#"><i class="ri-links-line"></i>
+                          Connected Network</a></li>
 
 
 
@@ -2050,8 +1179,8 @@
 
                   <!-- HUMAN RESOURCES -->
                   <li class="nav-item">
-                      <a class="nav-link menu-link" href="#HUMANRESOURCES" data-bs-toggle="collapse"
-                          role="button" aria-expanded="false" aria-controls="HUMANRESOURCES">
+                      <a class="nav-link menu-link" href="#HUMANRESOURCES" data-bs-toggle="collapse" role="button"
+                          aria-expanded="false" aria-controls="HUMANRESOURCES">
                           <i class="ri-user-settings-line"></i> <span>Human Resources</span>
                       </a>
                   </li>
@@ -2078,18 +1207,7 @@
                           aria-expanded="false" aria-controls="TAXES">
                           <i class="ri-funds-box-line"></i><span>Taxes</span>
                       </a>
-                  </li>
-              @elseif(request()->routeIs('active-area.*'))
-                  <!-- SETTINGS PAGE SIDEBAR -->
-                  <li class="menu-title"><i class="ri-dashboard-2-line"></i>
-                      <span>DASHBOARDS</span>
-                  </li>
-
-                  <li class="nav-item">
-                      <a class="nav-link menu-link" href="">
-                          <i class="ri-dashboard-2-line"></i> <span data-key="t-dashboards">Main Dashboard</span>
-                      </a>
-                  </li> <!-- end Dashboard Menu -->
+                  </li> --}}
 
 
 
@@ -2197,8 +1315,8 @@
 
                   <li class="nav-item"><a class="nav-link menu-link" href=""><i
                               class="ri-archive-2-line"></i> Inventory</a></li>
-                  <li class="nav-item"><a class="nav-link menu-link" href=""><i
-                              class="ri-apps-2-line"></i> Categories</a></li>
+                  <li class="nav-item"><a class="nav-link menu-link" href=""><i class="ri-apps-2-line"></i>
+                          Categories</a></li>
 
                   <li class="nav-item">
                       <a class="nav-link menu-link" href="#ManageProductsCentralized" data-bs-toggle="collapse"
@@ -2337,10 +1455,6 @@
                   <li class="menu-title"><span>Functions</span></li>
                   <li class="nav-item"><a class="nav-link menu-link" href=""><i
                               class="ri-map-pin-line"></i> Map Locator</a></li>
-                  <li class="nav-item"><a class="nav-link menu-link" href=""><i
-                              class="ri-shield-keyhole-line"></i> Firewall</a></li>
-              @else
-                  <!-- DEFAULT SIDEBAR -->
                   <li class="menu-title"><span data-key="t-menu">Menu</span></li>
                   <li class="nav-item">
                       <a class="nav-link menu-link" href="" data-bs-toggle="collapse" role="button"
@@ -2349,15 +1463,15 @@
                       </a>
                   </li> <!-- end Dashboard Menu -->
 
-                  
+
                   <!-- SETUP PAGE SIDEBAR -->
                   <li class="menu-title"><span>Configuration</span></li>
                   <!-- Company PAGE SIDEBAR -->
 
                   <!-- Custom Content Types Dropdown -->
                   <li class="nav-item">
-                      <a class="nav-link menu-link" href="#sidebarmenucontrol" data-bs-toggle="collapse" role="button"
-                          aria-expanded="false" aria-controls="sidebarmenucontrol">
+                      <a class="nav-link menu-link" href="#sidebarmenucontrol" data-bs-toggle="collapse"
+                          role="button" aria-expanded="false" aria-controls="sidebarmenucontrol">
                           <i class="ri-folder-3-line"></i> <span>Menu Control</span>
                       </a>
                       <div class="collapse menu-dropdown" id="sidebarmenucontrol">
@@ -2772,3 +1886,299 @@
       </div>
       <!-- Sidebar -->
   </div>
+
+  @if (request()->routeIs(['config.*']))
+      <script>
+          // Menu Control Position & Alignment Functions
+          window.setMenuControlPosition = function(position) {
+              const wrapper = document.getElementById('menuControlWrapper');
+              if (wrapper) {
+                  // Remove existing position classes
+                  wrapper.classList.remove('position-top', 'position-bottom', 'position-custom');
+                  // Add new position class
+                  wrapper.classList.add('position-' + position);
+
+                  // Save to session/localStorage
+                  sessionStorage.setItem('menu_control_position', position);
+
+                  // Optional: Send to server to persist
+                  fetch('{{ url('admin/config/menu-control/settings') }}', {
+                      method: 'POST',
+                      headers: {
+                          'Content-Type': 'application/json',
+                          'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute(
+                              'content') || ''
+                      },
+                      body: JSON.stringify({
+                          position: position
+                      })
+                  }).catch(err => console.log('Settings save optional'));
+              }
+          };
+
+          window.setMenuControlAlignment = function(align) {
+              const wrapper = document.getElementById('menuControlWrapper');
+              if (wrapper) {
+                  // Remove existing alignment classes
+                  wrapper.classList.remove('align-left', 'align-center', 'align-right');
+                  // Add new alignment class
+                  wrapper.classList.add('align-' + align);
+
+                  // Save to session/localStorage
+                  sessionStorage.setItem('menu_control_align', align);
+
+                  // Optional: Send to server to persist
+                  fetch('{{ url('admin/config/menu-control/settings') }}', {
+                      method: 'POST',
+                      headers: {
+                          'Content-Type': 'application/json',
+                          'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute(
+                              'content') || ''
+                      },
+                      body: JSON.stringify({
+                          align: align
+                      })
+                  }).catch(err => console.log('Settings save optional'));
+              }
+          };
+
+          // Load saved settings on page load
+          document.addEventListener('DOMContentLoaded', function() {
+              const savedPosition = sessionStorage.getItem('menu_control_position') || 'top';
+              const savedAlign = sessionStorage.getItem('menu_control_align') || 'left';
+
+              if (document.getElementById('menuControlWrapper')) {
+                  setMenuControlPosition(savedPosition);
+                  setMenuControlAlignment(savedAlign);
+              }
+          });
+
+          // Menu Item Management Functions
+          window.toggleMenuActive = function(itemId, element) {
+              element.classList.toggle('active');
+              const isActive = element.classList.contains('active');
+
+              fetch('/admin/config/menu-management/items/' + itemId, {
+                      method: 'POST',
+                      headers: {
+                          'Content-Type': 'application/json',
+                          'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute(
+                              'content') || ''
+                      },
+                      body: JSON.stringify({
+                          is_active: isActive
+                      })
+                  })
+                  .then(response => response.json())
+                  .then(data => {
+                      if (!data.success) {
+                          element.classList.toggle('active');
+                          alert('Error updating menu item status');
+                      }
+                  })
+                  .catch(error => {
+                      console.error('Error:', error);
+                      element.classList.toggle('active');
+                  });
+          };
+
+          window.toggleMenuVisibility = function(itemId, isVisible) {
+              fetch('/admin/config/menu-management/items/' + itemId, {
+                      method: 'POST',
+                      headers: {
+                          'Content-Type': 'application/json',
+                          'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute(
+                              'content') || ''
+                      },
+                      body: JSON.stringify({
+                          is_visible: isVisible
+                      })
+                  })
+                  .then(response => response.json())
+                  .then(data => {
+                      if (!data.success) {
+                          alert('Error updating menu item visibility');
+                      }
+                  })
+                  .catch(error => {
+                      console.error('Error:', error);
+                  });
+          };
+
+          window.toggleSubMenu = function(element) {
+              const menuItem = element.closest('li');
+              if (menuItem) {
+                  const subMenu = menuItem.querySelector('.sidebar-sub-menu');
+                  if (subMenu) {
+                      if (subMenu.style.display === 'none' || !subMenu.style.display) {
+                          subMenu.style.display = 'block';
+                          element.innerHTML = '⌄';
+                      } else {
+                          subMenu.style.display = 'none';
+                          element.innerHTML = '▶';
+                      }
+                  }
+              }
+          };
+
+          window.addSubMenuItem = function(parentId) {
+              // Redirect to sidebar-left page with parent pre-selected
+              window.location.href = '{{ route('config.menu-management.sidebar-left') }}?parent=' + parentId;
+          };
+
+          window.editSidebarMenuItem = function(itemId) {
+              // Redirect to sidebar-left page with item to edit
+              window.location.href = '{{ route('config.menu-management.sidebar-left') }}?edit=' + itemId;
+          };
+
+          window.deleteSidebarMenuItem = function(itemId) {
+              if (confirm('Are you sure you want to delete this menu item?')) {
+                  fetch('/admin/config/menu-management/items/' + itemId, {
+                          method: 'DELETE',
+                          headers: {
+                              'Content-Type': 'application/json',
+                              'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute(
+                                  'content') || ''
+                          }
+                      })
+                      .then(response => response.json())
+                      .then(data => {
+                          if (data.success) {
+                              location.reload();
+                          } else {
+                              alert('Error deleting menu item: ' + (data.message || 'Unknown error'));
+                          }
+                      })
+                      .catch(error => {
+                          console.error('Error:', error);
+                          alert('Error deleting menu item. Please try again.');
+                      });
+              }
+          };
+
+          document.addEventListener('DOMContentLoaded', function() {
+              let draggedElement = null;
+
+              // Get all draggable menu items in sidebar
+              const menuItems = document.querySelectorAll('[data-menu-item-id]');
+
+              menuItems.forEach(item => {
+                  // Drag start
+                  item.addEventListener('dragstart', function(e) {
+                      draggedElement = this;
+                      this.style.opacity = '0.5';
+                      e.dataTransfer.effectAllowed = 'move';
+                      e.dataTransfer.setData('text/html', this.outerHTML);
+                      e.dataTransfer.setData('text/plain', this.dataset.menuItemId);
+                  });
+
+                  // Drag end
+                  item.addEventListener('dragend', function(e) {
+                      this.style.opacity = '1';
+                      document.querySelectorAll('.drag-over-sidebar').forEach(el => {
+                          el.classList.remove('drag-over-sidebar');
+                      });
+                      draggedElement = null;
+                  });
+
+                  // Drag over
+                  item.addEventListener('dragover', function(e) {
+                      e.preventDefault();
+                      e.dataTransfer.dropEffect = 'move';
+
+                      if (draggedElement && draggedElement !== this) {
+                          // Don't allow dropping on itself or its children
+                          if (this.contains(draggedElement)) {
+                              return;
+                          }
+
+                          this.classList.add('drag-over-sidebar');
+                          this.style.backgroundColor = '#e3f2fd';
+                      }
+                  });
+
+                  // Drag leave
+                  item.addEventListener('dragleave', function(e) {
+                      this.classList.remove('drag-over-sidebar');
+                      this.style.backgroundColor = '';
+                  });
+
+                  // Drop
+                  item.addEventListener('drop', function(e) {
+                      e.preventDefault();
+                      this.classList.remove('drag-over-sidebar');
+                      this.style.backgroundColor = '';
+
+                      if (draggedElement && draggedElement !== this) {
+                          const draggedId = draggedElement.dataset.menuItemId;
+                          const targetId = this.dataset.menuItemId;
+                          const targetParentId = this.dataset.menuItemParent;
+
+                          // Don't allow dropping on itself or its children
+                          if (this.contains(draggedElement)) {
+                              return;
+                          }
+
+                          // Check if we're creating a submenu (dropping on a parent item)
+                          const isParentItem = !targetParentId || targetParentId === '';
+                          const draggedParentId = draggedElement.dataset.menuItemParent || '';
+
+                          if (isParentItem && draggedParentId !== targetId) {
+                              // Create submenu - update parent_id in database
+                              updateMenuItemParent(draggedId, targetId);
+                          } else if (!isParentItem) {
+                              // Move within same level or reorder
+                              updateMenuItemParent(draggedId, targetParentId);
+                          }
+                      }
+                  });
+              });
+
+              // Function to update parent_id in database
+              function updateMenuItemParent(itemId, parentId) {
+                  const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+
+                  fetch('/admin/config/menu-management/items/' + itemId, {
+                          method: 'POST',
+                          headers: {
+                              'Content-Type': 'application/json',
+                              'X-CSRF-TOKEN': csrfToken,
+                              'Accept': 'application/json',
+                              'X-Requested-With': 'XMLHttpRequest'
+                          },
+                          body: JSON.stringify({
+                              parent_id: parentId ? parseInt(parentId) : null
+                          })
+                      })
+                      .then(response => response.json())
+                      .then(data => {
+                          if (data.success) {
+                              // Reload page to show updated menu structure
+                              setTimeout(() => {
+                                  window.location.reload();
+                              }, 500);
+                          } else {
+                              alert('Error updating menu: ' + (data.message || 'Unknown error'));
+                          }
+                      })
+                      .catch(error => {
+                          console.error('Error:', error);
+                          alert('Error updating menu. Please try again.');
+                      });
+              }
+
+              // Add CSS for drag-over effect
+              const style = document.createElement('style');
+              style.textContent = `
+              [data-menu-item-id].drag-over-sidebar {
+                  border: 2px dashed #007bff !important;
+                  border-radius: 4px;
+              }
+              [data-menu-item-id] {
+                  transition: background-color 0.2s;
+              }
+          `;
+              document.head.appendChild(style);
+          });
+      </script>
+  @endif
